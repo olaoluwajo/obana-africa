@@ -86,22 +86,12 @@ const VendorSignUp = () => {
     termsDocuments?: any;
     documentSubmitted?: string;
   }
-  const productCategoryOptions = [
-    "--select category--",
-    "Fashion",
-    "Beauty",
-    "Lifestyle",
-    "Groceries",
-  ];
 
   interface FormErrors extends Partial<Record<keyof FormData, string>> {
     documentSubmitted?: string;
   }
 
   const validateStep = (currentStep: number) => {
-    // const newErrors = {};
-    // const newErrors: Partial<Record<keyof FormData, string>> = {};
-    // const newErrors: Partial<Record<keyof ErrorsType, string | string[]>> = {};
     const newErrors: Partial<ErrorsType> = {};
 
     switch (currentStep) {
@@ -140,9 +130,9 @@ const VendorSignUp = () => {
           newErrors.productCategories = "Select at least one Product Category.";
         if (!formData.documents)
           newErrors.documentSubmitted = "Please upload the Business Documents.";
-            if (!formData.termsDocuments)
-      newErrors.documentSubmitted = "Please upload the Downloaded Documents.";
-
+        if (!formData.termsDocuments)
+          newErrors.documentSubmitted =
+            "Please upload the Downloaded Documents.";
 
         if (!isDocumentDownloaded) {
           newErrors.documentSubmitted =
@@ -201,7 +191,7 @@ const VendorSignUp = () => {
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Returns true if no errors
+    return Object.keys(newErrors).length === 0; 
   };
 
   const nextStep = () => {
@@ -217,12 +207,10 @@ const VendorSignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form data before submission:", formData);
-    // const error = validateForm();
     const isStepValid = validateStep(step);
     const isFormValid = validateForm();
 
-    if (isStepValid && isFormValid) {
+    if (isStepValid || isFormValid) {
       // setError("");
       setErrors({});
 
@@ -250,7 +238,7 @@ const VendorSignUp = () => {
         console.error("Error submitting form:", err);
       }
     } else {
-      console.log("ERROR", errors);
+      console.log("Validation failed, errors:", errors);
       setErrors(errors);
       // setError("");
     }
