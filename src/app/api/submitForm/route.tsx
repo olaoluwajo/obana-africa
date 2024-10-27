@@ -21,18 +21,18 @@ export async function POST(req: Request) {
     process.env.ZOHO_ORG_ID
   );
 
- const zohoVendorData: ZohoVendorData = {
-   contact_name: formData.contactPerson || "",
-   contact_number: formData.phone || "",
-   company_name: formData.companyName || "",
-   vendor_name: formData.contactPerson || "",
-   email: formData.email || "",
-   mobile: formData.mobile,
-   contact_type: "vendor",
- };
+  const zohoVendorData: ZohoVendorData = {
+    contact_name: formData.contactPerson || "",
+    contact_number: formData.phone || "",
+    company_name: formData.companyName || "",
+    vendor_name: formData.contactPerson || "",
+    email: formData.email || "",
+    mobile: formData.mobile,
+    contact_type: "vendor",
+  };
 
   if (formData.contactType === "customer") {
-    zohoVendorData.customer_name = formData.contactPerson || "";
+    zohoVendorData.customer_name = formData.contactPerson || "N/A";
   }
 
   console.log("Data being sent to Zoho:", zohoVendorData);

@@ -3,6 +3,10 @@ import React, { useState } from "react";
 
 import { CheckCircle2, XCircle } from "lucide-react";
 import { TiTick } from "react-icons/ti";
+import BusinessInfo from "./BusinessInfo";
+import ContactInfo from "./ContactInfo";
+import AddressInfo from "./AddressInfo";
+import BusinessDetails from "./BusinessDetails";
 
 const VendorSignUp = () => {
   const [step, setStep] = useState(1);
@@ -82,7 +86,6 @@ const VendorSignUp = () => {
     termsDocuments?: any;
     documentSubmitted?: string;
   }
-
   const productCategoryOptions = [
     "--select category--",
     "Fashion",
@@ -220,7 +223,10 @@ const VendorSignUp = () => {
       error.registrationNumber = "Please fill the Registration Number field.";
     }
 
-     if (!formData.productCategories || formData.productCategories.length === 0) {
+    if (
+      !formData.productCategories ||
+      formData.productCategories.length === 0
+    ) {
       error.productCategories = "Please select at least one Product Category.";
     }
 
@@ -291,7 +297,7 @@ const VendorSignUp = () => {
         console.error("Error submitting form:", err);
       }
     } else {
-      console.log('ERROR', error, errors);
+      console.log("ERROR", error, errors);
       setErrors(errors);
       setError("");
     }
@@ -386,458 +392,45 @@ const VendorSignUp = () => {
           >
             {/* Step 1: Company Information */}
             {step === 1 && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700">
-                  Business Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Business Name *
-                    </label>
-                    {errors.companyName && (
-                      <p className="text-red-500 text-xs">
-                        {errors.companyName}
-                      </p>
-                    )}
-                    <input
-                      type="text"
-                      name="companyName"
-                      required
-                      placeholder="Enter your business name"
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.companyName ? "border-red-500" : ""
-                      }`}
-                      value={formData.companyName}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Brand Name
-                    </label>
-                    <input
-                      type="text"
-                      name="brandName"
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.brandName ? "border-red-500" : ""
-                      }`}
-                      value={formData.brandName}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Business Type *
-                  </label>
-                  {errors.businessType && (
-                    <p className="text-red-500 text-sm">
-                      {errors.businessType}
-                    </p>
-                  )}
-                  <select
-                    name="businessType"
-                    required
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                      errors.businessType ? "border-red-500" : ""
-                    }`}
-                    value={formData.businessType}
-                    onChange={handleChange}
-                  >
-                    <option value="" className="!text-white">
-                      --Select Business Type--
-                    </option>
-                    <option value="manufacturer">Manufacturer</option>
-                    <option value="supplier">Supplier</option>
-                    <option value="distributor">Distributor</option>
-                    <option value="wholesaler">Wholesaler</option>
-                  </select>
-                </div>
-              </div>
+              <BusinessInfo
+                formData={formData}
+                errors={errors}
+                handleChange={handleChange}
+              />
             )}
 
             {/* Step 2: Contact Information */}
             {step === 2 && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700">
-                  Contact Information
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Contact Person *
-                    </label>
-                    {errors.contactPerson && (
-                      <p className="text-red-500 text-sm">
-                        {errors.contactPerson}
-                      </p>
-                    )}
-                    <input
-                      type="text"
-                      name="contactPerson"
-                      required
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.contactPerson ? "border-red-500" : ""
-                      }`}
-                      value={formData.contactPerson}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Email *
-                    </label>
-                    {errors.email && (
-                      <p className="text-red-500 text-sm">{errors.email}</p>
-                    )}
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.email ? "border-red-500" : ""
-                      }`}
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Phone *
-                    </label>
-                    {errors.phone && (
-                      <p className="text-red-500 text-sm">{errors.phone}</p>
-                    )}
-                    <input
-                      type="tel"
-                      name="phone"
-                      required
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.phone ? "border-red-500" : ""
-                      }`}
-                      value={formData.phone}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Website
-                    </label>
-                    <input
-                      type="url"
-                      name="website"
-                      className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                      value={formData.website}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      LinkedIn
-                    </label>
-                    <input
-                      type="text"
-                      name="linkedin"
-                      className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                      value={formData.linkedin}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Twitter
-                    </label>
-                    <input
-                      type="text"
-                      name="twitter"
-                      className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                      value={formData.twitter}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Facebook
-                    </label>
-                    <input
-                      type="text"
-                      name="facebook"
-                      className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                      value={formData.facebook}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Instagram
-                    </label>
-                    <input
-                      type="text"
-                      name="instagram"
-                      className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                      value={formData.instagram}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
+              <ContactInfo
+                formData={formData}
+                errors={errors}
+                handleChange={handleChange}
+              />
             )}
 
             {/* Step 3: Address Information */}
             {step === 3 && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700">
-                  Address Information
-                </h2>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Operational Address *
-                  </label>
-                  {errors.address && (
-                    <p className="text-red-500 text-sm">{errors.address}</p>
-                  )}
-                  <textarea
-                    name="address"
-                    required
-                    rows={3}
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                      errors.address ? "border-red-500" : ""
-                    }`}
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      City *
-                    </label>
-                    {errors.city && (
-                      <p className="text-red-500 text-sm">{errors.city}</p>
-                    )}
-                    <input
-                      type="text"
-                      name="city"
-                      required
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.city ? "border-red-500" : ""
-                      }`}
-                      value={formData.city}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Country *
-                    </label>
-                    {errors.country && (
-                      <p className="text-red-500  text-sm">{errors.country}</p>
-                    )}
-                    <input
-                      type="text"
-                      name="country"
-                      required
-                      className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                        errors.country ? "border-red-500" : ""
-                      }`}
-                      value={formData.country}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </div>
+              <AddressInfo
+                formData={formData}
+                errors={errors}
+                handleChange={handleChange}
+              />
             )}
 
             {/* Step 4: Business Details */}
             {step === 4 && (
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-gray-700">
-                  Business Details
-                </h2>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Registration Number *
-                  </label>
-                  {errors.registrationNumber && (
-                    <p className="text-red-500  text-sm">
-                      {errors.registrationNumber}
-                    </p>
-                  )}
-                  <input
-                    type="text"
-                    name="registrationNumber"
-                    required
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                      errors.registrationNumber ? "border-red-500" : ""
-                    }`}
-                    value={formData.registrationNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Tax ID
-                  </label>
-                  <input
-                    type="text"
-                    name="taxId"
-                    className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                    value={formData.taxId}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Product Categories *
-                  </label>
-                  {errors.productCategories && (
-                    <p className="text-red-500  text-sm">
-                      {errors.productCategories}
-                    </p>
-                  )}
-                  <select
-                    name="productCategories"
-                    required
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-                      errors.productCategories ? "border-red-500" : ""
-                    }`}
-                    value=""
-                    onChange={handleCategoryChange}
-                  >
-                    {productCategoryOptions.map((category) => (
-                      <option
-                        key={category}
-                        value={category}
-                        className="py-[4px] hover:bg-[#539dab] hover:text-white cursor-pointer"
-                      >
-                        {category}
-                      </option>
-                    ))}
-                  </select>
-                  {/* Display selected categories */}
-                  <div className="mt-2  ">
-                    {(formData.productCategories || []).length > 0 && (
-                      <div className="flex gap-2 items-center flex-wrap ">
-                        {(formData.productCategories || []).map((category) => (
-                          <div
-                            key={category}
-                            className="flex items-center justify-between bg-gray-100 p-2 rounded-md gap-2"
-                          >
-                            <span>{category}</span>
-                            <button
-                              type="button"
-                              aria-label="Remove category"
-                              onClick={() => removeCategory(category)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <XCircle size={20} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Description
-                  </label>
-                  <textarea
-                    name="description"
-                    rows={4}
-                    className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
-                    value={formData.description}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Business Documents *
-                  </label>
-                  {errors.documents && (
-                    <p className="text-red-500  text-sm">{errors.documents}</p>
-                  )}
-                  <input
-                    type="file"
-                    name="documents"
-                    required
-                    className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-                      errors.documents ? "border-red-500" : ""
-                    }`}
-                    onChange={(e) => {
-                      const file = e.target.files ? e.target.files[0] : null;
-
-                      setFormData((prev) => ({
-                        ...prev,
-                        documents: file,
-                      }));
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold text-gray-700">
-                    Policy
-                  </label>
-                  <div className="flex space-x-4 mt-1 items-end justify-between">
-                    {/* Download Terms and Conditions */}
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Accept our Terms and Conditions to continue signing up
-                      </label>
-                      <a
-                        onClick={handleDownload} // Update click handler
-                        className="mt-1 block w-[200px] rounded-md border px-3 py-2 text-center bg-[#43828d] text-white cursor-pointer"
-                      >
-                        Download document
-                      </a>
-                    </div>
-
-                    {/* Upload Business Documents */}
-                    <div className="w-1/2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Submit document *
-                      </label>
-                      {errors.termsDocuments && (
-                        <p className="text-red-500  text-sm">
-                          {errors.termsDocuments}
-                        </p>
-                      )}
-                      <input
-                        type="file"
-                        name="termsDocuments"
-                        required
-                        className="mt-1 block w-full rounded-md border px-3 py-2"
-                        onChange={(e) => {
-                          const file = e.target.files
-                            ? e.target.files[0]
-                            : null;
-
-                          setFormData((prev) => ({
-                            ...prev,
-                            documents: file,
-                          }));
-                        }}
-                        disabled={!isDocumentDownloaded} // Disable based on download state
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <BusinessDetails
+                formData={formData}
+                errors={errors}
+                handleChange={handleChange}
+                handleCategoryChange={handleCategoryChange}
+                removeCategory={removeCategory}
+                handleDownload={handleDownload}
+                setFormData={setFormData}
+                isDocumentDownloaded={isDocumentDownloaded}
+              />
             )}
+
             <div className="flex justify-between mt-6">
               {step > 1 && (
                 <button
