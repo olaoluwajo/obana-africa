@@ -6,8 +6,8 @@ interface VendorFormData {
   taxId?: string;
   productCategories?: string[];
   description?: string;
-  documents?: File | null; 
-  termsDocuments?: File | null;
+  documents?: File | undefined;
+  termsDocuments?: File | undefined;
 }
 
 interface Errors {
@@ -158,12 +158,12 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
       <input
         type="file"
         name="documents"
-        required
+      
         className={`mt-1 block w-full rounded-md border px-3 py-2 ${
           errors.documents ? "border-red-500" : ""
         }`}
         onChange={(e) => {
-          const file = e.target.files ? e.target.files[0] : null;
+         const file = e.target.files ? e.target.files[0] : undefined;
 
           setFormData((prev) => ({
             ...prev,
@@ -175,22 +175,22 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
 
     <div>
       <label className="block text-sm font-bold text-gray-700">Policy</label>
-      <div className="flex space-x-4 mt-1 items-end justify-between">
+      <div className=" md:flex space-x-4 mt-1 items-end justify-between">
         {/* Download Terms and Conditions */}
-        <div className="w-1/2">
+        <div className="md:w-1/2 w-full">
           <label className="block text-sm font-medium text-gray-700">
             Accept our Terms and Conditions to continue signing up
           </label>
           <a
             onClick={handleDownload}
-            className="mt-1 block w-[200px] rounded-md border px-3 py-2 text-center bg-[#43828d] text-white cursor-pointer"
+            className="mt-1 block md:w-[200px] rounded-md border px-3 py-2 text-center bg-[#43828d] text-white cursor-pointer"
           >
             Download document
           </a>
         </div>
 
         {/* Upload Business Documents */}
-        <div className="w-1/2">
+        <div className="md:w-1/2  mt-2 w-full">
           <label className="block text-sm font-medium text-gray-700">
             Submit document *
           </label>
@@ -200,10 +200,9 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
           <input
             type="file"
             name="termsDocuments"
-            required
             className="mt-1 block w-full rounded-md border px-3 py-2"
             onChange={(e) => {
-              const file = e.target.files ? e.target.files[0] : null;
+             const file = e.target.files ? e.target.files[0] : undefined;
 
               setFormData((prev) => ({
                 ...prev,
