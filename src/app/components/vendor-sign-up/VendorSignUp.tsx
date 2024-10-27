@@ -217,7 +217,7 @@ const VendorSignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form data before submission:", formData);
+    // console.log("Form data before submission:", formData);
     // const error = validateForm();
     const isStepValid = validateStep(step);
     const isFormValid = validateForm();
