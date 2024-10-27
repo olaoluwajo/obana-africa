@@ -6,8 +6,8 @@ interface VendorFormData {
   taxId?: string;
   productCategories?: string[];
   description?: string;
-  documents?: File | null; 
-  termsDocuments?: File | null;
+  documents?: File ; 
+  termsDocuments?: File ;
 }
 
 interface Errors {
@@ -159,6 +159,7 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
         type="file"
         name="documents"
         required
+        value={formData.documents}
         className={`mt-1 block w-full rounded-md border px-3 py-2 ${
           errors.documents ? "border-red-500" : ""
         }`}
@@ -201,6 +202,7 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
             type="file"
             name="termsDocuments"
             required
+            value={formData.termsDocuments}
             className="mt-1 block w-full rounded-md border px-3 py-2"
             onChange={(e) => {
               const file = e.target.files ? e.target.files[0] : null;
