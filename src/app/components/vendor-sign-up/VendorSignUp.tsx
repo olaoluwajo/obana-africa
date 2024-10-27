@@ -13,7 +13,6 @@ const VendorSignUp = () => {
   const [submitted, setSubmitted] = useState(false);
   const [notSubmitted, setNotSubmitted] = useState(false);
   // const [error, setError] = useState("");
-  // const [error, setError] = useState("");
   const [isDocumentDownloaded, setIsDocumentDownloaded] = useState(false);
   const [errors, setErrors] = useState<ErrorsType>({});
   // const [formErrors, setFormErrors] = useState({});
@@ -174,22 +173,7 @@ const VendorSignUp = () => {
     if (!formData.city) newErrors.city = "City is required.";
     if (!formData.country) newErrors.country = "Country is required.";
 
-    if (!formData.registrationNumber)
-      newErrors.registrationNumber = "Registration Number is required.";
-
-    if (!formData.productCategories || formData.productCategories.length === 0)
-      newErrors.productCategories = "Select at least one Product Category.";
-
-    if (!formData.documents)
-      newErrors.documentSubmitted = "Please upload the Business Documents.";
-
-    if (!formData.termsDocuments)
-      newErrors.documentSubmitted = "Please upload the Downloaded Documents.";
-
-    if (!isDocumentDownloaded) {
-      newErrors.documentSubmitted =
-        "Please download and submit the Terms and Conditions document.";
-    }
+  
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
