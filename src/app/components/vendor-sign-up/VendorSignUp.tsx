@@ -140,6 +140,9 @@ const VendorSignUp = () => {
           newErrors.productCategories = "Select at least one Product Category.";
         if (!formData.documents)
           newErrors.documentSubmitted = "Please upload the Business Documents.";
+            if (!formData.termsDocuments)
+      newErrors.documentSubmitted = "Please upload the Downloaded Documents.";
+
 
         if (!isDocumentDownloaded) {
           newErrors.documentSubmitted =
@@ -188,6 +191,9 @@ const VendorSignUp = () => {
 
     if (!formData.documents)
       newErrors.documentSubmitted = "Please upload the Business Documents.";
+
+    if (!formData.termsDocuments)
+      newErrors.documentSubmitted = "Please upload the Downloaded Documents.";
 
     if (!isDocumentDownloaded) {
       newErrors.documentSubmitted =
