@@ -1,3 +1,4 @@
+import { getAccessToken } from "@/app/lib/zohoAuth";
 import { NextResponse } from "next/server";
 
 interface ZohoVendorData {
@@ -36,11 +37,13 @@ interface ZohoVendorData {
 export async function POST(req: Request) {
   console.log("API route hit");
   const formData = await req.json();
-  console.log("Form Data:", formData);
+  // console.log("Form Data:", formData);
   console.log(
     "Environment Variables:",
     process.env.ZOHO_API_TOKEN,
-    process.env.ZOHO_ORG_ID
+    process.env.ZOHO_ORG_ID,
+    process.env.ZOHO_REFRESH_TOKEN,
+    process.env.ZOHO_CLIENT_SECRET
   );
 
   const zohoVendorData: ZohoVendorData = {
@@ -63,11 +66,12 @@ export async function POST(req: Request) {
   }
 
   console.log("Data being sent to Zoho:", zohoVendorData);
+  const accessToken = await getAccessToken();
 
   const options = {
     method: "POST",
     headers: {
-      Authorization: `Zoho-oauthtoken ${process.env.ZOHO_API_TOKEN}`,
+      Authorization: `Zoho-oauthtoken ${accessToken}`,
       "Content-Type": "application/json",
     },
     // body: JSON.stringify({ contacts: [zohoVendorData] }),
