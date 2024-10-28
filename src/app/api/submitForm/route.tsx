@@ -2,13 +2,35 @@ import { NextResponse } from "next/server";
 
 interface ZohoVendorData {
   contact_name: string;
-  contact_number: string;
+  contact_number?: string;
   company_name: string;
-  vendor_name: string;
+  // vendor_name: string;
   email: string;
   mobile?: string;
   contact_type: string;
   customer_name?: string;
+  companyName?: string;
+  brandName?: string;
+  billing_address?: string;
+  businessType?: string;
+  contactPerson?: string;
+  phone?: string;
+  address?: string;
+  instagram?: string;
+  twitter?: string;
+  facebook?: string;
+  linkedin?: string;
+  city?: string;
+  country?: string;
+  registrationNumber?: string;
+  taxId?: string;
+  productCategories?: string[] | undefined;
+  description?: string;
+  website?: string;
+  documents?: any;
+  termsDocuments?: any;
+  documentSubmitted?: string;
+  // custom_fields:[] | undefined
 }
 
 export async function POST(req: Request) {
@@ -23,12 +45,17 @@ export async function POST(req: Request) {
 
   const zohoVendorData: ZohoVendorData = {
     contact_name: formData.contactPerson || "",
-    contact_number: formData.phone || "",
+    customer_name: formData.contactPerson || "",
+    //   vendor_name: formData.businessType || "",
+    contact_number: formData.taxId || "",
     company_name: formData.companyName || "",
-    vendor_name: formData.contactPerson || "",
-    email: formData.email || "",
-    mobile: formData.mobile,
+    website: formData.website || "",
     contact_type: "vendor",
+    // twitter: formData.twitter || "",
+    facebook: formData.facebook || "",
+    email: formData.email || "",
+    phone: formData.phone || "",
+    mobile: formData.mobile,
   };
 
   if (formData.contactType === "customer") {
@@ -43,7 +70,8 @@ export async function POST(req: Request) {
       Authorization: `Zoho-oauthtoken ${process.env.ZOHO_API_TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ contacts: [zohoVendorData] }),
+    // body: JSON.stringify({ contacts: [zohoVendorData] }),
+    body: JSON.stringify([zohoVendorData]),
   };
   console.log("Final Payload:", options.body);
 

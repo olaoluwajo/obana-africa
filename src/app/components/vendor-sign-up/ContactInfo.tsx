@@ -112,7 +112,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           LinkedIn
         </label>
         <input
-          type="text"
+          type="url"
           name="linkedin"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.linkedin}
@@ -124,7 +124,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           Twitter
         </label>
         <input
-          type="text"
+          type="url"
           name="twitter"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.twitter}
@@ -136,7 +136,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           Facebook
         </label>
         <input
-          type="text"
+          type="url"
           name="facebook"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.facebook}
@@ -148,7 +148,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           Instagram
         </label>
         <input
-          type="text"
+          type="url"
           name="instagram"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.instagram}
