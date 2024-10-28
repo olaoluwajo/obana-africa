@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { getAccessToken } from "@/app/lib/zohoAuth";
+
 
 export async function GET() {
+   const accessToken = await getAccessToken();
   const options = {
     method: "GET",
     headers: {
-      Authorization: `Zoho-oauthtoken ${process.env.ZOHO_API_TOKEN}`,
+      Authorization: `Zoho-oauthtoken ${accessToken}`,
     },
   };
 
