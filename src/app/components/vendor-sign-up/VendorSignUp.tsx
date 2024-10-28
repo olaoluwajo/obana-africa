@@ -428,8 +428,7 @@ const VendorSignUp = () => {
           </form>
 
           {/* Submission Modal */}
-          {submitted ||
-            (notSubmitted && (
+          {submitted && (
               <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center ">
                 <div className="bg-white p-8 rounded-lg shadow-lg h-[500px] w-[90%] md:w-[40%] flex justify-center items-center flex-col">
                   <CheckCircle2 className="text-green-600 size-20 mx-auto" />
@@ -459,7 +458,7 @@ const VendorSignUp = () => {
                   </a>
                 </div>
               </div>
-            ))}
+            )}
 
           {/* Error Modal */}
           {notSubmitted && (
