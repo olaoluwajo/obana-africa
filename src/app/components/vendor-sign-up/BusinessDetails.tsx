@@ -125,7 +125,6 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
                   aria-label="Remove category"
                   onClick={() => removeCategory(category)}
                   className="text-red-500 hover:text-red-700"
-                  
                 >
                   <XCircle size={20} />
                 </button>
@@ -159,8 +158,9 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
       <input
         type="file"
         name="documents"
+        accept=".pdf,.docx"
         onChange={(e) => {
-         const file = e.target.files ? e.target.files[0] : undefined;
+          const file = e.target.files ? e.target.files[0] : undefined;
 
           setFormData((prev) => ({
             ...prev,
@@ -197,9 +197,10 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
           <input
             type="file"
             name="termsDocuments"
+            accept=".pdf,.docx"
             className="mt-1 block w-full rounded-md border px-3 py-2"
             onChange={(e) => {
-             const file = e.target.files ? e.target.files[0] : undefined;
+              const file = e.target.files ? e.target.files[0] : undefined;
 
               setFormData((prev) => ({
                 ...prev,

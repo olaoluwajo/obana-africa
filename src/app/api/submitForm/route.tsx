@@ -30,14 +30,16 @@ interface ZohoVendorData {
   description?: string;
   notes?: string;
   website?: string;
-  documents?: File | any[];
-  termsDocuments?: File | any[];
+  documents?: [];
+  termsDocuments?: File | null;
   documentSubmitted?: string;
+  // dataDocuments: [];
   // designation: string;
   // invited_by: string;
   tax_id?: string;
   billing_address?: Address | any;
   contact_persons: [] | undefined;
+  
 }
 
 interface Address {
@@ -70,7 +72,18 @@ export async function POST(req: Request) {
 
   const [first_name = "", ...lastNameParts] =
     formData.contactPerson?.split(" ") || [];
+
   const last_name = lastNameParts.join(" ");
+
+  const websiteInput = formData.website || "";
+
+  const formattedWebsite = websiteInput.startsWith("https://")
+    ? websiteInput
+    : `https://${websiteInput}`;
+
+  const cleanedTwitter = formData.twitter
+    ? formData.twitter.replace(/\s+/g, "")
+    : "";
 
   const zohoVendorData: ZohoVendorData = {
     contact_name: formData.contactPerson || "",
@@ -78,22 +91,16 @@ export async function POST(req: Request) {
     customer_name: formData.contactPerson || "",
     contact_number: formData.taxId || "",
     company_name: formData.companyName || "",
-    website: formData.website || "",
+    website: formattedWebsite,
     contact_type: "vendor",
 
-    twitter: formData.twitter || "",
+    twitter: cleanedTwitter,
     facebook: formData.facebook || "",
     email: formData.email || "",
     phone: formData.phone || "",
     mobile: formData.phone,
     notes: formData.description,
-
-    documents: [
-      ...(formData.documents ? [{ document: formData.documents }] : []),
-      ...(formData.termsDocuments
-        ? [{ document: formData.termsDocuments }]
-        : []),
-    ],
+    documents: formData.dataDocuments,
     tax_id: formData.taxId,
     billing_address: {
       address: formData.address || "",
@@ -110,7 +117,7 @@ export async function POST(req: Request) {
         mobile: formData.phone || "",
         department: formData.businessType || "",
         designation: formData.productCategories?.join(", ") || "",
-        documents: [formData.documents, formData.termsDocuments],
+        documents: formData.dataDocuments,
       },
     ],
   };
