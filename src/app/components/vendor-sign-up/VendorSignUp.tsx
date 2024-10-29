@@ -214,15 +214,14 @@ const VendorSignUp = () => {
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
-
+        setSubmitted(true);
         const data = await response.json();
         console.log("Response from server:", data);
       } catch (err) {
-        setNotSubmitted(true);
         console.error("Error submitting form:", err);
       } finally {
         setLoading(false);
-        setSubmitted(true);
+        setNotSubmitted(true);
       }
     } else {
       console.log("ERROR", errors);
