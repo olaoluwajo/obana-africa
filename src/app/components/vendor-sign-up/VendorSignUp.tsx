@@ -200,7 +200,7 @@ const VendorSignUp = () => {
       setErrors({});
       setLoading(true);
 
-      console.log("Form submitted:", formData);
+      // console.log("Form submitted:", formData);
 
       try {
         const response = await fetch("/api/submitForm", {

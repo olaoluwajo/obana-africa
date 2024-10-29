@@ -49,6 +49,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           type="text"
           name="contactPerson"
           required
+          placeholder='Firstname Lastname'
           className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
             errors.contactPerson ? "border-red-500" : ""
           }`}
@@ -65,6 +66,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           type="email"
           name="email"
           required
+          placeholder="e.g johnDoe@gmail.com"
           className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
             errors.email ? "border-red-500" : ""
           }`}
@@ -84,6 +86,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           type="tel"
           name="phone"
           required
+          placeholder='+12345678'
           className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
             errors.phone ? "border-red-500" : ""
           }`}
@@ -99,6 +102,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
         <input
           type="url"
           name="website"
+          placeholder="e.g. https://www.johnDoe.cm"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.website}
           onChange={handleChange}
@@ -121,11 +125,12 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Twitter
+          Twitter Name
         </label>
         <input
-          type="url"
+          type="text"
           name="twitter"
+          placeholder='e.g. johnDoe'
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.twitter}
           onChange={handleChange}

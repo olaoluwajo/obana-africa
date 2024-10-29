@@ -6,8 +6,8 @@ interface VendorFormData {
   taxId?: string;
   productCategories?: string[];
   description?: string;
-  documents?: File | undefined;
-  termsDocuments?: File | undefined;
+  documents?: File ;
+  termsDocuments?: File ;
 }
 
 interface Errors {
@@ -76,7 +76,7 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
     <div>
       <label className="block text-sm font-medium text-gray-700">Tax ID</label>
       <input
-        type="text"
+        type="number"
         name="taxId"
         className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
         value={formData.taxId}
@@ -125,6 +125,7 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
                   aria-label="Remove category"
                   onClick={() => removeCategory(category)}
                   className="text-red-500 hover:text-red-700"
+                  
                 >
                   <XCircle size={20} />
                 </button>
@@ -158,10 +159,6 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
       <input
         type="file"
         name="documents"
-      
-        className={`mt-1 block w-full rounded-md border px-3 py-2 ${
-          errors.documents ? "border-red-500" : ""
-        }`}
         onChange={(e) => {
          const file = e.target.files ? e.target.files[0] : undefined;
 
@@ -206,7 +203,7 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
 
               setFormData((prev) => ({
                 ...prev,
-                documents: file,
+                termsDocuments: file,
               }));
             }}
             disabled={!isDocumentDownloaded}
