@@ -77,6 +77,7 @@ const VendorSignUp = () => {
     documentSubmitted?: string;
   }
   interface ErrorsType {
+    country?: string,
     companyName?: string;
     brandName?: string;
     businessType?: string;
@@ -89,7 +90,6 @@ const VendorSignUp = () => {
     facebook?: string;
     linkedin?: string;
     city?: string;
-    country?: string;
     registrationNumber?: string;
     taxId?: string;
     productCategories?: string;
@@ -352,6 +352,7 @@ const VendorSignUp = () => {
               {/* Step 3: Address Information */}
               {step === 3 && (
                 <AddressInfo
+                  setFormData={setFormData}
                   formData={formData}
                   errors={errors}
                   handleChange={handleChange}
@@ -384,6 +385,7 @@ const VendorSignUp = () => {
                 handleChange={handleChange}
               />
               <AddressInfo
+                setFormData={setFormData}
                 formData={formData}
                 errors={errors}
                 handleChange={handleChange}
