@@ -81,8 +81,12 @@ export async function POST(req: Request) {
     ? websiteInput
     : `https://${websiteInput}`;
 
-  const cleanedTwitter = formData.twitter
+  const formattedTwitter = formData.twitter
     ? formData.twitter.replace(/\s+/g, "")
+    : "";
+
+  const formattedNumber = formData.phone
+    ? formData.phone.replace(/-\s/g, "")
     : "";
 
   const zohoVendorData: ZohoVendorData = {
@@ -94,7 +98,7 @@ export async function POST(req: Request) {
     website: formattedWebsite,
     contact_type: "vendor",
 
-    twitter: cleanedTwitter,
+    twitter: formattedTwitter,
     facebook: formData.facebook || "",
     email: formData.email || "",
     phone: formData.phone || "",
@@ -113,8 +117,8 @@ export async function POST(req: Request) {
         first_name: first_name,
         last_name: last_name,
         email: formData.email || "",
-        phone: formData.phone || "",
-        mobile: formData.phone || "",
+        phone: formattedNumber,
+        mobile: formattedNumber,
         department: formData.businessType || "",
         designation: formData.productCategories?.join(", ") || "",
         documents: formData.dataDocuments,

@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 
+
+
+export const metadata: Metadata = {
+  title: "Vendor.obana.africa",
+  description: "Vendor Sign Up",
+  icons: {
+    icon: "/favicon.png",
+  },
+};
 
 
 export default function RootLayout({
@@ -11,14 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-         <head>
-        <link rel="icon" href="/favicon.png" />
-      </head>
-      <body
-        className={`antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`antialiased`}>{children}</body>
     </html>
   );
 }

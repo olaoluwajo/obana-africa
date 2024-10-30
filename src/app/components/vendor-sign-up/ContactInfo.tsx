@@ -49,7 +49,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           type="text"
           name="contactPerson"
           required
-          placeholder='Firstname Lastname'
+          placeholder="Firstname Lastname"
           className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
             errors.contactPerson ? "border-red-500" : ""
           }`}
@@ -86,7 +86,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           type="tel"
           name="phone"
           required
-          placeholder='+12345678'
+          placeholder="+12345678"
           className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
             errors.phone ? "border-red-500" : ""
           }`}
@@ -116,7 +116,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           LinkedIn
         </label>
         <input
-          type="url"
+          type="text"
           name="linkedin"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.linkedin}
@@ -130,7 +130,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
         <input
           type="text"
           name="twitter"
-          placeholder='e.g. johnDoe'
+          placeholder="e.g. johnDoe"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.twitter}
           onChange={handleChange}
@@ -141,7 +141,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           Facebook
         </label>
         <input
-          type="url"
+          type="text"
           name="facebook"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.facebook}
@@ -153,7 +153,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           Instagram
         </label>
         <input
-          type="url"
+          type="text"
           name="instagram"
           className="mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab]"
           value={formData.instagram}
