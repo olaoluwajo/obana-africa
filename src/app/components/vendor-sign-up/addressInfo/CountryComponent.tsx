@@ -11,23 +11,24 @@ interface Country {
 }
 
 const CountrySelector: React.FC<CountrySelectorProps> = ({
-  setSelectedCountry,
+  setSelectedCountry, 
 }) => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [search, setSearch] = useState("");
   const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
+    const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    const fetchCountries = async () => {
+    const loadCountries = async () => {
       try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
+        const response = await fetch("/api/addressInfo/countriesApi");
         const data = await response.json();
         setCountries(data);
       } catch (error) {
-        console.error("Error fetching countries:", error);
+        console.error("Failed to fetch countries", error);
       }
     };
-    fetchCountries();
+    loadCountries();
   }, []);
 
   useEffect(() => {
@@ -37,31 +38,36 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
       );
       setFilteredCountries(results);
     } else {
-      setFilteredCountries([]);
+      setFilteredCountries(countries);
     }
   }, [search, countries]);
 
     const handleCountrySelect = (countryName: string) => {
       setSearch(countryName);
       setSelectedCountry(countryName);
-      setFilteredCountries([]); 
+      // setFilteredCountries([]); 
+       setShowDropdown(false);
     };
 
   return (
     <div className="relative">
       <input
         type="text"
-        placeholder="Search for a country"
+        autoComplete="off"
+        placeholder="Your country"
         value={search}
+        onFocus={() => setShowDropdown(true)}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full border border-gray-300 rounded p-2"
+        onBlur={() => setShowDropdown(false)}
+        className="w-full border border-gray-300 rounded p-2 focus:border-[#539dab] outline-none"
       />
-      {filteredCountries.length > 1 && (
+      {showDropdown && filteredCountries.length > 1 && (
         <ul className="absolute w-full border border-gray-300 rounded bg-white max-h-60 overflow-y-auto mt-1">
           {filteredCountries.map((country, index) => (
             <li
               key={index}
-              onClick={() => handleCountrySelect(country.name.common)}
+              // onClick={() => handleCountrySelect(country.name.common)}
+              onMouseDown={() => handleCountrySelect(country.name.common)}
               className="p-2 hover:bg-gray-100 cursor-pointer"
             >
               {country.name.common}

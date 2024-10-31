@@ -1,4 +1,5 @@
 import React from "react";
+import PhoneInput from "./PhoneInput";
 
 interface VendorFormData {
   contactPerson?: string;
@@ -93,6 +94,7 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           value={formData.phone}
           onChange={handleChange}
         />
+      
       </div>
 
       <div>

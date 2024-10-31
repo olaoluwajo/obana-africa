@@ -2,11 +2,12 @@
 import React, { useState } from "react";
 import { TiTick } from "react-icons/ti";
 import BusinessInfo from "./BusinessInfo";
-import ContactInfo from "./ContactInfo";
-import AddressInfo from "./AddressInfo";
+import ContactInfo from "./contactInfo/ContactInfo";
+import AddressInfo from "./addressInfo/AddressInfo";
 import BusinessDetails from "./BusinessDetails";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
+import TermsAndConditionModal from "../modals/TermsAndConditionModal";
 
 const VendorSignUp = () => {
   const [step, setStep] = useState(1);
@@ -18,11 +19,19 @@ const VendorSignUp = () => {
   const [isDocumentDownloaded, setIsDocumentDownloaded] = useState(false);
   const [errors, setErrors] = useState<ErrorsType>({});
   // const [formErrors, setFormErrors] = useState({});
+  const [termsAccepted, setTermsAccepted] = useState(false);
+    const handleTermsAccept = () => {
+    setTermsAccepted(true);
+  };
 
   const [formData, setFormData] = useState<FormData>({
     companyName: "",
     brandName: "",
     businessType: "",
+    businessCategory: "",
+    bankName: "",
+    accountNumber: "",
+    accountName: "",
     contactPerson: "",
     email: "",
     phone: "",
@@ -55,7 +64,11 @@ const VendorSignUp = () => {
   interface FormData {
     companyName?: string;
     brandName?: string;
+    bankName?: string;
+    accountNumber?: string;
+    accountName?: string;
     businessType?: string;
+    businessCategory?: string;
     contactPerson?: string;
     email?: string;
     phone?: string;
@@ -77,10 +90,11 @@ const VendorSignUp = () => {
     documentSubmitted?: string;
   }
   interface ErrorsType {
-    country?: string,
+    country?: string;
     companyName?: string;
     brandName?: string;
     businessType?: string;
+    businessCategory?: string;
     contactPerson?: string;
     email?: string;
     phone?: string;
@@ -112,8 +126,8 @@ const VendorSignUp = () => {
       case 1:
         if (!formData.companyName)
           newErrors.companyName = "Company Name is required.";
-        if (!formData.businessType)
-          newErrors.businessType = "Business Type is required.";
+        if (!formData.businessCategory)
+          newErrors.businessCategory = "Business Category is required.";
         break;
 
       case 2:
@@ -168,8 +182,8 @@ const VendorSignUp = () => {
     if (!formData.companyName)
       newErrors.companyName = "Company Name is required.";
     if (!formData.brandName) newErrors.brandName = "Brand Name is required.";
-    if (!formData.businessType)
-      newErrors.businessType = "Business Type is required.";
+    if (!formData.businessCategory)
+      newErrors.businessCategory = "Business Category is required.";
 
     if (!formData.contactPerson)
       newErrors.contactPerson = "Contact Person is required.";
@@ -204,6 +218,11 @@ const VendorSignUp = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!termsAccepted) {
+      setNotSubmitted(true);
+      return;
+    }
+
     const isStepValid = validateStep(step);
     const isFormValid = validateForm();
 
@@ -285,6 +304,9 @@ const VendorSignUp = () => {
     }));
   };
 
+  // Function to accept terms
+
+
   return (
     <div className="min-h-screen py-10 md:py-20 flex flex-col items-center justify-center bg-[#f2f4f7] ">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] h-full divide-y-2 flex  flex-col items-center justify-center">
@@ -327,6 +349,7 @@ const VendorSignUp = () => {
           </div>
           {/* {error && <p className="text-red-500  pl-6 font-semibold">{error}</p>} */}
           <form
+            autoComplete="off"
             onSubmit={handleSubmit}
             className="space-y-6  px-6  pb-6  md:block"
           >
@@ -370,6 +393,8 @@ const VendorSignUp = () => {
                   handleDownload={handleDownload}
                   setFormData={setFormData}
                   isDocumentDownloaded={isDocumentDownloaded}
+                   handleTermsAccept={handleTermsAccept}
+        termsAccepted={termsAccepted}
                 />
               )}
             </div>
@@ -399,6 +424,8 @@ const VendorSignUp = () => {
                 handleDownload={handleDownload}
                 setFormData={setFormData}
                 isDocumentDownloaded={isDocumentDownloaded}
+                 handleTermsAccept={handleTermsAccept}
+        termsAccepted={termsAccepted}
               />
             </div>
 
@@ -453,6 +480,9 @@ const VendorSignUp = () => {
           {notSubmitted && (
             <ErrorModal onClose={() => setNotSubmitted(false)} />
           )}
+
+
+        
         </div>
       </div>
     </div>

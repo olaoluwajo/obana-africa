@@ -3,12 +3,12 @@ import React from "react";
 interface VendorFormData {
   companyName?: string;
   brandName?: string;
-  businessType?: string;
+  businessCategory?: string;
 }
 
 interface Errors {
   companyName?: string;
-  businessType?: string;
+  businessCategory?: string;
   brandName?: string;
 }
 
@@ -55,6 +55,7 @@ const BusinessInfo: React.FC<BusinessInfoProps> = ({
         </label>
         <input
           type="text"
+          placeholder="Brand name"
           name="brandName"
           className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
             errors.brandName ? "border-red-500" : ""
@@ -66,22 +67,22 @@ const BusinessInfo: React.FC<BusinessInfoProps> = ({
     </div>
     <div>
       <label className="block text-sm font-medium text-gray-700">
-        Business Type *
+        Business Category *
       </label>
-      {errors.businessType && (
-        <p className="text-red-500 text-sm">{errors.businessType}</p>
+      {errors.businessCategory && (
+        <p className="text-red-500 text-sm">{errors.businessCategory}</p>
       )}
       <select
-        name="businessType"
+        name="businessCategory"
         required
         className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-          errors.businessType ? "border-red-500" : ""
+          errors.businessCategory ? "border-red-500" : ""
         }`}
-        value={formData.businessType}
+        value={formData.businessCategory}
         onChange={handleChange}
       >
         <option value="" className="!text-white">
-          --Select Business Type--
+          --Select Business Category--
         </option>
         <option value="manufacturer">Manufacturer</option>
         <option value="supplier">Supplier</option>
