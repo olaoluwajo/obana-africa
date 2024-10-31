@@ -80,9 +80,8 @@ export async function POST(req: Request) {
   // );
 
   const formattedAccount = `
-  Bank Details: 
-  ${formData.bankName || "N/A"} ,
-    ${formData.accountNumber || "N/A"} ,
+  ${formData.bankName || "N/A"} 
+    ${formData.accountNumber || "N/A"} 
    ${formData.accountName || "N/A"}
   `
     .replace(/\n/g, "")
@@ -91,7 +90,7 @@ export async function POST(req: Request) {
 
   const customFields = [
     {
-      value: 'trimmedFormattedAccount',
+      value: trimmedFormattedAccount,
       index: 1,
     },
   ];
