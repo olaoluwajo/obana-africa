@@ -13,8 +13,13 @@ interface ZohoVendorData {
   customer_name?: string;
   first_name?: string;
   companyName?: string;
+  cf_bank_account_detail?: string;
   brandName?: string;
+  bankName?: string;
+  accountNumber?: string;
+  accountName?: string;
   businessType?: string;
+  businessCategory?: string;
   contactPerson?: string;
   phone?: string;
   address?: string;
@@ -25,7 +30,7 @@ interface ZohoVendorData {
   city?: string;
   country?: string;
   registrationNumber?: string;
-  taxId?: string;
+  // taxId?: string;
   productCategories?: string[] | undefined;
   description?: string;
   notes?: string;
@@ -36,10 +41,10 @@ interface ZohoVendorData {
   // dataDocuments: [];
   // designation: string;
   // invited_by: string;
-  tax_id?: string;
+  // tax_id?: string;
   billing_address?: Address | any;
   contact_persons: [] | undefined;
-  
+  custom_fields?: CustomField[];
 }
 
 interface Address {
@@ -57,6 +62,10 @@ interface Address {
   phone: string;
   fax: string;
 }
+interface CustomField {
+  value: string;
+  index: number;
+}
 
 export async function POST(req: Request) {
   console.log("API route hit");
@@ -70,6 +79,23 @@ export async function POST(req: Request) {
   //   process.env.ZOHO_CLIENT_SECRET
   // );
 
+  const formattedAccount = `
+  Bank Details: 
+  ${formData.bankName || "N/A"} ,
+    ${formData.accountNumber || "N/A"} ,
+   ${formData.accountName || "N/A"}
+  `
+    .replace(/\n/g, "")
+    .trim();
+  const trimmedFormattedAccount = formattedAccount.slice(0, 95);
+
+  const customFields = [
+    {
+      value: 'trimmedFormattedAccount',
+      index: 1,
+    },
+  ];
+
   const [first_name = "", ...lastNameParts] =
     formData.contactPerson?.split(" ") || [];
 
@@ -77,9 +103,25 @@ export async function POST(req: Request) {
 
   const websiteInput = formData.website || "";
 
-  const formattedWebsite = websiteInput.startsWith("https://")
-    ? websiteInput
-    : `https://${websiteInput}`;
+  const formattedWebsite = websiteInput
+    ? websiteInput.startsWith("https://")
+      ? websiteInput
+      : `https://${websiteInput}`
+    : "";
+
+  const facebookInput = formData.facebook || "";
+
+  const formattedFacebookInput = facebookInput
+    ? facebookInput.startsWith("https://")
+      ? facebookInput
+      : facebookInput.startsWith("www.")
+      ? `https://${facebookInput}`
+      : `https://www.${facebookInput}`
+    : "";
+
+  const formattedFacebook = formattedFacebookInput
+    ? formattedFacebookInput.replace(/\s+/g, "")
+    : "";
 
   const formattedTwitter = formData.twitter
     ? formData.twitter.replace(/\s+/g, "")
@@ -90,6 +132,7 @@ export async function POST(req: Request) {
     : "";
 
   const zohoVendorData: ZohoVendorData = {
+    custom_fields: customFields,
     contact_name: formData.contactPerson || "",
     // first_name: formData.contactPerson || "",
     customer_name: formData.contactPerson || "",
@@ -97,15 +140,16 @@ export async function POST(req: Request) {
     company_name: formData.companyName || "",
     website: formattedWebsite,
     contact_type: "vendor",
-
+    cf_bank_account_detail: trimmedFormattedAccount,
     twitter: formattedTwitter,
-    facebook: formData.facebook || "",
+    facebook: formattedFacebook,
     email: formData.email || "",
     phone: formData.phone || "",
     mobile: formData.phone,
-    notes: formData.description,
+    notes: formattedAccount && formData.description,
     documents: formData.dataDocuments,
-    tax_id: formData.taxId,
+    // tax_id: formData.taxId,
+
     billing_address: {
       address: formData.address || "",
       country: formData.country || "",
@@ -122,6 +166,8 @@ export async function POST(req: Request) {
         department: formData.businessType || "",
         designation: formData.productCategories?.join(", ") || "",
         documents: formData.dataDocuments,
+        cf_bank_account_detail: trimmedFormattedAccount,
+        custom_fields: customFields,
       },
     ],
   };
