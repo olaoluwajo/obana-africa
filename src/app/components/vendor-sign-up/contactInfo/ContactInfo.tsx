@@ -83,16 +83,13 @@ const ContactInfo: React.FC<ContactInfoProps> = ({
           Phone *
         </label>
         {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
-        <input
-          type="tel"
-          name="phone"
-          required
-          placeholder="+12345678"
-          className={`mt-1 block w-full rounded-md border px-3 py-2 outline-none focus:border-[#539dab] ${
-            errors.phone ? "border-red-500" : ""
-          }`}
-          value={formData.phone}
-          onChange={handleChange}
+         <PhoneInput
+          value={formData.phone || ""}
+          onChange={(phone) =>
+            handleChange({
+              target: { name: "phone", value: phone },
+            } as React.ChangeEvent<HTMLInputElement>)
+          }
         />
       
       </div>
