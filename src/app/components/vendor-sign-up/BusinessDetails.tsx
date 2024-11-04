@@ -327,7 +327,21 @@ handleTermsAccept()
         </div>
       </div> */}
 
-      <div className="flex items-center mt-4">
+
+       <div className="flex items-center mt-4">
+        <label
+          htmlFor="agreeTerms"
+          className="ml-2  flex items-center justify-center font-semibold"
+        >
+          <input
+            type="checkbox"
+            className=" mr-2 size-[15px]"
+          />
+          Subscribe to our newsletter
+        </label>
+      </div>
+
+      <div className="flex items-center">
         <label
           htmlFor="agreeTerms"
           className="ml-2  cursor-pointer flex items-center justify-center font-semibold"
@@ -353,6 +367,7 @@ handleTermsAccept()
           I agree to the Terms and Conditions
         </label>
       </div>
+     
       {showTermsModal && (
         <TermsAndConditionModal
           onClose={closeTermsModal}

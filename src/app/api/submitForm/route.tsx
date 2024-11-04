@@ -6,14 +6,12 @@ interface ZohoVendorData {
   contact_number?: string;
   legal_name?: string;
   company_name: string;
-  // vendor_name: string;
   email: string;
   mobile?: string;
   contact_type: string;
   customer_name?: string;
   first_name?: string;
   companyName?: string;
-  cf_bank_account_detail?: string;
   brandName?: string;
   bankName?: string;
   accountNumber?: string;
@@ -30,7 +28,6 @@ interface ZohoVendorData {
   city?: string;
   country?: string;
   registrationNumber?: string;
-  // taxId?: string;
   productCategories?: string[] | undefined;
   description?: string;
   notes?: string;
@@ -38,10 +35,6 @@ interface ZohoVendorData {
   documents?: [];
   termsDocuments?: File | null;
   documentSubmitted?: string;
-  // dataDocuments: [];
-  // designation: string;
-  // invited_by: string;
-  // tax_id?: string;
   billing_address?: Address | any;
   contact_persons: [] | undefined;
   custom_fields?: CustomField[];
@@ -89,9 +82,18 @@ export async function POST(req: Request) {
   const trimmedFormattedAccount = formattedAccount.slice(0, 95);
 
   const customFields = [
+
     {
-      value: trimmedFormattedAccount,
+      value: formData.bankName,
       index: 1,
+    },
+    {
+      value: formData.accountNumber,
+      index: 2,
+    },
+    {
+      value: formData.accountName,
+      index: 3,
     },
   ];
 
@@ -133,13 +135,11 @@ export async function POST(req: Request) {
   const zohoVendorData: ZohoVendorData = {
     custom_fields: customFields,
     contact_name: formData.contactPerson || "",
-    // first_name: formData.contactPerson || "",
     customer_name: formData.contactPerson || "",
     contact_number: formData.taxId || "",
     company_name: formData.companyName || "",
     website: formattedWebsite,
     contact_type: "vendor",
-    cf_bank_account_detail: trimmedFormattedAccount,
     twitter: formattedTwitter,
     facebook: formattedFacebook,
     email: formData.email || "",
@@ -147,12 +147,12 @@ export async function POST(req: Request) {
     mobile: formData.phone,
     notes: formattedAccount && formData.description,
     documents: formData.dataDocuments,
-    // tax_id: formData.taxId,
 
     billing_address: {
       address: formData.address || "",
       country: formData.country || "",
       city: formData.city || "",
+      state: formData.state || "",
     },
     contact_persons: formData.contactPersons || [
       {
@@ -165,8 +165,6 @@ export async function POST(req: Request) {
         department: formData.businessType || "",
         designation: formData.productCategories?.join(", ") || "",
         documents: formData.dataDocuments,
-        cf_bank_account_detail: trimmedFormattedAccount,
-        custom_fields: customFields,
       },
     ],
   };
@@ -184,7 +182,6 @@ export async function POST(req: Request) {
       Authorization: `Zoho-oauthtoken ${accessToken}`,
       "Content-Type": "application/json",
     },
-    // body: JSON.stringify({ contacts: [zohoVendorData] }),
     body: JSON.stringify([zohoVendorData]),
   };
   // console.log("Final Payload:", options.body);

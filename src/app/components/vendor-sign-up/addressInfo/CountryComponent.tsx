@@ -2,21 +2,22 @@ import { useState, useEffect } from "react";
 
 interface CountrySelectorProps {
   setSelectedCountry: (country: string) => void;
+  setStates: (states: string[]) => void;
 }
 
 interface Country {
-  name: {
-    common: string;
-  };
+  name: string;
+  stateProvinces?: { name: string }[];
 }
 
 const CountrySelector: React.FC<CountrySelectorProps> = ({
-  setSelectedCountry, 
+  setSelectedCountry,
+  setStates,
 }) => {
   const [countries, setCountries] = useState<Country[]>([]);
   const [search, setSearch] = useState("");
   const [filteredCountries, setFilteredCountries] = useState<Country[]>([]);
-    const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const loadCountries = async () => {
@@ -34,7 +35,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   useEffect(() => {
     if (search) {
       const results = countries.filter((country) =>
-        country.name.common.toLowerCase().includes(search.toLowerCase())
+        country.name.toLowerCase().includes(search.toLowerCase())
       );
       setFilteredCountries(results);
     } else {
@@ -42,11 +43,24 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
     }
   }, [search, countries]);
 
+  // const handleCountrySelect = (countryName: string) => {
+  //   setSearch(countryName);
+  //   setSelectedCountry(countryName);
+  //   // setFilteredCountries([]);
+  //   setShowDropdown(false);
+  // };
     const handleCountrySelect = (countryName: string) => {
+      const selectedCountry = countries.find(
+        (country) => country.name === countryName
+      );
+      if (selectedCountry) {
+        setSelectedCountry(countryName);
+        setStates(
+          selectedCountry.stateProvinces?.map((state) => state.name) || []
+        );
+      }
       setSearch(countryName);
-      setSelectedCountry(countryName);
-      // setFilteredCountries([]); 
-       setShowDropdown(false);
+      setShowDropdown(false);
     };
 
   return (
@@ -67,10 +81,10 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
             <li
               key={index}
               // onClick={() => handleCountrySelect(country.name.common)}
-              onMouseDown={() => handleCountrySelect(country.name.common)}
+              onMouseDown={() => handleCountrySelect(country.name)}
               className="p-2 hover:bg-gray-100 cursor-pointer"
             >
-              {country.name.common}
+              {country.name}
             </li>
           ))}
         </ul>

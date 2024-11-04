@@ -7,7 +7,7 @@ import AddressInfo from "./addressInfo/AddressInfo";
 import BusinessDetails from "./BusinessDetails";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
-import TermsAndConditionModal from "../modals/TermsAndConditionModal";
+// import TermsAndConditionModal from "../modals/TermsAndConditionModal";
 
 const VendorSignUp = () => {
   const [step, setStep] = useState(1);
@@ -42,6 +42,7 @@ const VendorSignUp = () => {
     linkedin: "",
     city: "",
     country: "",
+    state: "",
     registrationNumber: "",
     taxId: "",
     productCategories: [],
@@ -79,6 +80,7 @@ const VendorSignUp = () => {
     linkedin?: string;
     city?: string;
     country?: string;
+    state?: string;
     registrationNumber?: string;
     taxId?: string;
     productCategories?: string[] | undefined;
@@ -231,7 +233,7 @@ const VendorSignUp = () => {
       setErrors({});
       setLoading(true);
 
-      // console.log("Form submitted:", formData);
+      console.log("Form submitted:", formData);
 
       try {
         const response = await fetch("/api/submitForm", {
