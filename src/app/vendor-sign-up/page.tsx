@@ -1,8 +1,8 @@
-import React from 'react'
-import VendorSignUp from './../components/vendor-sign-up/VendorSignUp';
+import React from "react";
+import VendorSignUp from "../../components/vendor-sign-up/VendorSignUp";
 
 const VendorSignUpPage = () => {
-  return <VendorSignUp />;
+	return <VendorSignUp />;
 };
 
-export default VendorSignUpPage 
+export default VendorSignUpPage;
