@@ -93,7 +93,7 @@ handleTermsAccept()
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-700">Business Details</h2>
+      <h1 className="text-xl font-semibold text-gray-700">Business Details</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
         <div>
@@ -172,7 +172,7 @@ handleTermsAccept()
               key={type}
               className={`flex items-center py-2 px-4 rounded-lg w-full cursor-pointer border ${
                 formData.businessType === type
-                  ? "bg-[#43828d] pl-4 text-white font-semibold border-blue-400"
+                  ? "bg-primary pl-4 text-white font-semibold border-blue-400"
                   : "bg-white border-gray-300"
               }`}
               onClick={() =>
@@ -330,12 +330,12 @@ handleTermsAccept()
 
        <div className="flex items-center mt-4">
         <label
-          htmlFor="agreeTerms"
+          htmlFor="subscribe"
           className="ml-2  flex items-center justify-center font-semibold"
         >
           <input
             type="checkbox"
-            className=" mr-2 size-[15px]"
+            className=" mr-2 size-[15px] cursor-pointer"
           />
           Subscribe to our newsletter
         </label>
