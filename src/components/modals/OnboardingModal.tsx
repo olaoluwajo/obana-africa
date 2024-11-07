@@ -16,7 +16,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
 				</button>
 				<div>
 					{" "}
-					<h2 className="text-3xl font-bold mb-2 text-center">Vendor Onboarding Instructions</h2>
+					<h1 className="text-3xl font-bold mb-2 text-center">Vendor Onboarding Instructions</h1>
 					<p className="mb-4">
 						Welcome to <b>Obana Africa!</b> To ensure a smooth onboarding experience, please follow the steps outlined below. Once registered and approved, you’ll be able to list your products
 						on our platform.
@@ -56,7 +56,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onClose }) =>
 					</div>
 					<p className="font-semibold"> Full access to the portal will only be granted after all onboarding requirements and agreements are met.</p>
 				</div>
-				<button onClick={onClose} className="mt-4 bg-[#43828d] hover:bg-[#539dab]  text-white py-2 px-4 rounded w-full ">
+				<button onClick={onClose} className="mt-4 bg-primary hover:bg-primary-hover  text-white py-2 px-4 rounded w-full ">
 					Continue
 				</button>
 			</div>

@@ -26,9 +26,9 @@ const BusinessInfo: React.FC<BusinessInfoProps> = ({
   handleChange,
 }) => (
   <div className="space-y-4">
-    <h2 className="text-xl font-semibold text-gray-700">
+    <h1 className="text-xl font-semibold text-gray-700">
       Business Information
-    </h2>
+    </h1>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
       <div>
         <label className="block text-sm font-medium text-gray-700">

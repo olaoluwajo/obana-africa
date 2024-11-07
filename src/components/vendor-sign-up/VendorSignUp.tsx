@@ -233,7 +233,7 @@ const VendorSignUp = () => {
       setErrors({});
       setLoading(true);
 
-      console.log("Form submitted:", formData);
+      // console.log("Form submitted:", formData);
 
       try {
         const response = await fetch("/api/submitForm", {
@@ -310,184 +310,103 @@ const VendorSignUp = () => {
 
 
   return (
-    <div className="min-h-screen py-10 md:py-20 flex flex-col items-center justify-center bg-[#f2f4f7] ">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] h-full divide-y-2 flex  flex-col items-center justify-center">
-        <img src="/logo.webp" alt="" className="md:w-[30%] w-[50%]" />
-        <div className="mx-auto  w-full">
-          <h1 className="text-2xl font-bold mb-6 text-gray-800 text-center mt-3">
-            Vendor Registration
-          </h1>
-          {/* Step indicator */}
-          <div className="hidden md:flex justify-between mb-6 ">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`flex-1 text-center ${
-                  step === i ? "text-[#43828d]" : "text-gray-400"
-                }`}
-              >
-                <div className="flex flex-col items-center justify-center space-x-2.5">
-                  <span
-                    className={`flex items-center justify-center w-8 h-8 border ${
-                      step === i ? "border-[#43828d]" : "border-gray-400"
-                    } rounded-full shrink-0`}
-                  >
-                    {step > i ? <TiTick size={24} /> : i}
-                  </span>
-                  <span>
-                    <h3 className="font-medium leading-tight">
-                      {i === 1
-                        ? "Business Info"
-                        : i === 2
-                        ? "Contact Info"
-                        : i === 3
-                        ? "Address Info"
-                        : "Business Details"}
-                    </h3>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* {error && <p className="text-red-500  pl-6 font-semibold">{error}</p>} */}
-          <form
-            autoComplete="off"
-            onSubmit={handleSubmit}
-            className="space-y-6  px-6  pb-6  md:block"
-          >
-            <div className="hidden md:block">
-              {/* Step 1: Company Information */}
-              {step === 1 && (
-                <BusinessInfo
-                  formData={formData}
-                  errors={errors}
-                  handleChange={handleChange}
-                />
-              )}
+		<div className="min-h-screen py-10 md:py-20 flex flex-col items-center justify-center bg-[#f2f4f7] ">
+			<div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] h-full divide-y-2 flex  flex-col items-center justify-center">
+				<img src="/logo.png" alt="" className="md:w-[30%] w-[50%] mb-2" />
+				<div className="mx-auto  w-full">
+					<h1 className="text-2xl font-bold mb-6 text-black text-center mt-3">Vendor Registration</h1>
+					{/* Step indicator */}
+					<div className="hidden md:flex justify-between mb-6 ">
+						{[1, 2, 3, 4].map((i) => (
+							<div key={i} className={`flex-1 text-center ${step === i ? "text-primary" : "text-gray-400"}`}>
+								<div className="flex flex-col items-center justify-center space-x-2.5">
+									<span className={`flex items-center justify-center w-8 h-8 border ${step === i ? "border-primary" : "border-gray-400"} rounded-full shrink-0`}>
+										{step > i ? <TiTick size={24} /> : i}
+									</span>
+									<span>
+										<h3 className="font-medium leading-tight">{i === 1 ? "Business Info" : i === 2 ? "Contact Info" : i === 3 ? "Address Info" : "Business Details"}</h3>
+									</span>
+								</div>
+							</div>
+						))}
+					</div>
+					{/* {error && <p className="text-red-500  pl-6 font-semibold">{error}</p>} */}
+					<form autoComplete="off" onSubmit={handleSubmit} className="space-y-6  px-6  pb-6  md:block">
+						<div className="hidden md:block">
+							{/* Step 1: Company Information */}
+							{step === 1 && <BusinessInfo formData={formData} errors={errors} handleChange={handleChange} />}
 
-              {/* Step 2: Contact Information */}
-              {step === 2 && (
-                <ContactInfo
-                  formData={formData}
-                  errors={errors}
-                  handleChange={handleChange}
-                />
-              )}
+							{/* Step 2: Contact Information */}
+							{step === 2 && <ContactInfo formData={formData} errors={errors} handleChange={handleChange} />}
 
-              {/* Step 3: Address Information */}
-              {step === 3 && (
-                <AddressInfo
-                  setFormData={setFormData}
-                  formData={formData}
-                  errors={errors}
-                  handleChange={handleChange}
-                />
-              )}
+							{/* Step 3: Address Information */}
+							{step === 3 && <AddressInfo setFormData={setFormData} formData={formData} errors={errors} handleChange={handleChange} />}
 
-              {/* Step 4: Business Details */}
-              {step === 4 && (
-                <BusinessDetails
-                  formData={formData}
-                  errors={errors}
-                  handleChange={handleChange}
-                  handleCategoryChange={handleCategoryChange}
-                  removeCategory={removeCategory}
-                  handleDownload={handleDownload}
-                  setFormData={setFormData}
-                  isDocumentDownloaded={isDocumentDownloaded}
-                   handleTermsAccept={handleTermsAccept}
-        termsAccepted={termsAccepted}
-                />
-              )}
-            </div>
-            <div className="block md:hidden">
-              <BusinessInfo
-                formData={formData}
-                errors={errors}
-                handleChange={handleChange}
-              />
-              <ContactInfo
-                formData={formData}
-                errors={errors}
-                handleChange={handleChange}
-              />
-              <AddressInfo
-                setFormData={setFormData}
-                formData={formData}
-                errors={errors}
-                handleChange={handleChange}
-              />
-              <BusinessDetails
-                formData={formData}
-                errors={errors}
-                handleChange={handleChange}
-                handleCategoryChange={handleCategoryChange}
-                removeCategory={removeCategory}
-                handleDownload={handleDownload}
-                setFormData={setFormData}
-                isDocumentDownloaded={isDocumentDownloaded}
-                 handleTermsAccept={handleTermsAccept}
-        termsAccepted={termsAccepted}
-              />
-            </div>
+							{/* Step 4: Business Details */}
+							{step === 4 && (
+								<BusinessDetails
+									formData={formData}
+									errors={errors}
+									handleChange={handleChange}
+									handleCategoryChange={handleCategoryChange}
+									removeCategory={removeCategory}
+									handleDownload={handleDownload}
+									setFormData={setFormData}
+									isDocumentDownloaded={isDocumentDownloaded}
+									handleTermsAccept={handleTermsAccept}
+									termsAccepted={termsAccepted}
+								/>
+							)}
+						</div>
+						<div className="block md:hidden">
+							<BusinessInfo formData={formData} errors={errors} handleChange={handleChange} />
+							<ContactInfo formData={formData} errors={errors} handleChange={handleChange} />
+							<AddressInfo setFormData={setFormData} formData={formData} errors={errors} handleChange={handleChange} />
+							<BusinessDetails
+								formData={formData}
+								errors={errors}
+								handleChange={handleChange}
+								handleCategoryChange={handleCategoryChange}
+								removeCategory={removeCategory}
+								handleDownload={handleDownload}
+								setFormData={setFormData}
+								isDocumentDownloaded={isDocumentDownloaded}
+								handleTermsAccept={handleTermsAccept}
+								termsAccepted={termsAccepted}
+							/>
+						</div>
 
-            <div className=" justify-between mt-6 hidden md:flex">
-              {step > 1 && (
-                <button
-                  type="button"
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500"
-                  onClick={prevStep}
-                >
-                  Previous
-                </button>
-              )}
+						<div className=" justify-between mt-6 hidden md:flex">
+							{step > 1 && (
+								<button type="button" className="bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-gray-500" onClick={prevStep}>
+									Previous
+								</button>
+							)}
 
-              {step < 4 && (
-                <button
-                  type="button"
-                  className="bg-[#43828d] hover:bg-[#539dab] text-white px-4 py-2 rounded-md "
-                  onClick={nextStep}
-                >
-                  Next
-                </button>
-              )}
+							{step < 4 && (
+								<button type="button" className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md " onClick={nextStep}>
+									Next
+								</button>
+							)}
 
-              {step === 4 && (
-                <button
-                  disabled={loading}
-                  type="submit"
-                  className="bg-[#43828d] hover:bg-[#539dab] text-white px-4 py-2 rounded-md "
-                >
-                  {loading ? "Submitting..." : "Submit"}
-                </button>
-              )}
-            </div>
-            <div className="w-full  mt-6 block md:hidden">
-              <button
-                disabled={loading}
-                type="submit"
-                className="bg-[#43828d] hover:bg-[#539dab] w-full text-white px-4 py-2 rounded-md "
-              >
-                {loading ? "Submitting..." : "Submit"}
-              </button>
-            </div>
-          </form>
+							{step === 4 && (
+								<button disabled={loading} type="submit" className="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md ">
+									{loading ? "Submitting..." : "Submit"}
+								</button>
+							)}
+						</div>
+						<div className="w-full  mt-6 block md:hidden">
+							<button disabled={loading} type="submit" className="bg-primary hover:bg-primary-hover w-full text-white px-4 py-2 rounded-md ">
+								{loading ? "Submitting..." : "Submit"}
+							</button>
+						</div>
+					</form>
 
-          {submitted && (
-            <SuccessModal
-              onClose={() => setSubmitted(false)}
-              href="https://inventory.zohosecure.com/portal/obanaafrica/signup#/send-invite"
-            />
-          )}
-          {notSubmitted && (
-            <ErrorModal onClose={() => setNotSubmitted(false)} />
-          )}
-
-
-        
-        </div>
-      </div>
-    </div>
+					{submitted && <SuccessModal onClose={() => setSubmitted(false)} href="https://inventory.zohosecure.com/portal/obanaafrica/signup#/send-invite" />}
+					{notSubmitted && <ErrorModal onClose={() => setNotSubmitted(false)} />}
+				</div>
+			</div>
+		</div>
   );
 };
 

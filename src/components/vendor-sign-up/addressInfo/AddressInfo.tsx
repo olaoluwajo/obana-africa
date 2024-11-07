@@ -42,9 +42,9 @@ const AddressInfo: React.FC<AddressInfoProps> = ({
   };
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold text-gray-700">
+      <h1 className="text-xl font-semibold text-gray-700">
         Address Information
-      </h2>
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         <div>
