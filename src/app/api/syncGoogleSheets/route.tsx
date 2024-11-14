@@ -2,7 +2,15 @@ import { syncGoogleSheetsWithZoho } from "@/utils/googleSheetsToZoho";
 
 export async function POST(req: any, res: any) {
 	try {
-		await syncGoogleSheetsWithZoho();
+		// console.log("Updated Row:", req.test);
+		const { updatedRow } = req.body;
+
+		// Process the data (e.g., use the data to sync with Zoho)
+		console.log("Updated Row:", updatedRow);
+		// console.log("Updated Values:", updatedValues);
+
+		await syncGoogleSheetsWithZoho(updatedRow);
+
 		return new Response(JSON.stringify({ status: "Data synced successfully" }), { status: 200 });
 	} catch (error) {
 		console.error("Error syncing data:", error);
