@@ -84,11 +84,7 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				description: "Sales Information description",
 				vendor_id: "4650667000000093341",
 				// vendor_name: "FAZSION WHOLESALE",
-				// attribute_option_name1: "Yellow",
-				attribute_option_name1: row.get("Available Colors"),
-				// attribute_option_name1: (updatedRowData.get("Available Colors") || "")
-				// 	.replace(/\s+/g, "")
-				// 	.replace(/,/g, ""),
+				attribute_option_name1: "GREEN",
 				attribute_option_name2: "S-XL",
 				attribute_option_name3: "TANKTOP",
 

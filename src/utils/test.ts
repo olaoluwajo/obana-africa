@@ -20,20 +20,29 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 	}
 
 	try {
+		// Google Sheets Authentication
 		const authClient = new JWT({
 			email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
 			key: GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
 			scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
 		});
 
+		// Load the Google Sheet data
 		const doc = new GoogleSpreadsheet(String(SHEET_ID), authClient);
 		await doc.loadInfo();
 		const sheet = doc.sheetsByIndex[0];
 		const rows = await sheet.getRows();
-		// const row = await sheet.getRow(updatedRow);
 
-		const updatedRowData = rows[updatedRow - 1];
+		// console.log("Loaded Google Sheet data:", rows);
 
+		if (updatedRow < 1 || updatedRow > rows.length) {
+			console.error(`Invalid row index: ${updatedRow}. Row does not exist.`);
+			return null;
+		}
+		const updatedRowData = rows[(updatedRow = 1)];
+		// console.log("Updated Row Data:", updatedRowData._updateRowNumber);
+
+		// Fetch Zoho Inventory items
 		const accessToken = await getAccessToken();
 		const existingItemsResponse = await axios.get("https://www.zohoapis.com/inventory/v1/items", {
 			headers: {
@@ -42,34 +51,44 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
 			},
 		});
-		// console.log("Response items from Zoho Inventory:", existingItemsResponse.data.items);
 
 		const existingItems: ZohoInventoryItem[] = existingItemsResponse.data.items || [];
+		existingItems.forEach((item) => {
+			console.log("SKU:", item.sku);
+		});
 		const existingItemMap = new Map(existingItems.map((item: any) => [item.sku, item]));
-		// console.log("EXISTING ITEM 1", existingItemMap);
-		// console.log("Service Account Email:", GOOGLE_SERVICE_ACCOUNT_EMAIL);
-		// console.log("Private Key Present:", !!GOOGLE_PRIVATE_KEY);
 
+		// console.log(existingItemMap)
+
+		// Prepare the payload to send to Zoho
 		for (const row of rows) {
+			// const payload = {
+			// 	sku: updatedRowData.get("SKU"),
+			// 	name: updatedRowData.get("Item Name"),
+			// 	unit: updatedRowData.get("Unit"),
+			// 	selling_price: parseFloat(updatedRowData.get("Selling Price")),
+			// 	rate: parseFloat(updatedRowData.get("Price per Unit")),
+			// };
+
 			const payload = {
-				sku: row.get("SKU"),
-				name: row.get("Item Name"),
-				unit: row.get("Unit"),
-				selling_price: parseFloat(row.get("Selling Price")),
+				sku: updatedRowData.get("SKU"),
+				name: updatedRowData.get("Item Name"),
+				unit: updatedRowData.get("Unit"),
+				selling_price: parseFloat(updatedRowData.get("Selling Price")),
 
 				sales_rate: 10000.0,
 				purchase_rate: 1950.0,
 
 				is_returnable: true,
-				sample: row.get("Sample Available"),
-				size: row.get("Sizes Run"),
-				color: row.get("Available Colors"),
-				purchase_price: parseFloat(row.get("Purchase Price")),
-				price: parseFloat(row.get("Purchase Price")),
-				rate: parseFloat(row.get("Price per Unit")),
-				returnable: row.get("Is Returnable Item"),
-				brand: row.get("Brand"),
-				category_name: row.get("Category"),
+				sample: updatedRowData.get("Sample Available"),
+				size: updatedRowData.get("Sizes Run"),
+				color: updatedRowData.get("Available Colors"),
+				purchase_price: parseFloat(updatedRowData.get("Purchase Price")),
+				price: parseFloat(updatedRowData.get("Purchase Price")),
+				rate: parseFloat(updatedRowData.get("Price per Unit")),
+				returnable: updatedRowData.get("Is Returnable Item"),
+				brand: updatedRowData.get("Brand"),
+				category_name: updatedRowData.get("Category"),
 				item_type: "inventory",
 				group_id: "4650667000000093429",
 				// group_name: "MEN",
@@ -84,11 +103,7 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				description: "Sales Information description",
 				vendor_id: "4650667000000093341",
 				// vendor_name: "FAZSION WHOLESALE",
-				// attribute_option_name1: "Yellow",
-				attribute_option_name1: row.get("Available Colors"),
-				// attribute_option_name1: (updatedRowData.get("Available Colors") || "")
-				// 	.replace(/\s+/g, "")
-				// 	.replace(/,/g, ""),
+				attribute_option_name1: updatedRowData.get("Available Colors"),
 				attribute_option_name2: "S-XL",
 				attribute_option_name3: "TANKTOP",
 
@@ -104,7 +119,7 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				product_type: "goods",
 				purchase_account_name: "Cost of Goods Sold",
 				account_name: "Sales",
-				// stock_on_hand: parseInt(row.get("Units per Box")),
+				// stock_on_hand: parseInt(updatedRowData.get("Units per Box")),
 				// stock_on_hand: 50,
 				// available_stock: 2,
 				// actual_available_stock: 2,
@@ -116,15 +131,20 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				},
 			};
 
-			console.log("PAYLOAD :", payload);
-			if (existingItemMap.has(payload.sku)) {
-				console.log("PAYLOAD SKU:", payload);
-				// Update existing item
-				const existingItem = existingItemMap.get(payload.sku);
-				console.log("Found existing item in Zoho to be updated:", existingItem);
+			console.log("Prepared Payload:", payload.sku);
+			console.log("Existing SKUs in Map:", Array.from(existingItemMap.keys()));
 
-				if (existingItem.name !== payload.name || existingItem.rate !== payload.rate || existingItem.unit !== payload.unit) {
-					console.log("Updating item:", payload.name);
+			if (existingItemMap.has(payload.sku)) {
+				// Item exists in Zoho, check for modifications
+				const existingItem = existingItemMap.get(payload.sku);
+				console.log("Found existing item in Zoho:", existingItem);
+
+				// Compare if any field has changed (you can add more fields for comparison)
+				const isModified = existingItem.name !== payload.name || existingItem.rate !== payload.rate || existingItem.unit !== payload.unit;
+
+				if (isModified) {
+					// Update the item in Zoho
+					console.log("Item modified, updating in Zoho...");
 					try {
 						await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
 							headers: {
@@ -133,15 +153,16 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 								"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
 							},
 						});
-						console.log(`Updated item: ${payload.name}`);
+						console.log(`Updated item: ${payload.sku}`);
 					} catch (error: any) {
 						console.error("Error updating item:", error.response?.data || error.message);
 					}
 				} else {
-					console.log(`No changes detected for item: ${payload.name}`);
+					console.log(`No changes detected for item: ${payload.sku}`);
 				}
 			} else {
-				// Create new item
+				// Item does not exist, create a new item in Zoho
+				console.log("Item not found, creating new item...");
 				try {
 					await axios.post("https://www.zohoapis.com/inventory/v1/items", payload, {
 						headers: {
@@ -150,45 +171,16 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 							"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
 						},
 					});
-					console.log(`Created item: ${payload.name}`);
+					console.log(`Created item: ${payload.sku}`);
 				} catch (error: any) {
-					if (error.response && error.response.data?.code === 1001) {
-						// Handle conflict error (item already exists)
-						console.warn(`Item with SKU ${payload.sku} already exists. Attempting to update.`);
-						const existingItem = existingItemMap.get(payload.sku);
-						console.log("EXISTING ITEM 2", existingItem);
-
-						if (existingItem) {
-							// Try updating the existing item
-							try {
-								await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
-									headers: {
-										Authorization: `Zoho-oauthtoken ${accessToken}`,
-										"Content-Type": "application/json",
-										"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
-									},
-								});
-								console.log(`Updated existing item on conflict: ${payload.name}`);
-							} catch (updateError: any) {
-								console.error("Error updating item after conflict:", updateError.response?.data || updateError.message);
-							}
-						} else {
-							console.error(`Conflict detected, but could not find existing item with SKU ${payload.sku}`);
-						}
-					} else if (error.response) {
-						console.error("Error sending data to Zoho Inventory:", error.response.data);
-						console.error("Status Code:", error.response.status);
-					} else if (error.request) {
-						console.error("No response received:", error.request);
-					} else {
-						console.error("Error:", error.message);
-					}
+					console.error("Error creating item:", error.response?.data || error.message);
 				}
 			}
 		}
 
 		return rows;
 	} catch (err) {
-		console.error("Error fetching data from Google Sheets:", err);
+		console.error("Error syncing with Zoho:", err);
+		return null;
 	}
 };
