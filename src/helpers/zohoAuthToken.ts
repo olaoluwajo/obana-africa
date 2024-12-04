@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import axios from "axios";
 
 // Zoho Inventory credentials
 const ZOHO_REFRESH_TOKEN = process.env.ZOHO_REFRESH_TOKEN;
@@ -32,31 +32,38 @@ export async function getAccessToken() {
 	console.log("Requesting new Zoho Inventory access token...");
 
 	// Fetch a new access token if the old one is expired
-	const response = await fetch("https://accounts.zoho.com/oauth/v2/token", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
-		body: new URLSearchParams({
-			refresh_token: ZOHO_REFRESH_TOKEN || "",
-			client_id: ZOHO_CLIENT_ID || "",
-			client_secret: ZOHO_CLIENT_SECRET || "",
-			grant_type: "refresh_token",
-		}),
-	});
+	try {
+		const response = await axios.post(
+			"https://accounts.zoho.com/oauth/v2/token",
+			new URLSearchParams({
+				refresh_token: ZOHO_REFRESH_TOKEN || "",
+				client_id: ZOHO_CLIENT_ID || "",
+				client_secret: ZOHO_CLIENT_SECRET || "",
+				grant_type: "refresh_token",
+			}),
+			{
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+			},
+		);
 
-	const data = (await response.json()) as ZohoTokenResponse;
+		const data = response.data as ZohoTokenResponse;
 
-	if (!response.ok) {
-		throw new Error(`Failed to refresh Zoho Inventory access token: ${data.error}`);
+		// Handle error response from Zoho
+		if (response.status !== 200) {
+			throw new Error(`Failed to refresh Zoho Inventory access token: ${data.error}`);
+		}
+
+		// Save the new token in environment variables
+		process.env.ZOHO_API_TOKEN = data.access_token;
+
+		accessTokenExpiry = Date.now() + data.expires_in * 1000;
+
+		return data.access_token;
+	} catch (error: any) {
+		throw new Error(`Error refreshing Zoho Inventory access token: ${error.message}`);
 	}
-
-	// Save the new token in environment variables
-	process.env.ZOHO_API_TOKEN = data.access_token;
-
-	accessTokenExpiry = Date.now() + data.expires_in * 1000;
-
-	return data.access_token;
 }
 
 // Function to refresh the Zoho Mail access token
@@ -72,30 +79,37 @@ export async function getMailAccessToken() {
 	console.log("Requesting new Zoho Mail access token...");
 
 	// Fetch a new access token if the old one is expired
-	const response = await fetch("https://accounts.zoho.com/oauth/v2/token", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-		},
-		body: new URLSearchParams({
-			refresh_token: ZOHO_MAIL_REFRESH_TOKEN || "",
-			client_id: ZOHO_MAIL_CLIENT_ID || "",
-			client_secret: ZOHO_MAIL_CLIENT_SECRET || "",
-			grant_type: "refresh_token",
-		}),
-	});
+	try {
+		const response = await axios.post(
+			"https://accounts.zoho.com/oauth/v2/token",
+			new URLSearchParams({
+				refresh_token: ZOHO_MAIL_REFRESH_TOKEN || "",
+				client_id: ZOHO_MAIL_CLIENT_ID || "",
+				client_secret: ZOHO_MAIL_CLIENT_SECRET || "",
+				grant_type: "refresh_token",
+			}),
+			{
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+			},
+		);
 
-	const data = (await response.json()) as ZohoTokenResponse;
+		const data = response.data as ZohoTokenResponse;
 
-	if (!response.ok) {
-		throw new Error(`Failed to refresh Zoho Mail access token: ${data.error}`);
+		// Handle error response from Zoho
+		if (response.status !== 200) {
+			throw new Error(`Failed to refresh Zoho Mail access token: ${data.error}`);
+		}
+
+		// Save the new token in environment variables
+		process.env.MAIL_ACCESS_TOKEN = data.access_token;
+
+		mailAccessTokenExpiry = Date.now() + data.expires_in * 1000;
+
+		console.log("ACCESS TOKEN", data.access_token);
+		return data.access_token;
+	} catch (error: any) {
+		throw new Error(`Error refreshing Zoho Mail access token: ${error.message}`);
 	}
-
-	// Save the new token in environment variables
-	process.env.MAIL_ACCESS_TOKEN = data.access_token;
-
-	mailAccessTokenExpiry = Date.now() + data.expires_in * 1000;
-
-	console.log("ACCESS TOKEN", data.access_token);
-	return data.access_token;
 }

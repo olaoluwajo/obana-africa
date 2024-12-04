@@ -14,7 +14,7 @@ function generateJwtToken(email: string, otp: string): string {
 		email,
 		otp,
 	};
-	const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!, { expiresIn: "5m" });
+	const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!, { expiresIn: "3m" });
 	return token;
 }
 

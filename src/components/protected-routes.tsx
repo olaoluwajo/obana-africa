@@ -9,10 +9,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 	const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
 
 	useEffect(() => {
-		if (!isAuthenticated) {
-			router.push("/onboarding");
-		} else {
+		if (isAuthenticated) {
 			router.push("/dashboard");
+		} else {
+			router.push("/sign-in");
 		}
 	}, [isAuthenticated, router]);
 

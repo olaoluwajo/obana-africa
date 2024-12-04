@@ -30,13 +30,10 @@ export function UserNav() {
 
 	// Logout handler
 	const handleLogout = () => {
-		// 1. Set the authentication state to false
 		setAuthenticated(false);
 
-		// 2. Remove OTP token from localStorage
 		localStorage.removeItem("otpToken");
 
-		// 3. Optionally, redirect to the sign-in page
 		router.push("/sign-in");
 	};
 

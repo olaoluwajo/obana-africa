@@ -6,7 +6,7 @@ import useAuthStore from "@/stores/authStore";
 import { useOtpStore } from "@/stores/useOtpStore";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 function VerifyPageContent() {
@@ -15,10 +15,33 @@ function VerifyPageContent() {
 	const { token, otp } = useOtpStore();
 	const [userOtp, setUserOtp] = useState("");
 	const [loading, setLoading] = useState(false);
+	const [timer, setTimer] = useState(3 * 60);
+	const [timerExpired, setTimerExpired] = useState(false);
 	const router = useRouter();
 	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
 
 	// console.log("Current token in store:", token);
+
+	useEffect(() => {
+		if (timer === 0) {
+			setTimerExpired(true);
+			return;
+		}
+		const interval = setInterval(() => {
+			setTimer((prevTimer) => prevTimer - 1);
+		}, 1000);
+
+		return () => clearInterval(interval);
+	}, [timer]);
+
+	// Format the timer in MM:SS format
+	const formatTimer = (seconds: number) => {
+		const minutes = Math.floor(seconds / 60);
+		const remainingSeconds = seconds % 60;
+		return `${minutes < 10 ? "0" : ""}${minutes}:${
+			remainingSeconds < 10 ? "0" : ""
+		}${remainingSeconds}`;
+	};
 
 	const onSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
@@ -53,44 +76,114 @@ function VerifyPageContent() {
 			} else {
 				toast.error(response.data.message || "Invalid OTP.");
 			}
+		} catch (error: any) {
+			toast.error(error.response.data.message || "Error verifying OTP...");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	// Handle OTP input change
+	const handleOtpChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+		const newOtp = userOtp.split("");
+		newOtp[index] = e.target.value.slice(0, 1);
+		setUserOtp(newOtp.join(""));
+		if (e.target.value && index < 5) {
+			document.getElementById(`otp-input-${index + 1}`)?.focus();
+		}
+	};
+
+	// Handle backspace
+	const handleBackspace = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+		if (e.key === "Backspace" && userOtp[index] === "" && index > 0) {
+			document.getElementById(`otp-input-${index - 1}`)?.focus();
+		}
+	};
+
+	// Request a new OTP when the timer expires
+	const handleRequestNewOtp = async () => {
+		setLoading(true);
+		try {
+			const response = await axios.post("/api/send-otp-email", { email });
+			if (response.data.success) {
+				toast.success("New OTP sent to your email.");
+				setTimer(3 * 60);
+				setTimerExpired(false);
+				setUserOtp("");
+				useOtpStore.getState().setOtp(response.data.otp);
+				useOtpStore.getState().setToken(response.data.token);
+			} else {
+				toast.error(response.data.message || "Failed to send new OTP.");
+			}
 		} catch (error) {
-			toast.error("Error verifying OTP.");
+			toast.error("Error requesting new OTP.");
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	return (
-		<div className="max-w-md mx-auto mt-8">
-			<h2 className="text-2xl font-bold">Verify Your Email</h2>
-			<form onSubmit={onSubmit} className="space-y-4">
-				<div>
-					<label className="block">Verification Code</label>
-					<Input
-						type="text"
-						value={userOtp}
-						onChange={(e) => setUserOtp(e.target.value)}
-						maxLength={6}
-						placeholder="Enter the 6-digit code"
-						disabled={loading}
-					/>
+		<div className="h-screen flex  items-center justify-center">
+			<div className="max-w-md mx-auto mt-8 px-12 py-8 bg-white shadow-lg border border-slate-300 rounded-lg ">
+				<div className="flex flex-col items-center my-4">
+					<img src="/logo.png" alt="" className="md:w-[50%] w-[50%] mb-2" />
 				</div>
+				<h2 className="text-xl font-bold text-center mb-1">Verify Your Email</h2>
+				<form onSubmit={onSubmit} className="">
+					<div>
+						<label className="block text-center mb-4">
+							Check your email for Verification Code
+						</label>
+						<div className="flex justify-between gap-2">
+							{[...Array(6)].map((_, index) => (
+								<Input
+									id={`otp-input-${index}`}
+									key={index}
+									type="text"
+									value={userOtp[index] || ""}
+									onChange={(e) => handleOtpChange(e, index)}
+									onKeyDown={(e) => handleBackspace(e, index)}
+									maxLength={1}
+									className="size-12 text-center border-2 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+									disabled={loading}
+								/>
+							))}
+						</div>
+					</div>
 
-				<Button disabled={loading} className="w-full text-white" type="submit">
-					Verify Code
-				</Button>
-			</form>
-			<div className="flex justify-center">
-				<Button
-					onClick={() => router.push("/sign-in")}
-					className="w-full mx-auto text-white mt-8">
-					Back to Login
-				</Button>
+					<Button disabled={loading} className="w-full text-white mt-6" type="submit">
+						{loading ? "Verifying..." : "Verify Code"}
+					</Button>
+				</form>
+				<div className="text-center mt-4">
+					<p className="text-sm text-gray-600">
+						{timerExpired ? (
+							<>
+								OTP expired.
+								<Button
+									variant="link"
+									onClick={handleRequestNewOtp}
+									className="text-blue-500 underline"
+									disabled={loading}>
+									Request New OTP
+								</Button>
+							</>
+						) : (
+							<>Time remaining: {formatTimer(timer)}</>
+						)}
+					</p>
+				</div>
+				<div className="flex justify-center mt-1">
+					<Button
+						onClick={() => router.push("/sign-in")}
+						className="w-full mx-auto text-white mt-8">
+						Back to Login
+					</Button>
+				</div>
 			</div>
 		</div>
 	);
 }
-
 
 export default function VerifyPage() {
 	return (
