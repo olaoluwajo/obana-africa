@@ -1,7 +1,7 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import axios from "axios";
-import { getAccessToken } from "@/lib/zohoAuth";
+import { getAccessToken } from "@/helpers/zohoAuthToken";
 
 interface ZohoInventoryItem {
 	item_id: string;
@@ -63,7 +63,7 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				is_returnable: true,
 				sample: row.get("Sample Available"),
 				size: row.get("Sizes Run"),
-				color: row.get("Available Colors"),
+				// color: row.get("Available Colors"),
 				purchase_price: parseFloat(row.get("Purchase Price")),
 				price: parseFloat(row.get("Purchase Price")),
 				rate: parseFloat(row.get("Price per Unit")),
@@ -85,11 +85,11 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				vendor_id: "4650667000000093341",
 				// vendor_name: "FAZSION WHOLESALE",
 				// attribute_option_name1: "Yellow",
-				attribute_option_name1: row.get("Available Colors"),
-				// attribute_option_name1: (updatedRowData.get("Available Colors") || "")
-				// 	.replace(/\s+/g, "")
-				// 	.replace(/,/g, ""),
-				attribute_option_name2: "S-XL",
+				// attribute_option_name1: row.get("Available Colors") || "",
+				cf_color: (row.get("Available Colors") || "").replace(/\s+/g).replace(/,/g),
+				// attribute_option_name1: (row.get("Available Colors") || "").replace(/\s+/g).replace(/,/g),
+				cf_sizes_run: row.get("Sizes Run"),
+				// attribute_option_name2: row.get("Sizes Run"),
 				attribute_option_name3: "TANKTOP",
 
 				stock_on_hand: 6.0,
@@ -108,12 +108,12 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				// stock_on_hand: 50,
 				// available_stock: 2,
 				// actual_available_stock: 2,
-				inventory_summary: {
-					qty_to_be_shipped: 0.0,
-					qty_to_be_received: 0.0,
-					qty_to_be_invoiced: 0.0,
-					qty_to_be_billed: 5.0,
-				},
+				// inventory_summary: {
+				// 	qty_to_be_shipped: 0.0,
+				// 	qty_to_be_received: 0.0,
+				// 	qty_to_be_invoiced: 0.0,
+				// 	qty_to_be_billed: 5.0,
+				// },
 			};
 
 			console.log("PAYLOAD :", payload);
@@ -123,16 +123,24 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				const existingItem = existingItemMap.get(payload.sku);
 				console.log("Found existing item in Zoho to be updated:", existingItem);
 
-				if (existingItem.name !== payload.name || existingItem.rate !== payload.rate || existingItem.unit !== payload.unit) {
+				if (
+					existingItem.name !== payload.name ||
+					existingItem.rate !== payload.rate ||
+					existingItem.unit !== payload.unit
+				) {
 					console.log("Updating item:", payload.name);
 					try {
-						await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
-							headers: {
-								Authorization: `Zoho-oauthtoken ${accessToken}`,
-								"Content-Type": "application/json",
-								"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+						await axios.put(
+							`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`,
+							payload,
+							{
+								headers: {
+									Authorization: `Zoho-oauthtoken ${accessToken}`,
+									"Content-Type": "application/json",
+									"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+								},
 							},
-						});
+						);
 						console.log(`Updated item: ${payload.name}`);
 					} catch (error: any) {
 						console.error("Error updating item:", error.response?.data || error.message);
@@ -154,26 +162,37 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				} catch (error: any) {
 					if (error.response && error.response.data?.code === 1001) {
 						// Handle conflict error (item already exists)
-						console.warn(`Item with SKU ${payload.sku} already exists. Attempting to update.`);
+						console.warn(
+							`Item with SKU ${payload.sku} already exists. Attempting to update.`,
+						);
 						const existingItem = existingItemMap.get(payload.sku);
 						console.log("EXISTING ITEM 2", existingItem);
 
 						if (existingItem) {
 							// Try updating the existing item
 							try {
-								await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
-									headers: {
-										Authorization: `Zoho-oauthtoken ${accessToken}`,
-										"Content-Type": "application/json",
-										"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+								await axios.put(
+									`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`,
+									payload,
+									{
+										headers: {
+											Authorization: `Zoho-oauthtoken ${accessToken}`,
+											"Content-Type": "application/json",
+											"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+										},
 									},
-								});
+								);
 								console.log(`Updated existing item on conflict: ${payload.name}`);
 							} catch (updateError: any) {
-								console.error("Error updating item after conflict:", updateError.response?.data || updateError.message);
+								console.error(
+									"Error updating item after conflict:",
+									updateError.response?.data || updateError.message,
+								);
 							}
 						} else {
-							console.error(`Conflict detected, but could not find existing item with SKU ${payload.sku}`);
+							console.error(
+								`Conflict detected, but could not find existing item with SKU ${payload.sku}`,
+							);
 						}
 					} else if (error.response) {
 						console.error("Error sending data to Zoho Inventory:", error.response.data);
