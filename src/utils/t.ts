@@ -1,7 +1,7 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import axios from "axios";
-import { getAccessToken } from "@/lib/zohoAuth";
+import { getAccessToken } from "@/helpers/zohoAuthToken";
 
 interface ZohoInventoryItem {
 	item_id: string;
@@ -119,16 +119,24 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				const existingItem = existingItemMap.get(payload.sku);
 				console.log("Found existing item in Zoho to be updated:", existingItem);
 
-				if (existingItem.name !== payload.name || existingItem.rate !== payload.rate || existingItem.unit !== payload.unit) {
+				if (
+					existingItem.name !== payload.name ||
+					existingItem.rate !== payload.rate ||
+					existingItem.unit !== payload.unit
+				) {
 					console.log("Updating item:", payload.name);
 					try {
-						await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
-							headers: {
-								Authorization: `Zoho-oauthtoken ${accessToken}`,
-								"Content-Type": "application/json",
-								"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+						await axios.put(
+							`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`,
+							payload,
+							{
+								headers: {
+									Authorization: `Zoho-oauthtoken ${accessToken}`,
+									"Content-Type": "application/json",
+									"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+								},
 							},
-						});
+						);
 						console.log(`Updated item: ${payload.name}`);
 					} catch (error: any) {
 						console.error("Error updating item:", error.response?.data || error.message);
@@ -150,26 +158,37 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				} catch (error: any) {
 					if (error.response && error.response.data?.code === 1001) {
 						// Handle conflict error (item already exists)
-						console.warn(`Item with SKU ${payload.sku} already exists. Attempting to update.`);
+						console.warn(
+							`Item with SKU ${payload.sku} already exists. Attempting to update.`,
+						);
 						const existingItem = existingItemMap.get(payload.sku);
 						console.log("EXISTING ITEM 2", existingItem);
 
 						if (existingItem) {
 							// Try updating the existing item
 							try {
-								await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
-									headers: {
-										Authorization: `Zoho-oauthtoken ${accessToken}`,
-										"Content-Type": "application/json",
-										"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+								await axios.put(
+									`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`,
+									payload,
+									{
+										headers: {
+											Authorization: `Zoho-oauthtoken ${accessToken}`,
+											"Content-Type": "application/json",
+											"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+										},
 									},
-								});
+								);
 								console.log(`Updated existing item on conflict: ${payload.name}`);
 							} catch (updateError: any) {
-								console.error("Error updating item after conflict:", updateError.response?.data || updateError.message);
+								console.error(
+									"Error updating item after conflict:",
+									updateError.response?.data || updateError.message,
+								);
 							}
 						} else {
-							console.error(`Conflict detected, but could not find existing item with SKU ${payload.sku}`);
+							console.error(
+								`Conflict detected, but could not find existing item with SKU ${payload.sku}`,
+							);
 						}
 					} else if (error.response) {
 						console.error("Error sending data to Zoho Inventory:", error.response.data);

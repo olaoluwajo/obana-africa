@@ -1,7 +1,7 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import axios from "axios";
-import { getAccessToken } from "@/lib/zohoAuth";
+import { getAccessToken } from "@/helpers/zohoAuthToken";
 
 interface ZohoInventoryItem {
 	item_id: string;
@@ -140,19 +140,26 @@ export const syncGoogleSheetsWithZoho = async (updatedRow: number) => {
 				console.log("Found existing item in Zoho:", existingItem);
 
 				// Compare if any field has changed (you can add more fields for comparison)
-				const isModified = existingItem.name !== payload.name || existingItem.rate !== payload.rate || existingItem.unit !== payload.unit;
+				const isModified =
+					existingItem.name !== payload.name ||
+					existingItem.rate !== payload.rate ||
+					existingItem.unit !== payload.unit;
 
 				if (isModified) {
 					// Update the item in Zoho
 					console.log("Item modified, updating in Zoho...");
 					try {
-						await axios.put(`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`, payload, {
-							headers: {
-								Authorization: `Zoho-oauthtoken ${accessToken}`,
-								"Content-Type": "application/json",
-								"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+						await axios.put(
+							`https://www.zohoapis.com/inventory/v1/items/${existingItem.item_id}`,
+							payload,
+							{
+								headers: {
+									Authorization: `Zoho-oauthtoken ${accessToken}`,
+									"Content-Type": "application/json",
+									"X-com-zoho-inventory-organizationid": process.env.ZOHO_ORG_ID,
+								},
 							},
-						});
+						);
 						console.log(`Updated item: ${payload.sku}`);
 					} catch (error: any) {
 						console.error("Error updating item:", error.response?.data || error.message);

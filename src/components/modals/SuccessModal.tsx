@@ -1,6 +1,7 @@
 // SuccessModal.tsx
 import React from "react";
 import { CheckCircle2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface SuccessModalProps {
 	onClose: () => void;
@@ -8,6 +9,12 @@ interface SuccessModalProps {
 }
 
 const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, href }) => {
+	const router = useRouter();
+
+	const handleContinue = () => {
+		onClose();
+		router.push("/dashboard"); // Redirect to dashboard
+	};
 	return (
 		<div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center ">
 			<div className="bg-white p-8 rounded-lg shadow-lg h-[500px] w-[90%] md:w-[40%] flex justify-center items-center flex-col">
@@ -17,7 +24,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, href }) => {
 				<p className="text-center mt-2 text-md font-semibold">Your vendor portal will enabled, once you application is approved.</p>
 
 				<a
-					onClick={onClose}
+					onClick={handleContinue}
 					href={href}
 					className="relative px-10 py-3 overflow-hidden font-medium text-white bg-[#43828d] border border-gray-100 rounded-lg shadow-inner group mt-4 cursor-pointer"
 				>

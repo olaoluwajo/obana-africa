@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAccessToken } from "@/lib/zohoAuth";
+import { getAccessToken } from "@/helpers/zohoAuthToken";
 
 export async function GET() {
 	const accessToken = await getAccessToken();
@@ -11,7 +11,10 @@ export async function GET() {
 	};
 
 	try {
-		const res = await fetch(`https://www.zohoapis.com/inventory/v1/contacts?organization_id=${process.env.ZOHO_ORG_ID}`, options);
+		const res = await fetch(
+			`https://www.zohoapis.com/inventory/v1/contacts?organization_id=${process.env.ZOHO_ORG_ID}`,
+			options,
+		);
 
 		if (!res.ok) {
 			return NextResponse.json({ error: "Network response was not ok" }, { status: 500 });

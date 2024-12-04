@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Toaster } from "sonner";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
 	title: "Vendor.obana.africa",
@@ -15,8 +17,12 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-			<body className={`antialiased`}>{children}</body>
+		<html lang="en" suppressHydrationWarning={true}>
+			<body className={`antialiased`}>
+				<NextTopLoader showSpinner={false} />
+				<Toaster />
+				{children}
+			</body>
 		</html>
 	);
 }

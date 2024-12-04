@@ -8,19 +8,96 @@ html {
 	font-family: "Inter", sans-serif;
 	font-size: 14px;
 }
-h1{
- font-family: "Bricolage Grotesque", serif;
+h1 {
+	font-family: "Bricolage Grotesque", serif;
 }
 
 @layer base {
 	:root {
-		--primary: 212 56% 24%;
+		/* --primary: 212 56% 24%;
 		--primary-foreground: 212 53% 47%;
 		--background: 0 0% 100%;
-		--foreground: 0 0% 3.9%;
+		--foreground: 0 0% 3.9%; */
+
+		--background: 0 0% 100%;
+		--foreground: 197.14 38.58% 24.9%;
+
+		--muted: 210 40% 96.1%;
+		--muted-foreground: 215.4 16.3% 46.9%;
+
+		--popover: 0 0% 100%;
+		--popover-foreground: 222.2 84% 4.9%;
+
+		--card: 0 0% 100%;
+		--card-foreground: 222.2 84% 4.9%;
+
+		--border: 214.3 31.8% 91.4%;
+		--input: 214.3 31.8% 91.4%;
+
+		--primary: 197.14 38.58% 24.9%;
+		/* --primary: 222.2 47.4% 11.2%; */
+		--primary-foreground: 210 40% 98%;
+
+		--secondary: 210 40% 96.1%;
+		--secondary-foreground: 176.13 79.49% 92.35%;
+
+		--accent: 210 40% 96.1%;
+		--accent-foreground: 222.2 47.4% 11.2%;
+
+		--destructive: 0 84.2% 60.2%;
+		--destructive-foreground: 210 40% 98%;
+
+		--ring: 215 20.2% 65.1%;
+
+		--radius: 0.5rem;
+
+		--chart-1: 20 48% 72%;
+		--chart-2: 173 58% 39%;
+		--chart-3: 197 37% 24%;
+		--chart-4: 43 74% 66%;
+		--chart-5: 27 87% 67%;
+
+		--sidebar-background: 176.13 79.49% 92.35%;
+		--sidebar-foreground: 240 5.3% 26.1%;
+
+		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-primary-foreground: 0 0% 98%;
+		--sidebar-accent: 175.43 56.1% 67.84%;
+		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-border: 220 13% 91%;
+		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 	.dark {
 		--background: 0 0% 3.9%;
 		--foreground: 0 0% 98%;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply box-border bg-background text-foreground;
+	}
+}
+
+@layer utilities {
+	.min-h-screen {
+		min-height: 100vh; /* Fallback */
+		min-height: 100dvh;
+	}
+	.h-screen {
+		height: 100vh; /* Fallback */
+		height: 100dvh;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground;
 	}
 }
