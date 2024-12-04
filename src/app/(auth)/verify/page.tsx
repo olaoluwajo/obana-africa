@@ -6,10 +6,10 @@ import useAuthStore from "@/stores/authStore";
 import { useOtpStore } from "@/stores/useOtpStore";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import { toast } from "sonner";
 
-export default function VerifyPage() {
+function VerifyPageContent() {
 	const searchParams = useSearchParams();
 	const email = searchParams.get("email");
 	const { token, otp } = useOtpStore();
@@ -20,7 +20,6 @@ export default function VerifyPage() {
 
 	// console.log("Current token in store:", token);
 
-	// Submit handler for OTP verification
 	const onSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 
@@ -37,7 +36,6 @@ export default function VerifyPage() {
 
 		try {
 			// console.log("Sending data to the backend:", { email, otp: userOtp, token });
-			// Send OTP and token to the backend for verification
 			const response = await axios.post("/api/send-otp-email/verify-code", {
 				email,
 				otp: userOtp,
@@ -47,7 +45,7 @@ export default function VerifyPage() {
 			console.log(response.data);
 
 			if (response.data.success) {
-				  setAuthenticated(true);
+				setAuthenticated(true);
 				useOtpStore.getState().clearOtp();
 				useOtpStore.getState().clearToken();
 				router.push("/dashboard");
@@ -83,10 +81,21 @@ export default function VerifyPage() {
 				</Button>
 			</form>
 			<div className="flex justify-center">
-				<Button onClick={() => router.push("/")} className="w-full mx-auto text-white mt-8">
+				<Button
+					onClick={() => router.push("/sign-in")}
+					className="w-full mx-auto text-white mt-8">
 					Back to Login
 				</Button>
 			</div>
 		</div>
+	);
+}
+
+
+export default function VerifyPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<VerifyPageContent />
+		</Suspense>
 	);
 }

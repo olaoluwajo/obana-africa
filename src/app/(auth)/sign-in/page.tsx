@@ -1,8 +1,14 @@
-import React from 'react'
-import SignInViewPage from '../_components/sigin-view';
+"use client";
+
+import React, { Suspense } from "react";
+import SignInViewPage from "../_components/sigin-view";
 
 const SignInPage = () => {
-	return <SignInViewPage />;
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<SignInViewPage />
+		</Suspense>
+	);
 };
 
-export default SignInPage
+export default SignInPage;
