@@ -186,9 +186,9 @@ export const navItems: NavItem[] = [
     ]
   },
   {
-    title: 'Task Manager',
+    title: 'Contact Support',
     url: '/',
-    icon: 'kanban',
+    icon: 'phone',
     shortcut: ['k', 'k'],
     isActive: false,
     items: [] // No child items

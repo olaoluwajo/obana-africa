@@ -21,7 +21,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ onClose, href }) => {
 				<CheckCircle2 className="text-green-600 size-20 mx-auto" />
 				<h2 className="text-4xl font-bold text-center mt-4">Success!</h2>
 				<p className="text-center mt-2 text-xl font-semibold">You have successfully registered as a vendor</p>
-				<p className="text-center mt-2 text-md font-semibold">Your vendor portal will enabled, once you application is approved.</p>
+				<p className="text-center mt-2 text-md font-semibold">Your vendor portal will enabled soon, Please wait OR Continue</p>
 
 				<a
 					onClick={handleContinue}

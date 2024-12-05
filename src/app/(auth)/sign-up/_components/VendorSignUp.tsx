@@ -476,12 +476,7 @@ const VendorSignUp = () => {
 						</div>
 					</form>
 
-					{submitted && (
-						<SuccessModal
-							onClose={() => setSubmitted(false)}
-							href="https://inventory.zohosecure.com/portal/obanaafrica/signup#/send-invite"
-						/>
-					)}
+					{submitted && <SuccessModal onClose={() => setSubmitted(false)} href="/dashboard" />}
 					{notSubmitted && <ErrorModal onClose={() => setNotSubmitted(false)} />}
 				</div>
 			</div>
