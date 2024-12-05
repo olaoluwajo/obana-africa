@@ -41,17 +41,15 @@ export const company = {
 
 type IconType = keyof typeof Icons;
 
-
-
 export default function AppSidebar() {
 	// const { data: session } = useSession();
-	  const session = {
-			user: {
-				name: "John Doe",
-				email: "john@example.com",
-				image: "/path/to/profile-image.jpg",
-			},
-		};
+	const session = {
+		user: {
+			name: "John Doe",
+			email: "john@example.com",
+			image: "/path/to/profile-image.jpg",
+		},
+	};
 	const pathname = usePathname();
 
 	return (
@@ -72,7 +70,8 @@ export default function AppSidebar() {
              */}
 
 						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<img src="/logo.webp" alt="logo" className="w-[170px]" />
+						<h1 className="text-white text-[28px]">Obana.africa</h1>
+						{/* <img src="/logo.webp" alt="logo" className="w-[170px]" /> */}
 					</div>
 					{/* <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold">{company.name}</span>
@@ -143,8 +142,8 @@ export default function AppSidebar() {
 							<DropdownMenuTrigger asChild>
 								<SidebarMenuButton
 									size="lg"
-									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-									<Avatar className="h-8 w-8 rounded-lg">
+									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ">
+									<Avatar className="h-8 w-8 rounded-lg text-sidebar-accent-foreground">
 										<AvatarImage
 											src={session?.user?.image || ""}
 											alt={session?.user?.name || ""}

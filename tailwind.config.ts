@@ -42,6 +42,10 @@ const config: Config = {
 					DEFAULT: "hsl(var(--card))",
 					foreground: "hsl(var(--card-foreground))",
 				},
+				dashboard: {
+					DEFAULT: "hsl(var(--dashboard-sidebar-bg))",
+					foreground: "hsl(var(--dashboard-sidebar-text))",
+				},
 				sidebar: {
 					DEFAULT: "hsl(var(--sidebar-background))",
 					foreground: "hsl(var(--sidebar-foreground))",

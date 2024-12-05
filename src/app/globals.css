@@ -57,15 +57,25 @@ h1 {
 		--chart-4: 43 74% 66%;
 		--chart-5: 27 87% 67%;
 
-		--sidebar-background: 176.13 79.49% 92.35%;
-		/* --sidebar-background: 211 56% 24%; */
-		--sidebar-foreground: 240 5.3% 26.1%;
+		--dashboard-sidebar-bg: 210.88, 55.74%, 23.92%;
+		--dashboard-sidebar-text: 176 78.95% 92.55%;
 
-		--sidebar-primary: 240 5.9% 10%;
+		--sidebar-background: 210.88, 55.74%, 23.92%;
+		/* --sidebar-background: 211 56% 24%; */
+		--sidebar-foreground: 176 78.95% 92.55%;
+		/* bg-primary text-dashboard-foreground */
+
+		--sidebar-primary: 240 5.3% 26.1%;
+		/* --sidebar-primary: 240 5.9% 10%; */
+		/* --sidebar-primary-foreground: 240 5.3% 26.1%; */
 		--sidebar-primary-foreground: 0 0% 98%;
-		--sidebar-accent: 175.43 56.1% 67.84%;
-		--sidebar-accent-foreground: 240 5.9% 10%;
+		--sidebar-accent: 176 78.95% 92.55%;
+		/* --sidebar-accent: 175.43 56.1% 67.84%; */
+		--sidebar-accent-foreground: 240 5.3% 26.1%;
+		/* --sidebar-accent-foreground: 240 5.9% 10%; */
+		/* --sidebar-border: 240 5.3% 26.1%; */
 		--sidebar-border: 220 13% 91%;
+		/* --sidebar-ring: 240 5.3% 26.1%; */
 		--sidebar-ring: 217.2 91.2% 59.8%;
 	}
 	.dark {

@@ -1,22 +1,27 @@
-'use client'
+"use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import useAuthStore from "@/stores/authStore";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 	const router = useRouter();
+	const pathname = usePathname();
 	const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
 
 	useEffect(() => {
 		if (isAuthenticated) {
 			router.push("/dashboard");
-		} else {
-			router.push("/");
-		}
-	}, [isAuthenticated, router]);
 
-	// if (!isAuthenticated) return null;
+			if (pathname === "/") {
+				router.push("/dashboard");
+			}
+		} else {
+			if (pathname !== "/") {
+				router.push("/");
+			}
+		}
+	}, [isAuthenticated, router, pathname]);
 
 	return <>{children}</>;
 };
