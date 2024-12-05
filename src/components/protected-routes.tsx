@@ -17,11 +17,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 				router.push("/dashboard");
 			}
 		} else {
+			router.push("/");
 			if (pathname !== "/") {
 				router.push("/");
 			}
 		}
-	}, [isAuthenticated, router, pathname]);
+	}, [isAuthenticated, router]);
 
 	return <>{children}</>;
 };
