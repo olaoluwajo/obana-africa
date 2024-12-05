@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { useOtpStore } from "@/stores/useOtpStore";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useOtpStore } from "@/stores/useOtpStore";
+// import checkIfVendorExists from "@/helpers/isVendorExistHelper";
 // import GithubSignInButton from './github-auth-button';
 
 const formSchema = z.object({
@@ -26,67 +27,49 @@ const formSchema = z.object({
 
 type UserFormValue = z.infer<typeof formSchema>;
 
-async function requestOtp(email: string) {
-	try {
-		const response = await fetch("/api/send-otp-email", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email }),
-		});
-
-		const data = await response.json();
-
-		// console.log("DATA", data);
-
-		if (data.success) {
-			localStorage.setItem("otpToken", data.token);
-			useOtpStore.getState().setOtp(data.otp);
-			useOtpStore.getState().setToken(data.token);
-			console.log("OTP sent successfully");
-		} else {
-			console.log("Error sending OTP:", data.message);
-		}
-	} catch (error) {
-		console.error("Error sending OTP:", error);
-	}
-}
-
 export default function UserAuthForm() {
 	const searchParams = useSearchParams();
 	const callbackUrl = searchParams.get("callbackUrl");
 	const router = useRouter();
 	const [loading, startTransition] = useTransition();
-	const defaultValues = {
-		email: "demo@gmail.com",
-	};
+	const [vendorExistsError, setVendorExistsError] = useState("");
+	// const defaultValues = {
+	// 	email: "demo@gmail.com",
+	// };
 	const form = useForm<UserFormValue>({
 		resolver: zodResolver(formSchema),
-		defaultValues,
+		// defaultValues,
 	});
 
 	const onSubmit = async (data: UserFormValue) => {
 		console.log("DATA", data);
+		setVendorExistsError("");
 		startTransition(async () => {
 			try {
-				const response = await axios.post("/api/send-otp-email", {
-					email: data.email,
-				});
+				const response = await axios.get(`/api/check-vendor-exists?email=${data.email}`);
 
-				// console.log("RESPONSE", response);
+				if (response.data.vendorExists) {
+					const otpResponse = await axios.post("/api/send-otp-email", {
+						email: data.email,
+					});
 
-				const result = response.data;
+					// console.log("RESPONSE", response);
 
-				console.log("RESULT", result);
+					const result = otpResponse.data;
+					console.log("RESULT", result);
 
-				if (result.success) {
 					localStorage.setItem("otpToken", result.token);
-					useOtpStore.getState().setOtp(result.otp);
-					useOtpStore.getState().setToken(result.token);
-					router.push(`/verify?email=${data.email}`);
-					toast.success("A sign-in OTP has been sent to your email!");
-					// await requestOtp(data.email);
+					if (result.success) {
+						useOtpStore.getState().setOtp(result.otp);
+						useOtpStore.getState().setToken(result.token);
+						router.push(`/verify?email=${data.email}`);
+						toast.success("A sign-in OTP has been sent to your email!");
+						// await requestOtp(data.email);
+					} else {
+						toast.error("Failed to send the sign-in link. Please try again later.");
+					}
 				} else {
-					toast.error("Failed to send the sign-in link. Please try again later.");
+					setVendorExistsError("You are not a vendor. Please register.");
 				}
 			} catch (error) {
 				toast.error("Error sending sign-in email. Please try again.");
@@ -116,23 +99,29 @@ export default function UserAuthForm() {
 							</FormItem>
 						)}
 					/>
-
 					<Button disabled={loading} className="ml-auto w-full text-white" type="submit">
-						Continue With Email
+						{loading ? "Please wait..." : "Continue With Email"}
 					</Button>
+					{loading && (
+						<p className="text-center text-sm text-gray-500">
+							Please sit back, this may take a while confirming your email...
+						</p>
+					)}
 				</form>
 			</Form>
+			{vendorExistsError && (
+				<div className="text-red-500 mt-4 text-sm text-center">
+					<p>{vendorExistsError}</p>
+					<a href="/sign-up" className="text-blue-500">
+						Click here to <span className="font-bold">register</span> as a vendor.
+					</a>
+				</div>
+			)}
 			<div className="relative">
 				<div className="absolute inset-0 flex items-center">
 					<span className="w-full border-t" />
 				</div>
-				{/* <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with
-          </span>
-        </div> */}
 			</div>
-			{/* <GithubSignInButton /> */}
 		</>
 	);
 }
