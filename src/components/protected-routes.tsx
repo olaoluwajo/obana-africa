@@ -12,11 +12,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 		if (isAuthenticated) {
 			router.push("/dashboard");
 		} else {
-			router.push("/sign-in");
+			router.push("/");
 		}
 	}, [isAuthenticated, router]);
 
-	if (!isAuthenticated) return null;
+	// if (!isAuthenticated) return null;
 
 	return <>{children}</>;
 };
