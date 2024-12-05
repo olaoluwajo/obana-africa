@@ -3,7 +3,7 @@ import React from "react";
 
 const OnboardingPage = () => {
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-between py-8 bg-gradient-to-b from-slate-50 to-blue-500 ">
+		<div className="min-h-screen flex flex-col items-center justify-between py-8 bg-gradient-to-b from-[#fff] to-[#7fdbd4]  ">
 			<div className="flex flex-col justify-center items-center w-full h-[80vh]">
 				<div className="flex flex-col justify-center items-center w-full">
 					<img src="/logo.png" alt="" className=" mb-2 md:w-[20%] w-[50%]" />
@@ -14,13 +14,13 @@ const OnboardingPage = () => {
 				</div>
 				<div className="flex mt-8">
 					<Link href="/sign-in">
-						<button className="bg-indigo-900 hover:bg-indigo-800 text-white py-12 px-16  text-xl font-semibold">
+						<button className="bg-[#1b3b5f] hover:bg-[#3874b8] text-white py-12 px-16  text-xl font-semibold">
 							LOGIN
 						</button>
 					</Link>
 
 					<Link href="/sign-up">
-						<button className="bg-blue-600 hover:bg-blue-500 text-white py-12 px-16  text-xl font-semibold">
+						<button className="bg-[#2b6e64] hover:bg-[#3874b8]  text-white py-12 px-16  text-xl font-semibold">
 							REGISTER
 						</button>
 					</Link>

@@ -28,7 +28,7 @@ type AuthState = {
 };
 
 // 8 hours in milliseconds
-const TIMEOUT_LIMIT = 8 * 60 * 60 * 1000;
+const TIMEOUT_LIMIT = 3 * 60 * 60 * 1000;
 
 const useAuthStore = create<AuthState>((set) => ({
 	isAuthenticated:
