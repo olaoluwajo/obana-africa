@@ -41,5 +41,7 @@ export async function deleteOtp(email: string) {
 	const { db } = await connectToDatabase();
 
 	const collection = db.collection("otps");
+	console.log(`Deleting OTP for email: ${email}`);
+	// db.collection("otps").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 	await collection.deleteOne({ email });
 }

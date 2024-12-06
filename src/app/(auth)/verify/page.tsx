@@ -123,7 +123,7 @@ function VerifyPageContent() {
 	};
 
 	return (
-		<div className="h-screen flex  items-center justify-center">
+		<div className="h-screen flex  items-center justify-center bg-[#dcfbf9]">
 			<div className="max-w-md mx-auto mt-8 px-12 py-8 bg-white shadow-lg border border-slate-300 rounded-lg ">
 				<div className="flex flex-col items-center my-4">
 					<img src="/logo.png" alt="" className="md:w-[50%] w-[50%] mb-2" />
@@ -173,10 +173,11 @@ function VerifyPageContent() {
 						)}
 					</p>
 				</div>
-				<div className="flex justify-center mt-1">
+				<div className="flex justify-center ">
 					<Button
+						variant="link"
 						onClick={() => router.push("/sign-in")}
-						className="w-full mx-auto text-white mt-8">
+						className="w-full mx-auto text-blue-500">
 						Back to Login
 					</Button>
 				</div>
