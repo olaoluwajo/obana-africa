@@ -189,12 +189,15 @@ export type Product = {
   photo_url: string;
   name: string;
   sku: string;
+  unit: string;
   status: string;
   description: string;
   created_at: string;
   price: number;
   id: number;
   category: string;
+  subCategory?: string;
+  subSubCategory?: string;
   updated_at: string;
 };
 
@@ -222,6 +225,7 @@ export const fakeProducts = {
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription().slice(0, 30) + '...',
         sku: faker.string.uuid().slice(0, 10),
+        unit: faker.helpers.arrayElement(['kg', 'pcs', 'litre', 'pack']),
         status: faker.helpers.arrayElement(['active', 'inactive']),
         created_at: faker.date
           .between({ from: '2022-01-01', to: '2023-12-31' })

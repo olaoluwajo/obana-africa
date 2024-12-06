@@ -99,7 +99,7 @@ export default function UserAuthForm() {
 							</FormItem>
 						)}
 					/>
-					<Button disabled={loading} className="ml-auto w-full text-white" type="submit">
+					<Button disabled={loading} className="ml-auto w-full text-white" type="button">
 						{loading ? "Please wait..." : "Continue With Email"}
 					</Button>
 					{loading && (
