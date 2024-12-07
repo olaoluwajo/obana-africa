@@ -1,4 +1,5 @@
 "use client";
+import * as React from "react";
 
 import { FileUploader } from "@/components/file-uploader";
 import { Button } from "@/components/ui/button";
@@ -26,9 +27,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-// Import Radix UI Tooltip
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { ChevronDownIcon, MessageCircleQuestion } from "lucide-react";
+import { MessageCircleQuestion } from "lucide-react";
+import { brandOptions, manufacturerOptions, unitOptions } from "@/constants/optionsData";
+import TextInput from "./inputs/text-input";
+import SelectInput from "./inputs/select-input";
+import CategoryInput from "./inputs/category-input";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -36,14 +40,18 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 const formSchema = z.object({
 	image: z
 		.any()
+		.optional()
 		.refine((files) => files?.length == 1, "Image is required.")
+		.optional()
 		.refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+		.optional()
 		.refine(
 			(files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
 			".jpg, .jpeg, .png and .webp files are accepted.",
-		),
-	name: z.string().min(10, {
-		message: "Product name must be at least 10 characters.",
+		)
+		.optional(),
+	name: z.string().min(5, {
+		message: "Product name must be at least 5 characters.",
 	}),
 	sku: z.string().min(5, {
 		message: "SKU must be at least 5 characters.",
@@ -51,13 +59,39 @@ const formSchema = z.object({
 	unit: z.string().min(1, {
 		message: "Unit is required.",
 	}),
-	category: z.string(),
-	subCategory: z.string(),
-	subSubCategory: z.string(),
-	price: z.number(),
-	description: z.string().min(5, {
-		message: "Description must be at least 5 characters.",
+	sellingPrice: z.string().min(1, {
+		message: "Selling price is required.",
 	}),
+	account: z.string().min(1, {
+		message: "Account is required.",
+	}),
+	salesTaxRule: z.string().optional(),
+	category: z.string({
+		message: "Please select a Category.",
+	}),
+	subCategory: z.string({
+		message: "Please select a Sub Category.",
+	}),
+	subSubCategory: z.string({
+		message: "Please select a Sub Sub Category.",
+	}),
+	unitPrice: z.any().optional(),
+	description: z.string().optional(),
+	manufacturer: z.string().optional(),
+	brand: z.string().optional(),
+	availableColors: z.string().optional(),
+	tags: z.string().optional(),
+	weight: z
+		.object({
+			value: z.any().optional(),
+			unit: z.string().optional(),
+		})
+		.optional(),
+	upc: z.any().optional(),
+	mpn: z.any().optional(),
+	ean: z.any().optional(),
+	isbn: z.any().optional(),
+	fob: z.any().optional(),
 });
 
 export default function ProductForm({
@@ -74,8 +108,24 @@ export default function ProductForm({
 		category: initialData?.category || "",
 		subCategory: initialData?.subCategory || "",
 		subSubCategory: initialData?.subSubCategory || "",
-		price: initialData?.price || 0,
+		sellingPrice: initialData?.sellingPrice || "",
+		account: initialData?.account || "Sales",
+		salesTaxRule: initialData?.salesTaxRule || "",
 		description: initialData?.description || "",
+		unitPrice: initialData?.unitPrice || "",
+		availableColors: initialData?.availableColors || "",
+		tags: initialData?.tags || "",
+		weight: {
+			value: initialData?.weight || "",
+			unit: "kg",
+		},
+		upc: initialData?.upc || "",
+		mpn: initialData?.mpn || "",
+		ean: initialData?.ean || "",
+		isbn: initialData?.isbn || "",
+		fob: initialData?.fob || "",
+		manufacturer: initialData?.manufacturer || "",
+		brand: initialData?.brand || "",
 	};
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -92,21 +142,12 @@ export default function ProductForm({
 	);
 	const [availableSubCategories, setAvailableSubCategories] = useState<string[]>([]);
 	const [availableSubSubCategories, setAvailableSubSubCategories] = useState<string[]>([]);
+	const [selectedManufacturer, setSelectedManufacturer] = useState(
+		defaultValues.manufacturer || "",
+	);
+	const [selectedBrand, setSelectedBrand] = useState(defaultValues.brand || "");
+	const [loading, setLoading] = useState(false);
 
-	// Mock data for categories, subcategories, and sub-subcategories
-	const unitOptions = [
-		"pcs",
-		"kg",
-		"litre",
-		"metre",
-		"box",
-		"pack",
-		"piece",
-		"set",
-		"pair",
-		"cm",
-		"dozen",
-	];
 	const categoryOptions = [
 		{ value: "beauty", label: "Beauty Products", subCategories: ["Beauty"] },
 		{ value: "fashion", label: "Fashion", subCategories: ["Men", "Women"] },
@@ -138,15 +179,14 @@ export default function ProductForm({
 		],
 		Women: ["Dresses", "Shirts", "Skirts", "Assesories"],
 	};
-
 	// Handle category selection change
 	const handleCategoryChange = (category: any) => {
 		setSelectedCategory(category);
 		setAvailableSubCategories(
 			subCategoryOptions[category as keyof typeof subCategoryOptions] || [],
 		);
-		setSelectedSubCategory(""); // Reset subcategory when category changes
-		setAvailableSubSubCategories([]); // Reset sub-subcategory
+		setSelectedSubCategory("");
+		setAvailableSubSubCategories([]);
 	};
 
 	// Handle subcategory selection change
@@ -165,6 +205,16 @@ export default function ProductForm({
 	// Handle unit selection change
 	const handleUnitChange = (unit: any) => {
 		setSelectedUnit(unit);
+	};
+
+	// Handle manufacturer selection change
+	const handleManufacturerChange = (manufacturer: any) => {
+		setSelectedManufacturer(manufacturer);
+	};
+
+	// Handle brand selection change
+	const handleBrandChange = (brand: any) => {
+		setSelectedBrand(brand);
 	};
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
@@ -190,7 +240,7 @@ export default function ProductForm({
 											<FileUploader
 												value={field.value}
 												onValueChange={field.onChange}
-												maxFiles={4}
+												maxFiles={8}
 												maxSize={4 * 1024 * 1024}
 												// disabled={loading}
 												// progresses={progresses}
@@ -207,48 +257,25 @@ export default function ProductForm({
 						/>
 
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-							<FormField
+							<TextInput
 								control={form.control}
 								name="name"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="text-red-500">Product Name *</FormLabel>
-										<FormControl>
-											<Input placeholder="Enter product name" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
+								label="Product Name *"
+								placeholder="Enter Product name"
+								type="text"
+								required={true}
 							/>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<FormField
+								<TextInput
 									control={form.control}
 									name="sku"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="text-red-500">SKU *</FormLabel>
-											<FormControl>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<MessageCircleQuestion
-															size={12}
-															className="text-black/40 mr-2"
-														/>
-													</Tooltip.Trigger>
-													<Tooltip.Content
-														side="top"
-														sideOffset={10}
-														className="bg-black/80 text-white px-2 py-1 rounded-md text-xs">
-														The Stock Keeping Unit of the item
-														<Tooltip.Arrow className="fill-black/80" />
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</FormControl>
-											<Input type="text" placeholder="Enter SKU" {...field} />
-											<FormMessage />
-										</FormItem>
-									)}
+									label="SKU *"
+									placeholder="Enter SKU"
+									type="text"
+									required={true}
+									tooltipContent="The Stock Keeping Unit of the item"
 								/>
+
 								<FormField
 									control={form.control}
 									name="unit"
@@ -266,7 +293,7 @@ export default function ProductForm({
 													<Tooltip.Content
 														side="top"
 														sideOffset={10}
-														className="bg-black/80 text-white px-2 py-1 rounded-md text-xs">
+														className="bg-black/80 text-white px-2 py-1 rounded-md text-xs max-w-[200px]">
 														The item will be measured in terms of this unit (e.g.: kg,
 														dozen)
 														<Tooltip.Arrow className="fill-black/80" />
@@ -279,8 +306,15 @@ export default function ProductForm({
 													handleUnitChange(value);
 													field.onChange(value);
 												}}>
-												<SelectTrigger>
-													<SelectValue placeholder="Select Unit" />
+												<SelectTrigger className="relative ">
+													<Input
+														placeholder="Select a Unit"
+														className={`${
+															!field.value
+																? "absolute"
+																: "hidden"
+														} p-2 border-none bg-transparent z-10`}
+													/>
 												</SelectTrigger>
 
 												<SelectContent>
@@ -295,53 +329,23 @@ export default function ProductForm({
 										</FormItem>
 									)}
 								/>
-								{/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<FormField
-									control={form.control}
-									name="price"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Price (NGN)</FormLabel>
-											<FormControl>
-												<Input
-													type="number"
-													step="0.01"
-													placeholder="Enter price"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/> */}
 							</div>
+
 							<FormField
 								control={form.control}
 								name="category"
 								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="text-red-500">Category *</FormLabel>
-										<Select
-											value={selectedCategory}
-											onValueChange={(value) => {
-												handleCategoryChange(value);
-												field.onChange(value);
-											}}>
-											<FormControl>
-												<SelectTrigger>
-													<SelectValue placeholder="Select category" />
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent>
-												{categoryOptions.map((option) => (
-													<SelectItem key={option.value} value={option.value}>
-														{option.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										<FormMessage />
-									</FormItem>
+									<CategoryInput
+										control={form.control}
+										name="category"
+										label="Category"
+										options={categoryOptions}
+										placeholder="Select category"
+										onChange={(value) => {
+											handleCategoryChange(value);
+											field.onChange(value);
+										}}
+									/>
 								)}
 							/>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -359,8 +363,13 @@ export default function ProductForm({
 												}}
 												disabled={!selectedCategory}>
 												<FormControl>
-													<SelectTrigger>
-														<SelectValue placeholder="Select subcategory" />
+													<SelectTrigger className="relative ">
+														<Input
+															placeholder="Select subcategory"
+															className={`${
+																!field.value ? "absolute " : "hidden"
+															} p-2 border-none bg-transparent z-10`}
+														/>
 													</SelectTrigger>
 												</FormControl>
 												<SelectContent>
@@ -409,208 +418,205 @@ export default function ProductForm({
 						</div>
 						<Separator />
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-							<FormField
-								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="text-red-500">Product Name *</FormLabel>
-										<FormControl>
-											<Input placeholder="Enter product name" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<FormField
+								<TextInput
 									control={form.control}
-									name="sku"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="text-red-500">SKU *</FormLabel>
-											<FormControl>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<MessageCircleQuestion
-															size={12}
-															className="text-black/40 mr-2"
-														/>
-													</Tooltip.Trigger>
-													<Tooltip.Content
-														side="top"
-														sideOffset={10}
-														className="bg-black/80 text-white px-2 py-1 rounded-md text-xs">
-														The Stock Keeping Unit of the item
-														<Tooltip.Arrow className="fill-black/80" />
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</FormControl>
-											<Input type="text" placeholder="Enter SKU" {...field} />
-											<FormMessage />
-										</FormItem>
-									)}
+									name="tags"
+									label="Tags"
+									placeholder="Enter tags"
+									type="text"
 								/>
-								<FormField
+								<TextInput
 									control={form.control}
-									name="unit"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="text-red-500">Unit *</FormLabel>
-											<FormControl>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<MessageCircleQuestion
-															size={12}
-															className="text-black/40 mr-2"
-														/>
-													</Tooltip.Trigger>
-													<Tooltip.Content
-														side="top"
-														sideOffset={10}
-														className="bg-black/80 text-white px-2 py-1 rounded-md text-xs">
-														The item will be measured in terms of this unit (e.g.: kg,
-														dozen)
-														<Tooltip.Arrow className="fill-black/80" />
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</FormControl>
-											<Select
-												value={selectedUnit}
-												onValueChange={(value) => {
-													handleUnitChange(value);
-													field.onChange(value);
-												}}>
-												<SelectTrigger>
-													<SelectValue placeholder="Select Unit" />
-												</SelectTrigger>
-
-												<SelectContent>
-													{unitOptions.map((unit) => (
-														<SelectItem key={unit} value={unit}>
-															{unit}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											<FormMessage />
-										</FormItem>
-									)}
+									name="colors"
+									label="Available Colors"
+									placeholder="Enter colors"
+									type="text"
 								/>
-								{/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<FormField
-									control={form.control}
-									name="price"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Price (NGN)</FormLabel>
-											<FormControl>
-												<Input
-													type="number"
-													step="0.01"
-													placeholder="Enter price"
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/> */}
 							</div>
-							<FormField
-								control={form.control}
-								name="category"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel className="text-red-500">Category *</FormLabel>
-										<Select
-											value={selectedCategory}
-											onValueChange={(value) => {
-												handleCategoryChange(value);
-												field.onChange(value);
-											}}>
-											<FormControl>
-												<SelectTrigger>
-													<SelectValue placeholder="Select category" />
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent>
-												{categoryOptions.map((option) => (
-													<SelectItem key={option.value} value={option.value}>
-														{option.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<SelectInput
+									control={form.control}
+									name="manufacturer"
+									label="Manufacturer"
+									options={manufacturerOptions}
+									placeholder="Select Manufacturer..."
+								/>
+								<SelectInput
+									control={form.control}
+									name="brand"
+									label="Brand"
+									options={brandOptions}
+									placeholder="Select Brand..."
+								/>
+							</div>
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<TextInput
+									control={form.control}
+									name="countryOfManufacture"
+									label="Country of Manufacture"
+									placeholder="Enter country of manufacture"
+									type="text"
+								/>
+								<TextInput
+									control={form.control}
+									name="sizesRun"
+									label="Sizes Run"
+									placeholder="Enter sizes run"
+									type="text"
+								/>
+							</div>
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<TextInput
+									control={form.control}
+									name="fabricType"
+									label="Fabric Type"
+									placeholder="Enter fabric type"
+									type="text"
+								/>
+								<TextInput
+									control={form.control}
+									name="sizeType"
+									label="Size Type"
+									placeholder="Enter size type"
+									type="text"
+								/>
+							</div>
+
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<TextInput
+									control={form.control}
+									name="unitPrice"
+									label="Price per Unit"
+									placeholder="Enter price..."
+									type="number"
+								/>
 								<FormField
 									control={form.control}
-									name="subCategory"
+									name="weight"
 									render={({ field }) => (
 										<FormItem>
-											<FormLabel>Sub Category</FormLabel>
-											<Select
-												value={selectedSubCategory}
-												onValueChange={(value) => {
-													handleSubCategoryChange(value);
-													field.onChange(value);
-												}}
-												disabled={!selectedCategory}>
-												<FormControl>
-													<SelectTrigger>
-														<SelectValue placeholder="Select subcategory" />
-													</SelectTrigger>
-												</FormControl>
-												<SelectContent>
-													{availableSubCategories.map((subCategory) => (
-														<SelectItem key={subCategory} value={subCategory}>
-															{subCategory}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
+											<FormLabel>Weight</FormLabel>
+
+											{/* Wrapper to contain both input and select */}
+											<FormControl className="">
+												<div className="relative">
+													<Input
+														type="number"
+														placeholder="Enter weight"
+														// value={field.value.value}
+														onChange={(e) =>
+															field.onChange({
+																...field.value,
+																value: Number(e.target.value),
+															})
+														}
+														className="w-full pr-16"
+													/>
+
+													{/* Dropdown for units (kg, g, lb, oz) */}
+													<div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+														<Select
+															onValueChange={(value) => {
+																field.onChange({ ...field.value, unit: value });
+															}}>
+															<SelectTrigger className="border-none bg-slate-200">
+																<SelectValue placeholder="Unit" />
+															</SelectTrigger>
+															<SelectContent>
+																<SelectItem value="kg">kg</SelectItem>
+																<SelectItem value="g">g</SelectItem>
+																<SelectItem value="lb">lb</SelectItem>
+																<SelectItem value="oz">oz</SelectItem>
+															</SelectContent>
+														</Select>
+													</div>
+												</div>
+											</FormControl>
+
 											<FormMessage />
 										</FormItem>
 									)}
 								/>
-								<FormField
+							</div>
+
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<TextInput
 									control={form.control}
-									name="subSubCategory"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel>Sub Sub-Category</FormLabel>
-											<Select
-												value={selectedSubSubCategory}
-												onValueChange={(value) => {
-													handleSubSubCategoryChange(value);
-													field.onChange(value);
-												}}
-												disabled={!selectedSubCategory}>
-												<FormControl>
-													<SelectTrigger>
-														<SelectValue placeholder="Select Sub Sub-Category" />
-													</SelectTrigger>
-												</FormControl>
-												<SelectContent>
-													{availableSubSubCategories.map((subSubCategory) => (
-														<SelectItem key={subSubCategory} value={subSubCategory}>
-															{subSubCategory}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											<FormMessage />
-										</FormItem>
-									)}
+									name="isbn"
+									label="ISBN"
+									placeholder="Enter ISBN"
+									type="number"
+									tooltipContent="Thirteen digit unique commercial book identifier (International Standard Book Number)"
+								/>
+								<TextInput
+									control={form.control}
+									name="upc"
+									label="UPC"
+									placeholder="Enter UPC"
+									type="number"
+									tooltipContent="Twelve digit unique number associated with the bar code(Universal Product Code)"
+								/>
+							</div>
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+								<TextInput
+									control={form.control}
+									name="mpn"
+									label="MPN"
+									placeholder="Enter MPN"
+									type="number"
+									tooltipContent="	Manufacturing Part Number unambiguously identifies a part	design"
+								/>
+								<TextInput
+									control={form.control}
+									name="ean"
+									label="EAN"
+									placeholder="Enter EAN"
+									type="number"
+									tooltipContent="	Thirteen digit unique number (International Article Number)"
+								/>
+								<TextInput
+									control={form.control}
+									name="fob"
+									label="FOB"
+									placeholder="Enter FOB"
+									type="number"
+									tooltipContent="Free on Board"
 								/>
 							</div>
 						</div>
 
 						<Separator />
+						<h1 className="text-2xl font-bold">Sales Information</h1>
+						<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+							<TextInput
+								control={form.control}
+								name="sellingPrice"
+								label="Selling Price *"
+								placeholder="Enter selling price"
+								type="number"
+								required={true}
+								tooltipContent="The rate at which you're going to sell this item"
+							/>
+							<TextInput
+								control={form.control}
+								name="account"
+								label="Account *"
+								placeholder="Enter account"
+								type="text"
+								required={true}
+								disabled={true}
+								tooltipContent="All sales transactions for this item will be tracked under this account"
+							/>
+							<TextInput
+								control={form.control}
+								name="salesTaxRule"
+								label="Sales Tax Rule "
+								placeholder="Select sales tax rule"
+								type="text"
+								tooltipContent="The tax rates will be automatically applied to transactions based on your default sales tax rule. If you want to apply a different tax rate for this item, select a sales tax rule."
+							/>
+						</div>
 						<FormField
 							control={form.control}
 							name="description"
@@ -628,7 +634,9 @@ export default function ProductForm({
 								</FormItem>
 							)}
 						/>
-						<Button type="submit">Add Product</Button>
+						<Button disabled={loading} type="submit">
+							{loading ? "Adding Product..." : "Add Product"}
+						</Button>
 					</form>
 				</Form>
 			</CardContent>
