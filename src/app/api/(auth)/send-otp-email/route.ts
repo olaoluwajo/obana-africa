@@ -8,9 +8,10 @@ function generateOtp(): string {
 	return otp.toString();
 }
 
-function generateJwtToken(email: string, otp: string): string {
+function generateJwtToken(email: string, otp: string, role: string): string {
 	// Use JWT to generate a token with expiration (e.g., 5 minutes)
 	const payload = {
+		role,
 		email,
 		otp,
 	};
@@ -26,12 +27,14 @@ export async function POST(req: Request) {
 			return new Response(JSON.stringify({ error: "Email is required" }), { status: 400 });
 		}
 
+		 let role = "vendor";
+
 		// Generate OTP
 		const otp = generateOtp();
 		// console.log("OTP", otp);
 
 		// Generate JWT token with OTP and expiration
-		const token = generateJwtToken(email, otp);
+	 const token = generateJwtToken(email, otp, role);
 		// console.log("JWT Token", token);
 
 		// Store OTP in MongoDB
@@ -60,7 +63,7 @@ export async function POST(req: Request) {
 
 		if (response.status === 200) {
 			return new Response(
-				JSON.stringify({ success: true, token, otp, message: "OTP email sent successfully" }),
+				JSON.stringify({ success: true, token, role, otp, message: "OTP email sent successfully" }),
 				{ status: 200 },
 			);
 		} else {

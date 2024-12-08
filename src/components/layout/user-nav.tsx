@@ -14,6 +14,7 @@ import {
 // import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
+import Cookies from "js-cookie";
 
 export function UserNav() {
 	const session = {
@@ -30,11 +31,12 @@ export function UserNav() {
 
 	// Logout handler
 	const handleLogout = () => {
-		setAuthenticated(false);
-
+	 useAuthStore.getState().setAuthenticated(false);
 		localStorage.removeItem("otpToken");
-
-		router.push("/sign-in");
+		localStorage.removeItem("role");
+		Cookies.remove("otpToken");
+		Cookies.remove("role");
+		router.push("/auth/vendor/sign-in");
 	};
 
 	if (session) {

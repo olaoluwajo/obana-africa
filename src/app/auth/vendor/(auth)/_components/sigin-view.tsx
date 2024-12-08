@@ -33,7 +33,7 @@ export default function SignInViewPage() {
 					<UserAuthForm />
 					<p className="px-8 text-center text-sm text-muted-foreground">
 						Dont have an account?{" "}
-						<Link href="/sign-up" className="font-bold">
+						<Link href="/auth/vendor/sign-up" className="font-bold">
 							Sign up
 						</Link>
 					</p>

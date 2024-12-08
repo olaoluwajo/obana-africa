@@ -124,73 +124,71 @@ export type Product = {
 };
 
 export const navItems: NavItem[] = [
-  {
-    title: 'Dashboard',
-    url: '/dashboard/overview',
-    icon: 'dashboard',
-    isActive: false,
-    shortcut: ['d', 'd'],
-    items: [] // Empty array as there are no child items for Dashboard
-  },
-  // {
-  //   title: 'Employee',
-  //   url: '/dashboard/employee',
-  //   icon: 'user',
-  //   shortcut: ['e', 'e'],
-  //   isActive: false,
-  //   items: [] // No child items
-  // },
-  {
-    title: 'Product',
-    url: '/dashboard/product',
-    icon: 'product',
-    shortcut: ['p', 'p'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
-    title: 'Orders',
-    url: '/dashboard/orders',
-    icon: 'order',
-    shortcut: ['o', 'o'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
-    title: 'Invoices',
-    url: '/dashboard/invoice',
-    icon: 'invoice',
-    shortcut: ['o', 'o'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
-    title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
-    icon: 'billing',
-    isActive: true,
-
-    items: [
-      {
-        title: 'Profile',
-        url: '/dashboard/profile',
-        icon: 'userPen',
-        shortcut: ['m', 'm']
-      },
-      {
-        title: 'Login',
-        shortcut: ['l', 'l'],
-        url: '/',
-        icon: 'login'
-      }
-    ]
-  },
-  {
-    title: 'Contact Support',
-    url: '/',
-    icon: 'phone',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
-  }
+	{
+		title: "Dashboard",
+		url: "/vendor/dashboard/overview",
+		icon: "dashboard",
+		isActive: false,
+		shortcut: ["d", "d"],
+		items: [],
+		role: ["vendor"],
+	},
+	{
+		title: "Product",
+		url: "/vendor/dashboard/product",
+		icon: "product",
+		shortcut: ["p", "p"],
+		isActive: false,
+		items: [],
+		role: ["vendor"],
+	},
+	{
+		title: "Orders",
+		url: "/vendor/dashboard/orders",
+		icon: "order",
+		shortcut: ["o", "o"],
+		isActive: false,
+		items: [],
+		role: ["vendor"],
+	},
+	{
+		title: "Invoices",
+		url: "/vendor/dashboard/invoice",
+		icon: "invoice",
+		shortcut: ["o", "o"],
+		isActive: false,
+		items: [],
+		role: ["vendor"],
+	},
+	{
+		title: "Account",
+		url: "#",
+		icon: "billing",
+		isActive: true,
+		items: [
+			{
+				title: "Profile",
+				url: "/vendor/dashboard/profile",
+				icon: "userPen",
+				shortcut: ["m", "m"],
+				role: ["vendor"],
+			},
+			{
+				title: "Login",
+				url: "/auth/vendor/sign-in",
+				icon: "login",
+				role: ["vendor"],
+			},
+		],
+	},
+	{
+		title: "Contact Support",
+		url: "/",
+		icon: "phone",
+		shortcut: ["k", "k"],
+		isActive: false,
+		items: [],
+		role: ["admin", "vendor"],
+	},
 ];
+

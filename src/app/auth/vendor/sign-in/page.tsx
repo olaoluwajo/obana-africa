@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense } from "react";
-import SignInViewPage from "../_components/sigin-view";
+import SignInViewPage from "../(auth)/_components/sigin-view";
 
 const SignInPage = () => {
 	return (

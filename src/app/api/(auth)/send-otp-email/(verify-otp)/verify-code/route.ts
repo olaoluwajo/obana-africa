@@ -18,7 +18,11 @@ export async function POST(req: NextRequest) {
 		// Verify the JWT token first
 		let decoded;
 		try {
-			decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as { email: string; otp: string };
+			decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as {
+				email: string;
+				otp: string;
+				role: string;
+			};
 			// console.log("DECODED", decoded);
 		} catch (err) {
 			return NextResponse.json(
@@ -53,7 +57,12 @@ export async function POST(req: NextRequest) {
 						{ status: 500 },
 					);
 				}
-				return NextResponse.json({ success: true, message: "OTP verified successfully" });
+				return NextResponse.json({
+					success: true,
+					message: "OTP verified successfully",
+					token,
+					role: decoded.role,
+				});
 			} else {
 				return NextResponse.json(
 					{ success: false, message: "Invalid OTP (JWT mismatch)" },

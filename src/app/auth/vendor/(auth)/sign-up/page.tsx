@@ -3,7 +3,7 @@
 "use client";
 import React, { useState } from "react";
 import OnboardingModal from "@/components/modals/OnboardingModal";
-import VendorSignUp from "@/app/(auth)/sign-up/_components/VendorSignUp";
+import VendorSignUp from "./_components/VendorSignUp";
 
 export default function VendorSignUpPage() {
 	const [isModalOpen, setIsModalOpen] = useState(true);

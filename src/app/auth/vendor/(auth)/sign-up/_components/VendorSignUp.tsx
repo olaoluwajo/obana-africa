@@ -5,14 +5,12 @@ import BusinessInfo from "./BusinessInfo";
 import ContactInfo from "./contactInfo/ContactInfo";
 import AddressInfo from "./addressInfo/AddressInfo";
 import BusinessDetails from "./BusinessDetails";
-import ErrorModal from "../../../../components/modals/ErrorModal";
-import SuccessModal from "../../../../components/modals/SuccessModal";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 import axios from "axios";
 import useAuthStore from "@/stores/authStore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-// import { submitSignUpForm } from "@/app/api/submitForm/route";
-// import TermsAndConditionModal from "../modals/TermsAndConditionModal";
 
 const VendorSignUp = () => {
 	const [step, setStep] = useState(1);

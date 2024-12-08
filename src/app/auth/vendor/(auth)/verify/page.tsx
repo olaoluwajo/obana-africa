@@ -8,6 +8,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 function VerifyPageContent() {
 	const searchParams = useSearchParams();
@@ -68,10 +69,16 @@ function VerifyPageContent() {
 			console.log(response.data);
 
 			if (response.data.success) {
-				setAuthenticated(true);
-				useOtpStore.getState().clearOtp();
-				useOtpStore.getState().clearToken();
-				router.push("/dashboard");
+			   useAuthStore.getState().setAuthenticated(true, response.data.token, response.data.role);
+				// useAuthStore.getState().setRole(response.data.role);
+				localStorage.setItem("otpToken", response.data.token);
+				localStorage.setItem("role", response.data.role);
+				// useOtpStore.getState().clearOtp();
+				// useOtpStore.getState().clearToken();
+				// useOtpStore.getState().setRole(response.data.role);
+				Cookies.set("otpToken", response.data.token, { expires: 1 });
+				Cookies.set("role", response.data.role, { expires: 1 });
+				router.push("/vendor/dashboard/overview");
 				toast.success("OTP verified successfully!");
 			} else {
 				toast.error(response.data.message || "Invalid OTP.");
@@ -112,6 +119,7 @@ function VerifyPageContent() {
 				setUserOtp("");
 				useOtpStore.getState().setOtp(response.data.otp);
 				useOtpStore.getState().setToken(response.data.token);
+				useOtpStore.getState().setRole(response.data.role);
 			} else {
 				toast.error(response.data.message || "Failed to send new OTP.");
 			}

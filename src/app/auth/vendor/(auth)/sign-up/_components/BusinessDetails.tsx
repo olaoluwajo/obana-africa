@@ -1,6 +1,6 @@
+import TermsAndConditionModal from "@/components/modals/TermsAndConditionModal";
 import { XCircle } from "lucide-react";
 import React, { useState } from "react";
-import TermsAndConditionModal from "../../../../components/modals/TermsAndConditionModal";
 
 interface VendorFormData {
 	registrationNumber?: string;

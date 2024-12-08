@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { useOtpStore } from "@/stores/useOtpStore";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useOtpStore } from "@/stores/useOtpStore";
+import useAuthStore from "@/stores/authStore";
 // import checkIfVendorExists from "@/helpers/isVendorExistHelper";
 // import GithubSignInButton from './github-auth-button';
 
@@ -33,6 +34,8 @@ export default function UserAuthForm() {
 	const router = useRouter();
 	const [loading, startTransition] = useTransition();
 	const [vendorExistsError, setVendorExistsError] = useState("");
+	const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
+	const role = useAuthStore((state: any) => state.role);
 	// const defaultValues = {
 	// 	email: "demo@gmail.com",
 	// };
@@ -40,6 +43,20 @@ export default function UserAuthForm() {
 		resolver: zodResolver(formSchema),
 		// defaultValues,
 	});
+
+	useEffect(() => {
+		// console.log("Authenticated:", isAuthenticated);
+		// console.log("Role:", role);
+		if (isAuthenticated) {
+			if (role === "vendor") {
+				// console.log("Redirecting to vendor dashboard...");
+				router.push("/vendor/dashboard");
+			} else if (role === "admin") {
+				// console.log("Redirecting to admin dashboard...");
+				router.push("/admin/dashboard");
+			}
+		}
+	}, [isAuthenticated, role, router]);
 
 	const onSubmit = async (data: UserFormValue) => {
 		console.log("DATA", data);
@@ -53,18 +70,23 @@ export default function UserAuthForm() {
 						email: data.email,
 					});
 
-					// console.log("RESPONSE", response);
+					console.log("OTP RESPONSE", otpResponse);
 
 					const result = otpResponse.data;
 					console.log("RESULT", result);
 
-					localStorage.setItem("otpToken", result.token);
 					if (result.success) {
+						useAuthStore.getState().setAuthenticated(true);
+						useAuthStore.getState().setRole(result.role);
+						useOtpStore.getState().setRole(result.role);
 						useOtpStore.getState().setOtp(result.otp);
 						useOtpStore.getState().setToken(result.token);
-						router.push(`/verify?email=${data.email}`);
+						if (result.role === "vendor") {
+							router.push(`/auth/vendor/verify?email=${data.email}`);
+						} else if (result.role === "admin") {
+							router.push(`/auth/admin/verify?email=${data.email}`);
+						}
 						toast.success("A sign-in OTP has been sent to your email!");
-						// await requestOtp(data.email);
 					} else {
 						toast.error("Failed to send the sign-in link. Please try again later.");
 					}
@@ -77,7 +99,9 @@ export default function UserAuthForm() {
 		});
 	};
 
-	return (
+	return isAuthenticated ? (
+		<div>Loading...</div>
+	) : (
 		<>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
