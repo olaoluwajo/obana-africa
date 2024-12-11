@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require("path");
 
 const nextConfig = {
 	webpack: (config) => {
@@ -26,6 +26,10 @@ const nextConfig = {
 		],
 	},
 	transpilePackages: ["geist"],
+
+	experimental: {
+		runtime: "nodejs",
+	},
 };
 
 module.exports = nextConfig;
