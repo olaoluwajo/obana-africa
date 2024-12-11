@@ -155,7 +155,7 @@ export default function UserAuthForm() {
 			{vendorExistsError && (
 				<div className="text-red-500 mt-4 text-sm text-center">
 					<p>{vendorExistsError}</p>
-					<a href="/sign-up" className="text-blue-500">
+					<a href="/auth/vendor/sign-up" className="text-blue-500">
 						Click here to <span className="font-bold">register</span> as a vendor.
 					</a>
 				</div>

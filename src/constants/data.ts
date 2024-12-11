@@ -173,12 +173,12 @@ export const navItems: NavItem[] = [
 				shortcut: ["m", "m"],
 				role: ["vendor"],
 			},
-			{
-				title: "Login",
-				url: "/auth/vendor/sign-in",
-				icon: "login",
-				role: ["vendor"],
-			},
+			// {
+			// 	title: "Login",
+			// 	url: "/auth/vendor/sign-in",
+			// 	icon: "login",
+			// 	role: ["vendor"],
+			// },
 		],
 	},
 	{

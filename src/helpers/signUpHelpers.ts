@@ -118,7 +118,7 @@ function formatZohoVendorData(formData: any): ZohoVendorData {
 
 	const zohoVendorData: ZohoVendorData = {
 		custom_fields: customFields,
-		contact_name: formData.contactPerson || "",
+		contact_name: formData.companyName || "",
 		customer_name: formData.contactPerson || "",
 		contact_number: formData.taxId || "",
 		company_name: formData.companyName || "",
