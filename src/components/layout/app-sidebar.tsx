@@ -31,6 +31,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 import { Icons } from "../icons";
+import { toast } from "sonner";
+import { useVendorStore } from "@/stores/useVendorStore";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/stores/authStore";
+
 // import Image from 'next/image';
 
 export const company = {
@@ -42,6 +47,7 @@ export const company = {
 type IconType = keyof typeof Icons;
 
 export default function AppSidebar() {
+	const router = useRouter();
 	// const { data: session } = useSession();
 	const session = {
 		user: {
@@ -51,6 +57,13 @@ export default function AppSidebar() {
 		},
 	};
 	const pathname = usePathname();
+
+	const handleLogout = () => {
+		useVendorStore.getState().clearVendorId();
+		useAuthStore.getState().clearAuth();
+		router.push("/auth/vendor/sign-in");
+		toast.success("User logged out successfully.");
+	};
 
 	return (
 		<Sidebar collapsible="icon">
@@ -205,7 +218,7 @@ export default function AppSidebar() {
 									</DropdownMenuItem>
 								</DropdownMenuGroup>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem>
+								<DropdownMenuItem onClick={handleLogout}>
 									<LogOut />
 									Log out
 								</DropdownMenuItem>

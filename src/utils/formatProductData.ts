@@ -98,9 +98,9 @@ export const formatProductData = (values: FormValues) => {
 		subCategory?: string;
 		subSubCategory?: string;
 	}): string | null => {
-		console.log("Category:", category);
-		console.log("SubCategory:", subCategory);
-		console.log("SubSubCategory:", subSubCategory);
+		// console.log("Category:", category);
+		// console.log("SubCategory:", subCategory);
+		// console.log("SubSubCategory:", subSubCategory);
 
 		// First, check if subSubCategory is available, if so, get its ID
 		if (subSubCategory) {
@@ -127,9 +127,9 @@ export const formatProductData = (values: FormValues) => {
 		return selectedCategory?.id || null;
 	};
 
-	console.log("formattedCategoryId", formattedCategoryId);
+	// console.log("formattedCategoryId", formattedCategoryId);
 
-	console.log("Formatting Product Data:", values);
+	// console.log("Formatting Product Data:", values);
 	const formattedData = {
 		name: values.name,
 		rate: parseFloat(values.sellingPrice),

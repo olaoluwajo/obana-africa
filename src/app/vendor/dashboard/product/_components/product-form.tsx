@@ -233,12 +233,12 @@ export default function ProductForm({
 
 	const uploadImages = async (images: File[]): Promise<string[]> => {
 		const urls: string[] = [];
-		console.log("IMAGES", images);
+		// console.log("IMAGES", images);
 
 		for (const image of images) {
 			const formData = new FormData();
 			formData.append("image", image);
-			console.log("Image:", image);
+			// console.log("Image:", image);
 
 			try {
 				const response = await axios.post("/api/uploadImage", formData, {
@@ -246,7 +246,7 @@ export default function ProductForm({
 						"Content-Type": "multipart/form-data",
 					},
 				});
-				console.log("RESPONSE", response);
+				// console.log("RESPONSE", response);
 
 				if (response.status === 200) {
 					urls.push(response.data.url);
@@ -301,7 +301,7 @@ export default function ProductForm({
 
 			console.log("Product created successfully", response.data);
 			toast.success(`Product Name : ${response.data.item.name}  created successfully`);
-			// router.push("/vendor/dashboard/product");
+			router.push("/vendor/dashboard/product");
 			setIsLoading(false);
 		} catch (error: any) {
 			if (error.response) {
