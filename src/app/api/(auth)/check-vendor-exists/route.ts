@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import checkIfVendorExists from "@/helpers/isVendorExistHelper";
+import getVendorDetails from "@/helpers/isVendorExistHelper";
 
 export async function GET(request: Request) {
 	// Get the email from query parameters
@@ -11,9 +11,9 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const vendorExists = await checkIfVendorExists(email);
+	 const { exists, vendorId } = await getVendorDetails(email);
 
-		return NextResponse.json({ vendorExists });
+		return NextResponse.json({ exists, vendorId });
 	} catch (error) {
 		return NextResponse.json({ error: "Error checking vendor" }, { status: 500 });
 	}

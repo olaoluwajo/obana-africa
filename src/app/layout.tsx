@@ -21,7 +21,7 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning={true}>
 			<body className={`antialiased`}>
 				<NextTopLoader showSpinner={false} />
-				<Toaster />
+				<Toaster richColors duration={5000} />
 				{children}
 			</body>
 		</html>

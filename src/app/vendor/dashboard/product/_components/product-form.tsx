@@ -33,23 +33,29 @@ import { brandOptions, manufacturerOptions, unitOptions } from "@/constants/opti
 import TextInput from "./inputs/text-input";
 import SelectInput from "./inputs/select-input";
 import CategoryInput from "./inputs/category-input";
+import axios from "axios";
+import { toast } from "sonner";
+import { useVendorStore } from "@/stores/useVendorStore";
+import { useRouter } from "next/navigation";
+import { formatProductData } from "@/utils/formatProductData";
+import {
+	categoryOptions,
+	subCategoryOptions,
+	subSubCategoryOptions,
+} from "@/constants/categoryData";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-const formSchema = z.object({
+export const formSchema = z.object({
 	image: z
 		.any()
-		.optional()
-		.refine((files) => files?.length == 1, "Image is required.")
-		.optional()
-		.refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-		.optional()
+		.nullable()
+		.refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`).optional()
 		.refine(
 			(files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
 			".jpg, .jpeg, .png and .webp files are accepted.",
-		)
-		.optional(),
+		).optional(),
 	name: z.string().min(5, {
 		message: "Product name must be at least 5 characters.",
 	}),
@@ -81,17 +87,25 @@ const formSchema = z.object({
 	brand: z.string().optional(),
 	availableColors: z.string().optional(),
 	tags: z.string().optional(),
-	weight: z
-		.object({
-			value: z.any().optional(),
-			unit: z.string().optional(),
-		})
-		.optional(),
+	sizesRun: z.string().optional(),
+	countryOfManufacture: z.string().optional(),
+	fabricType: z.string().optional(),
+	sizeType: z.string().optional(),
+
+	// weight: z
+	// 	.object({
+	// 		value: z.any().optional(),
+	// 		unit: z.string().optional(),
+	// 	})
+	// 	.optional(),
+	weight: z.any().optional(),
+	weight_unit: z.any().optional(),
 	upc: z.any().optional(),
 	mpn: z.any().optional(),
 	ean: z.any().optional(),
 	isbn: z.any().optional(),
 	fob: z.any().optional(),
+	vendorId: z.string(),
 });
 
 export default function ProductForm({
@@ -101,9 +115,21 @@ export default function ProductForm({
 	initialData: Product | null;
 	pageTitle: string;
 }) {
+	// const vendorId = useVendorStore.getState().vendorId;
+	// useVendorStore.getState().setVendorId("123");
+	const vendorId = useVendorStore((state) => state.vendorId);
+	if (!vendorId) {
+		const vendorId = localStorage.getItem("vendorId");
+		console.log("VENDOR ID from local storage", vendorId);
+		if (vendorId) {
+			useVendorStore.getState().setVendorId(vendorId);
+		}
+	}
+	// console.log("VENDOR ID", vendorId);
 	const defaultValues = {
 		name: initialData?.name || "",
 		sku: initialData?.sku || "",
+		vendorId: vendorId || "",
 		unit: initialData?.unit || "",
 		category: initialData?.category || "",
 		subCategory: initialData?.subCategory || "",
@@ -114,11 +140,18 @@ export default function ProductForm({
 		description: initialData?.description || "",
 		unitPrice: initialData?.unitPrice || "",
 		availableColors: initialData?.availableColors || "",
+		sizesRun: initialData?.sizesRun || "",
+		countryOfManufacture: initialData?.countryOfManufacture || "",
+		fabricType: initialData?.fabricType || "",
+		sizeType: initialData?.sizeType || "",
+
 		tags: initialData?.tags || "",
-		weight: {
-			value: initialData?.weight || "",
-			unit: "kg",
-		},
+		// weight: {
+		// 	value: initialData?.weight || "",
+		// 	unit: "kg",
+		// },
+		weight_unit: initialData?.weight_unit || "",
+		weight: initialData?.weight || "",
 		upc: initialData?.upc || "",
 		mpn: initialData?.mpn || "",
 		ean: initialData?.ean || "",
@@ -146,44 +179,37 @@ export default function ProductForm({
 		defaultValues.manufacturer || "",
 	);
 	const [selectedBrand, setSelectedBrand] = useState(defaultValues.brand || "");
-	const [loading, setLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 
-	const categoryOptions = [
-		{ value: "beauty", label: "Beauty Products", subCategories: ["Beauty"] },
-		{ value: "fashion", label: "Fashion", subCategories: ["Men", "Women"] },
-		{ value: "lifestyle", label: "Lifestyle", subCategories: ["Electronics", "Headsets"] },
-	];
+	// export const subSubCategoryOptions = {
+	// 	Beauty: ["Face Wash", "Moisturizers", "Hair Care", "Skin Care"],
+	// 	Electronics: ["Phones", "Laptops"],
+	// 	Headsets: ["Headphones", "Earbuds"],
+	// 	Men: [
+	// 		"T-shirts",
+	// 		"Jeans",
+	// 		"Shorts",
+	// 		"Assesories",
+	// 		"Sneakers",
+	// 		"Trousers",
+	// 		"Sweatshirts",
+	// 		"Polos",
+	// 		"Hoodies",
+	// 		"Jackets",
+	// 		"Sweatpants",
+	// 	],
+	// 	Women: ["Dresses", "Shirts", "Skirts", "Assesories"],
+	// };
+	// const fabricTypeOptions = ["Cotton", "Polyester", "Wool", "Silk", "Linen"];
+	// const sizeTypeOptions = ["Small", "Medium", "Large", "X-Large", "XX-Large"];
 
-	const subCategoryOptions = {
-		beauty: ["Beauty"],
-		fashion: ["Men", "Women"],
-		lifestyle: ["Electronics", "Headsets"],
-	};
-
-	const subSubCategoryOptions = {
-		Beauty: ["Face Wash", "Moisturizers", "Hair Care", "Skin Care"],
-		Electronics: ["Phones", "Laptops"],
-		Headsets: ["Headphones", "Earbuds"],
-		Men: [
-			"T-shirts",
-			"Jeans",
-			"Shorts",
-			"Assesories",
-			"Sneakers",
-			"Trousers",
-			"Sweatshirts",
-			"Polos",
-			"Hoodies",
-			"Jackets",
-			"Sweatpants",
-		],
-		Women: ["Dresses", "Shirts", "Skirts", "Assesories"],
-	};
 	// Handle category selection change
 	const handleCategoryChange = (category: any) => {
 		setSelectedCategory(category);
 		setAvailableSubCategories(
-			subCategoryOptions[category as keyof typeof subCategoryOptions] || [],
+			(subCategoryOptions[category as keyof typeof subCategoryOptions] || []).map(
+				(item) => item.value,
+			),
 		);
 		setSelectedSubCategory("");
 		setAvailableSubSubCategories([]);
@@ -193,7 +219,9 @@ export default function ProductForm({
 	const handleSubCategoryChange = (subCategory: any) => {
 		setSelectedSubCategory(subCategory);
 		setAvailableSubSubCategories(
-			subSubCategoryOptions[subCategory as keyof typeof subSubCategoryOptions] || [],
+			(subSubCategoryOptions[subCategory as keyof typeof subSubCategoryOptions] || []).map(
+				(item) => item.value,
+			),
 		);
 	};
 
@@ -217,8 +245,50 @@ export default function ProductForm({
 		setSelectedBrand(brand);
 	};
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
+	// function onSubmit(values: z.infer<typeof formSchema>) {
+	// 	console.log(values);
+	// }
+
+	const router = useRouter();
+	async function onSubmit(values: z.infer<typeof formSchema>) {
+		const promise = () =>
+			new Promise((resolve) => setTimeout(() => resolve({ name: values.name }), 3000));
+
+		// console.log(values);
+		setIsLoading(true);
+		toast.promise(promise, {
+			// loading: "Adding Product, Please wait...",
+			loading: `Adding Product ${values.name}, Please wait...`,
+			// success: (data: any) => {
+			// 	return `Product ${data.name}  created successfully`;
+			// },
+			error: "Error",
+		});
+
+		console.log("Formatted Product Data", formatProductData(values));
+
+		try {
+			const response = await axios.post("/api/create-product", {
+				vendorId: values.vendorId,
+				productData: formatProductData(values),
+			});
+
+			console.log("Product created successfully", response.data);
+			toast.success(`Product Name : ${response.data.item.name}  created successfully`);
+			// router.push("/vendor/dashboard/product");
+			setIsLoading(false);
+		} catch (error: any) {
+			if (error.response) {
+				console.error(error.response);
+				console.error(error.response.data.message);
+				toast.error(error.response.data.message);
+				setIsLoading(false);
+			} else {
+				console.error("Error in API call:", error.message);
+				toast.error("Error in API call:", error.message);
+				setIsLoading(false);
+			}
+		}
 	}
 
 	return (
@@ -276,58 +346,12 @@ export default function ProductForm({
 									tooltipContent="The Stock Keeping Unit of the item"
 								/>
 
-								<FormField
+								<SelectInput
 									control={form.control}
 									name="unit"
-									render={({ field }) => (
-										<FormItem>
-											<FormLabel className="text-red-500">Unit *</FormLabel>
-											<FormControl>
-												<Tooltip.Root>
-													<Tooltip.Trigger>
-														<MessageCircleQuestion
-															size={12}
-															className="text-black/40 mr-2"
-														/>
-													</Tooltip.Trigger>
-													<Tooltip.Content
-														side="top"
-														sideOffset={10}
-														className="bg-black/80 text-white px-2 py-1 rounded-md text-xs max-w-[200px]">
-														The item will be measured in terms of this unit (e.g.: kg,
-														dozen)
-														<Tooltip.Arrow className="fill-black/80" />
-													</Tooltip.Content>
-												</Tooltip.Root>
-											</FormControl>
-											<Select
-												value={selectedUnit}
-												onValueChange={(value) => {
-													handleUnitChange(value);
-													field.onChange(value);
-												}}>
-												<SelectTrigger className="relative ">
-													<Input
-														placeholder="Select a Unit"
-														className={`${
-															!field.value
-																? "absolute"
-																: "hidden"
-														} p-2 border-none bg-transparent z-10`}
-													/>
-												</SelectTrigger>
-
-												<SelectContent>
-													{unitOptions.map((unit) => (
-														<SelectItem key={unit} value={unit}>
-															{unit}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											<FormMessage />
-										</FormItem>
-									)}
+									label="Unit"
+									options={unitOptions}
+									placeholder="Select Unit..."
 								/>
 							</div>
 
@@ -363,13 +387,8 @@ export default function ProductForm({
 												}}
 												disabled={!selectedCategory}>
 												<FormControl>
-													<SelectTrigger className="relative ">
-														<Input
-															placeholder="Select subcategory"
-															className={`${
-																!field.value ? "absolute " : "hidden"
-															} p-2 border-none bg-transparent z-10`}
-														/>
+													<SelectTrigger>
+														<SelectValue placeholder="Select Sub Sub-Category" />
 													</SelectTrigger>
 												</FormControl>
 												<SelectContent>
@@ -428,7 +447,7 @@ export default function ProductForm({
 								/>
 								<TextInput
 									control={form.control}
-									name="colors"
+									name="availableColors"
 									label="Available Colors"
 									placeholder="Enter colors"
 									type="text"
@@ -504,32 +523,38 @@ export default function ProductForm({
 													<Input
 														type="number"
 														placeholder="Enter weight"
-														// value={field.value.value}
-														onChange={(e) =>
-															field.onChange({
-																...field.value,
-																value: Number(e.target.value),
-															})
-														}
+														value={field.value || ""}
+														// onChange={(e) =>
+														// 	field.onChange({
+														// 		...field.value,
+														// 		value: Number(e.target.value),
+														// 	})
+														// }
+														onChange={(e) => field.onChange(e.target.value)}
 														className="w-full pr-16"
 													/>
 
 													{/* Dropdown for units (kg, g, lb, oz) */}
 													<div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-														<Select
-															onValueChange={(value) => {
-																field.onChange({ ...field.value, unit: value });
-															}}>
-															<SelectTrigger className="border-none bg-slate-200">
-																<SelectValue placeholder="Unit" />
-															</SelectTrigger>
-															<SelectContent>
-																<SelectItem value="kg">kg</SelectItem>
-																<SelectItem value="g">g</SelectItem>
-																<SelectItem value="lb">lb</SelectItem>
-																<SelectItem value="oz">oz</SelectItem>
-															</SelectContent>
-														</Select>
+														<FormField
+															control={form.control}
+															name="weight_unit"
+															render={({ field: unitField }) => (
+																<Select
+																	value={unitField.value}
+																	onValueChange={unitField.onChange}>
+																	<SelectTrigger className="border-none bg-slate-200">
+																		<SelectValue placeholder="Unit" />
+																	</SelectTrigger>
+																	<SelectContent>
+																		<SelectItem value="kg">kg</SelectItem>
+																		<SelectItem value="g">g</SelectItem>
+																		<SelectItem value="lb">lb</SelectItem>
+																		<SelectItem value="oz">oz</SelectItem>
+																	</SelectContent>
+																</Select>
+															)}
+														/>
 													</div>
 												</div>
 											</FormControl>
@@ -634,8 +659,8 @@ export default function ProductForm({
 								</FormItem>
 							)}
 						/>
-						<Button disabled={loading} type="submit">
-							{loading ? "Adding Product..." : "Add Product"}
+						<Button disabled={isLoading} type="submit">
+							{isLoading ? "Adding Product..." : "Add Product"}
 						</Button>
 					</form>
 				</Form>

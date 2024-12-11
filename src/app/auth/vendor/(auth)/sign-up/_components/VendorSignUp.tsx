@@ -253,9 +253,9 @@ const VendorSignUp = () => {
 				useAuthStore.getState().setAuthenticated(true);
 
 				if (mounted && router) {
-					router.push("/dashboard");
+					router.push("/vendor/dashboard");
 				}
-				router.push("/dashboard");
+				router.push("/vendor/dashboard");
 			} catch (err) {
 				console.error("Error submitting form:", err);
 				setNotSubmitted(true);

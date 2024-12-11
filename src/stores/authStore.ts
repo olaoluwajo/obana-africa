@@ -8,6 +8,7 @@ type AuthState = {
 	setAuthenticated: (authenticated: boolean, token?: string, role?: any) => void;
 	lastActivityTime: number | null;
 	resetLastActivityTime: () => void;
+	clearAuth: () => void;
 };
 
 const TIMEOUT_LIMIT = 8 * 60 * 60 * 1000;
@@ -49,6 +50,14 @@ const useAuthStore = create<AuthState>((set) => ({
 			Cookies.set("lastActivityTime", String(currentTime), { expires: 1 });
 			set({ lastActivityTime: currentTime });
 		}
+	},
+	clearAuth: () => {
+		localStorage.clear();
+		set({ isAuthenticated: false, role: null });
+		Cookies.remove("isAuthenticated");
+		Cookies.remove("otpToken");
+		Cookies.remove("role");
+		Cookies.remove("lastActivityTime");
 	},
 }));
 

@@ -19,6 +19,9 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { useOtpStore } from "@/stores/useOtpStore";
 import useAuthStore from "@/stores/authStore";
+import { useVendorStore } from "@/stores/useVendorStore";
+// import { useVendorStore } from "@/stores/useVendorStore";
+
 // import checkIfVendorExists from "@/helpers/isVendorExistHelper";
 // import GithubSignInButton from './github-auth-button';
 
@@ -33,6 +36,7 @@ export default function UserAuthForm() {
 	const callbackUrl = searchParams.get("callbackUrl");
 	const router = useRouter();
 	const [loading, startTransition] = useTransition();
+	const [isLoading, setIsLoading] = useState(false);
 	const [vendorExistsError, setVendorExistsError] = useState("");
 	const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
 	const role = useAuthStore((state: any) => state.role);
@@ -59,15 +63,28 @@ export default function UserAuthForm() {
 	}, [isAuthenticated, role, router]);
 
 	const onSubmit = async (data: UserFormValue) => {
+		const promise = () =>
+			new Promise((resolve) => setTimeout(() => resolve({ name: data.email }), 3000));
+
 		console.log("DATA", data);
+		setIsLoading(true);
 		setVendorExistsError("");
+
+		toast.promise(promise, {
+			loading: "Checking if vendor exists, Please wait...",
+			error: "Error",
+		});
 		startTransition(async () => {
 			try {
 				const response = await axios.get(`/api/check-vendor-exists?email=${data.email}`);
+				console.log("RESPONSE", response.data);
+				const { exists, vendorId } = response.data;
 
-				if (response.data.vendorExists) {
+				if (exists) {
+					console.log(`Vendor exists with ID: ${vendorId}`);
 					const otpResponse = await axios.post("/api/send-otp-email", {
 						email: data.email,
+						vendorId: vendorId,
 					});
 
 					console.log("OTP RESPONSE", otpResponse);
@@ -76,7 +93,7 @@ export default function UserAuthForm() {
 					console.log("RESULT", result);
 
 					if (result.success) {
-						useAuthStore.getState().setAuthenticated(true);
+						useVendorStore.getState().setVendorId(vendorId);
 						useAuthStore.getState().setRole(result.role);
 						useOtpStore.getState().setRole(result.role);
 						useOtpStore.getState().setOtp(result.otp);
@@ -95,6 +112,8 @@ export default function UserAuthForm() {
 				}
 			} catch (error) {
 				toast.error("Error sending sign-in email. Please try again.");
+			} finally {
+				setIsLoading(false);
 			}
 		});
 	};
@@ -115,7 +134,7 @@ export default function UserAuthForm() {
 									<Input
 										type="email"
 										placeholder="Enter your email..."
-										disabled={loading}
+										disabled={isLoading}
 										{...field}
 									/>
 								</FormControl>
@@ -123,10 +142,10 @@ export default function UserAuthForm() {
 							</FormItem>
 						)}
 					/>
-					<Button disabled={loading} className="ml-auto w-full text-white" type="submit">
-						{loading ? "Please wait..." : "Continue With Email"}
+					<Button disabled={isLoading} className="ml-auto w-full text-white" type="submit">
+						{isLoading ? "Please wait..." : "Continue With Email"}
 					</Button>
-					{loading && (
+					{isLoading && (
 						<p className="text-center text-sm text-gray-500">
 							Please sit back, this may take a while confirming your email...
 						</p>

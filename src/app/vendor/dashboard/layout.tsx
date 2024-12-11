@@ -20,9 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 				<AppSidebar />
 				<SidebarInset>
 					<Header />
-					{/* page main content */}
 					{children}
-					{/* page main content ends */}
 				</SidebarInset>
 			</SidebarProvider>
 		</KBar>

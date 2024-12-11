@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { useVendorStore } from "@/stores/useVendorStore";
 
 function VerifyPageContent() {
 	const searchParams = useSearchParams();
@@ -19,6 +20,7 @@ function VerifyPageContent() {
 	const [timer, setTimer] = useState(3 * 60);
 	const [timerExpired, setTimerExpired] = useState(false);
 	const router = useRouter();
+	const vendorId = useVendorStore((state) => state.vendorId);
 	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
 
 	// console.log("Current token in store:", token);
@@ -46,10 +48,20 @@ function VerifyPageContent() {
 
 	const onSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
+		const promise = () =>
+			new Promise((resolve) => setTimeout(() => resolve({ name: userOtp }), 3000));
 
-		console.log("Email:", email);
-		console.log("User OTP:", userOtp);
-		console.log("Token:", token);
+		console.log(userOtp);
+		setLoading(true);
+		toast.promise(promise, {
+			loading: `Verifying OTP, Please wait...`,
+
+			error: "Error",
+		});
+
+		// console.log("Email:", email);
+		// console.log("User OTP:", userOtp);
+		// console.log("Token:", token);
 
 		if (!email || !userOtp || !token) {
 			toast.error("Email, OTP, and token are required.");
@@ -69,13 +81,14 @@ function VerifyPageContent() {
 			console.log(response.data);
 
 			if (response.data.success) {
-			   useAuthStore.getState().setAuthenticated(true, response.data.token, response.data.role);
+				useAuthStore.getState().setAuthenticated(true, response.data.token, response.data.role);
+				if (vendorId) {
+					// Cookies.set("vendorId", vendorId, { expires: 1 });
+					// localStorage.setItem("vendorId", vendorId);
+				}
 				// useAuthStore.getState().setRole(response.data.role);
 				localStorage.setItem("otpToken", response.data.token);
 				localStorage.setItem("role", response.data.role);
-				// useOtpStore.getState().clearOtp();
-				// useOtpStore.getState().clearToken();
-				// useOtpStore.getState().setRole(response.data.role);
 				Cookies.set("otpToken", response.data.token, { expires: 1 });
 				Cookies.set("role", response.data.role, { expires: 1 });
 				router.push("/vendor/dashboard/overview");

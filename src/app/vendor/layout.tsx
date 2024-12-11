@@ -16,8 +16,8 @@ export default function RootLayout({
 	const role = useAuthStore((state: any) => state.role);
 
 	useEffect(() => {
-		console.log("Authenticated:", isAuthenticated);
-		console.log("Role:", role);
+		// console.log("Authenticated:", isAuthenticated);
+		// console.log("Role:", role);
 
 		if (role === "vendor") {
 			console.log("Redirecting to vendor dashboard...");

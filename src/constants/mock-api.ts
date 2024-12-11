@@ -2,6 +2,7 @@
 // 🛑 Nothing in here has anything to do with Nextjs, it's just a fake database
 ////////////////////////////////////////////////////////////////////////////////
 
+import { useVendorStore } from "@/stores/useVendorStore";
 import { faker } from "@faker-js/faker";
 import { matchSorter } from "match-sorter"; // For filtering
 
@@ -171,6 +172,7 @@ fakeUsers.initialize();
 export type Product = {
 	photo_url: string;
 	name: string;
+	vendorId: any;
 	sku: string;
 	unit: string;
 	status: string;
@@ -186,6 +188,7 @@ export type Product = {
 	account: any;
 	salesTaxRule: any;
 	weight: any;
+	weight_unit:any,
 	upc: any;
 	mpn: any;
 	ean: any;
@@ -195,11 +198,15 @@ export type Product = {
 	availableColors: string;
 	tags: string;
 	brand: string;
+	sizesRun: string;
+	countryOfManufacture: string;
+	fabricType: string;
+	sizeType: string;
 };
 
 // Mock product data store
 export const fakeProducts = {
-	records: [] as Product[], // Holds the list of product objects
+	records: [] as Product[],
 
 	// Initialize with sample data
 	initialize() {
@@ -215,13 +222,21 @@ export const fakeProducts = {
 				"Jewelry",
 				"Beauty Products",
 			];
+			const vendorId = useVendorStore.getState().vendorId;
 
 			return {
 				id,
+				vendorId: vendorId,
 				name: faker.commerce.productName(),
 				weight: faker.number.int({ min: 1, max: 100 }),
+				weight_unit: faker.helpers.arrayElement(["kg", "g", "mg", "oz", "lb"]),
 				sellingPrice: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-        account: faker.string.uuid().slice(0, 10),
+				sizesRun: faker.helpers.arrayElement(["M-4XL", "S-M", "L-XL", "S-XL", "M-XL"]),
+				countryOfManufacture: faker.helpers.arrayElement(["Nigeria", "Ghana", "Kenya", "South Africa", "Nigeria"]),
+				fabricType: faker.helpers.arrayElement(["Cotton", "Polyester", "Wool", "Silk", "Linen"]),
+				
+				sizeType: faker.helpers.arrayElement(["Small", "Medium", "Large", "X-Large", "XX-Large"]),
+				account: faker.string.uuid().slice(0, 10),
 				availableColors: faker.helpers.arrayElement(["Red", "Blue", "Green", "Yellow", "Purple"]),
 				tags: faker.helpers.arrayElement(["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"]),
 				salesTaxRule: faker.string.uuid().slice(0, 10),
