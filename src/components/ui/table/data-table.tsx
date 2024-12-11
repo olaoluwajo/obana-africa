@@ -27,6 +27,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
+import type { Product } from "@/constants/mock-api";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -35,7 +36,7 @@ interface DataTableProps<TData, TValue> {
 	pageSizeOptions?: number[];
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends Product, TValue>({
 	columns,
 	data,
 	totalItems,
@@ -51,7 +52,7 @@ export function DataTable<TData, TValue>({
 	);
 
 	const paginationState = {
-		pageIndex: currentPage - 1, 
+		pageIndex: currentPage - 1,
 		pageSize: pageSize,
 	};
 

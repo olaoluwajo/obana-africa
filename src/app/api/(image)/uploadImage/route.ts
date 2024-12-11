@@ -1,44 +1,44 @@
-// import { v2 as cloudinary } from "cloudinary";
-// import multer, { File } from "multer";
-// import { NextApiRequest, NextApiResponse } from "next";
-// import nc from "next-connect";
+import { v2 as cloudinary } from "cloudinary";
 
-// // Set up Cloudinary configuration
-// cloudinary.config({
-// 	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-// 	api_key: process.env.CLOUDINARY_API_KEY,
-// 	api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
+// Configure Cloudinary
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-// const upload = multer();
+// export const config = {
+// 	api: {
+// 		bodyParser: false,
+// 	},
+// };
 
-// // Create a Next.js API route handler with next-connect
-// const handler = nc<NextApiRequest, NextApiResponse>();
+export const runtime = "nodejs";
 
-// // Middleware for handling file upload
-// handler.use(upload.single("image"));
+// Named export for POST method
+export async function POST(req: Request) {
+	console.log("REQUEST", req);
+	try {
+		// Parse the FormData from the request
+		const formData = await req.formData();
+		const image = formData.get("image") as File | null;
 
-// // API POST request handler
-// handler.post((req: any, res: any) => {
-// 	// Type assertion: `req.file` is typed as `File | undefined`, so ensure it's not undefined
-// 	const file = req.file as File;
+		if (!image) {
+			return new Response(JSON.stringify({ error: "No image provided" }), { status: 400 });
+		}
 
-// 	if (!file) {
-// 		return res.status(400).json({ message: "No file uploaded." });
-// 	}
+		// Convert the image to a Base64 string
+		const buffer = await image.arrayBuffer();
+		const base64Image = Buffer.from(buffer).toString("base64");
+		const dataUri = `data:${image.type};base64,${base64Image}`;
 
-// 	// Upload the image to Cloudinary
-// 	cloudinary.v2.uploader
-// 		.upload_stream(
-// 			{ resource_type: "auto" }, // Automatically detect file type (e.g., image, video)
-// 			(error: any, result: any) => {
-// 				if (error) {
-// 					return res.status(500).json({ message: "Error uploading image", error });
-// 				}
-// 				return res.status(200).json({ url: result?.secure_url });
-// 			},
-// 		)
-// 		.end(file.buffer); // Multer buffer from the uploaded file
-// });
+		// Upload to Cloudinary
+		const result = await cloudinary.uploader.upload(dataUri, { folder: "Home" });
+		console.log("Cloudinary Result:", result);
 
-// export default handler;
+		return new Response(JSON.stringify({ url: result.secure_url }), { status: 200 });
+	} catch (error) {
+		console.error("Error uploading image:", error);
+		return new Response(JSON.stringify({ error: (error as Error).message }), { status: 500 });
+	}
+}

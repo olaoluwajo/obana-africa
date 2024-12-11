@@ -6,7 +6,7 @@ import {
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
 
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof formSchema> & { images?: string[] };
 
 export const formatProductData = (values: FormValues) => {
 	const customFields = [
@@ -77,7 +77,7 @@ export const formatProductData = (values: FormValues) => {
 
 		{
 			api_name: "cf_productimages",
-			value: ' ["https://ng.jumia.is/cms/0-0-black-friday/2024/Thumbnails/appliances.png , https://ng.jumia.is/cms/0-0-black-friday/2024/Thumbnails/appliances.png ,another image"]',
+			value: values.images ? JSON.stringify(values.images) : "[]"
 		},
 		{
 			api_name: "cf_singleimage",

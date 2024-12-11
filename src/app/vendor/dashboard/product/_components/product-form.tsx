@@ -27,8 +27,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import * as Tooltip from "@radix-ui/react-tooltip";
-import { MessageCircleQuestion } from "lucide-react";
 import { brandOptions, manufacturerOptions, unitOptions } from "@/constants/optionsData";
 import TextInput from "./inputs/text-input";
 import SelectInput from "./inputs/select-input";
@@ -51,11 +49,13 @@ export const formSchema = z.object({
 	image: z
 		.any()
 		.nullable()
-		.refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`).optional()
+		.refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+		.optional()
 		.refine(
 			(files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
 			".jpg, .jpeg, .png and .webp files are accepted.",
-		).optional(),
+		)
+		.optional(),
 	name: z.string().min(5, {
 		message: "Product name must be at least 5 characters.",
 	}),
@@ -91,13 +91,6 @@ export const formSchema = z.object({
 	countryOfManufacture: z.string().optional(),
 	fabricType: z.string().optional(),
 	sizeType: z.string().optional(),
-
-	// weight: z
-	// 	.object({
-	// 		value: z.any().optional(),
-	// 		unit: z.string().optional(),
-	// 	})
-	// 	.optional(),
 	weight: z.any().optional(),
 	weight_unit: z.any().optional(),
 	upc: z.any().optional(),
@@ -115,8 +108,6 @@ export default function ProductForm({
 	initialData: Product | null;
 	pageTitle: string;
 }) {
-	// const vendorId = useVendorStore.getState().vendorId;
-	// useVendorStore.getState().setVendorId("123");
 	const vendorId = useVendorStore((state) => state.vendorId);
 	if (!vendorId) {
 		const vendorId = localStorage.getItem("vendorId");
@@ -125,7 +116,7 @@ export default function ProductForm({
 			useVendorStore.getState().setVendorId(vendorId);
 		}
 	}
-	// console.log("VENDOR ID", vendorId);
+
 	const defaultValues = {
 		name: initialData?.name || "",
 		sku: initialData?.sku || "",
@@ -161,10 +152,7 @@ export default function ProductForm({
 		brand: initialData?.brand || "",
 	};
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		values: defaultValues,
-	});
+	const router = useRouter();
 
 	// State for dynamic category, subcategory, and sub-subcategory options
 	const [selectedCategory, setSelectedCategory] = useState(defaultValues.category || "");
@@ -180,26 +168,14 @@ export default function ProductForm({
 	);
 	const [selectedBrand, setSelectedBrand] = useState(defaultValues.brand || "");
 	const [isLoading, setIsLoading] = useState(false);
+	const [images, setImages] = useState<File[]>([]);
+	const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
 
-	// export const subSubCategoryOptions = {
-	// 	Beauty: ["Face Wash", "Moisturizers", "Hair Care", "Skin Care"],
-	// 	Electronics: ["Phones", "Laptops"],
-	// 	Headsets: ["Headphones", "Earbuds"],
-	// 	Men: [
-	// 		"T-shirts",
-	// 		"Jeans",
-	// 		"Shorts",
-	// 		"Assesories",
-	// 		"Sneakers",
-	// 		"Trousers",
-	// 		"Sweatshirts",
-	// 		"Polos",
-	// 		"Hoodies",
-	// 		"Jackets",
-	// 		"Sweatpants",
-	// 	],
-	// 	Women: ["Dresses", "Shirts", "Skirts", "Assesories"],
-	// };
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		values: defaultValues,
+	});
+
 	// const fabricTypeOptions = ["Cotton", "Polyester", "Wool", "Silk", "Linen"];
 	// const sizeTypeOptions = ["Small", "Medium", "Large", "X-Large", "XX-Large"];
 
@@ -231,25 +207,63 @@ export default function ProductForm({
 	};
 
 	// Handle unit selection change
-	const handleUnitChange = (unit: any) => {
-		setSelectedUnit(unit);
-	};
+	// const handleUnitChange = (unit: any) => {
+	// 	setSelectedUnit(unit);
+	// };
 
 	// Handle manufacturer selection change
-	const handleManufacturerChange = (manufacturer: any) => {
-		setSelectedManufacturer(manufacturer);
-	};
+	// const handleManufacturerChange = (manufacturer: any) => {
+	// 	setSelectedManufacturer(manufacturer);
+	// };
 
 	// Handle brand selection change
-	const handleBrandChange = (brand: any) => {
-		setSelectedBrand(brand);
-	};
+	// const handleBrandChange = (brand: any) => {
+	// 	setSelectedBrand(brand);
+	// };
 
 	// function onSubmit(values: z.infer<typeof formSchema>) {
 	// 	console.log(values);
 	// }
 
-	const router = useRouter();
+	// const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	// 	if (e.target.files) {
+	// 		setImages(Array.from(e.target.files));
+	// 	}
+	// };
+
+	const uploadImages = async (images: File[]): Promise<string[]> => {
+		const urls: string[] = [];
+		console.log("IMAGES", images);
+
+		for (const image of images) {
+			const formData = new FormData();
+			formData.append("image", image);
+			console.log("Image:", image);
+
+			try {
+				const response = await axios.post("/api/uploadImage", formData, {
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+				});
+				console.log("RESPONSE", response);
+
+				if (response.status === 200) {
+					urls.push(response.data.url);
+					console.log("Image uploaded successfully:", response.data.url);
+				} else {
+					console.error("Image upload failed:", response.data.error);
+					toast.error("Image upload failed");
+				}
+			} catch (error: any) {
+				console.error("Error uploading image:", error.message);
+				toast.error("Error uploading image");
+			}
+		}
+
+		return urls;
+	};
+
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		const promise = () =>
 			new Promise((resolve) => setTimeout(() => resolve({ name: values.name }), 3000));
@@ -268,9 +282,21 @@ export default function ProductForm({
 		console.log("Formatted Product Data", formatProductData(values));
 
 		try {
+			if (images.length > 0) {
+				const uploadedUrls = await uploadImages(images);
+				setUploadedUrls(uploadedUrls);
+				console.log("UPLOADED URLS", uploadedUrls);
+			}
+
+			const formattedProductData = formatProductData({
+				...values,
+				images: uploadedUrls,
+			});
+			console.log("Formatted Product Data with images", formattedProductData);
+
 			const response = await axios.post("/api/create-product", {
 				vendorId: values.vendorId,
-				productData: formatProductData(values),
+				productData: formattedProductData,
 			});
 
 			console.log("Product created successfully", response.data);
@@ -308,12 +334,12 @@ export default function ProductForm({
 										<FormLabel>Images</FormLabel>
 										<FormControl>
 											<FileUploader
-												value={field.value}
-												onValueChange={field.onChange}
+												value={images}
+												onValueChange={(files) => setImages(files)}
 												maxFiles={8}
 												maxSize={4 * 1024 * 1024}
-												// disabled={loading}
-												// progresses={progresses}
+												disabled={isLoading}
+												// progresses={onprogress}
 												// pass the onUpload function here for direct upload
 												// onUpload={uploadFiles}
 												// disabled={isUploading}

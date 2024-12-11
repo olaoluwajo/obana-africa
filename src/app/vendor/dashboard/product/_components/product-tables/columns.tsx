@@ -1,10 +1,10 @@
 "use client";
-import { Product } from "@/constants/data";
+import { Product } from "@/constants/mock-api";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { CellAction } from "./cell-action";
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Product, unknown>[] = [
 	{
 		accessorKey: "photo_url",
 		header: "IMAGE",
@@ -27,6 +27,7 @@ export const columns: ColumnDef<Product>[] = [
 	},
 	{
 		accessorKey: "name",
+		accessorFn: (row) => row.name,
 		header: "NAME",
 	},
 	{
@@ -38,12 +39,11 @@ export const columns: ColumnDef<Product>[] = [
 		header: "STATUS",
 	},
 	{
-		// accessorKey: 'price',
-		// header: 'PRICE'
-		accessorKey: "price",
+		accessorKey: "rate",
+		accessorFn: (row) => row.rate,
 		header: () => <div className="">PRICE</div>,
 		cell: ({ row }) => {
-			const amount = parseFloat(row.getValue("price"));
+			const amount = parseFloat(row.getValue("rate"));
 			const formatted = new Intl.NumberFormat("en-US", {
 				style: "currency",
 				currency: "USD",
