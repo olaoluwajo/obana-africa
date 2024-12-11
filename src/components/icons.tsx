@@ -34,6 +34,7 @@ import {
 	CircleDollarSign,
 	FileSpreadsheet,
 	PhoneCall,
+	Download,
 } from "lucide-react";
 
 export type Icon = LucideIcon;
@@ -70,6 +71,7 @@ export const Icons = {
 	moon: Moon,
 	laptop: Laptop,
 	phone: PhoneCall,
+	download: Download,
 	gitHub: ({ ...props }: LucideProps) => (
 		<svg
 			aria-hidden="true"

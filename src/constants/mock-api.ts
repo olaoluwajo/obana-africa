@@ -2,183 +2,167 @@
 // 🛑 Nothing in here has anything to do with Nextjs, it's just a fake database
 ////////////////////////////////////////////////////////////////////////////////
 
+import { useVendorStore } from "@/stores/useVendorStore";
 import { faker } from "@faker-js/faker";
 import { matchSorter } from "match-sorter"; // For filtering
 
 // Define the shape of User data
 
-type Gender = 'male' | 'female';
+type Gender = "male" | "female";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export type User = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  street: string;
-  city: string;
-  state: string;
-  country: string;
-  zipcode: string;
-  longitude: number;
-  latitude: number;
-  gender: Gender;
-  date_of_birth: string;
-  job: string;
-  profile_picture: string;
+	id: number;
+	first_name: string;
+	last_name: string;
+	email: string;
+	phone: string;
+	street: string;
+	city: string;
+	state: string;
+	country: string;
+	zipcode: string;
+	longitude: number;
+	latitude: number;
+	gender: Gender;
+	date_of_birth: string;
+	job: string;
+	profile_picture: string;
 };
 
 // Mock user data store
 export const fakeUsers = {
-  records: [] as User[], // Holds the list of user objects
+	records: [] as User[], // Holds the list of user objects
 
-  // Initialize with sample data
-  initialize() {
-    const sampleUsers: User[] = [];
-    function generateRandomUserData(id: number): User {
-      const genders = ['male', 'female'];
-      const jobs = [
-        'Software Engineer',
-        'Data Scientist',
-        'Marketing Manager',
-        'Graphic Designer',
-        'Sales Manager',
-        'Product Manager'
-      ];
-      const cities = [
-        'San Francisco',
-        'New York City',
-        'Los Angeles',
-        'Chicago',
-        'Houston',
-        'Phoenix',
-        'Philadelphia',
-        'San Antonio',
-        'San Diego',
-        'Dallas',
-        'San Jose',
-        'Austin',
-        'Jacksonville'
-      ];
-      const states = [
-        'California',
-        'New York',
-        'Texas',
-        'Florida',
-        'Illinois',
-        'Pennsylvania',
-        'Ohio',
-        'Georgia',
-        'North Carolina',
-        'Michigan'
-      ];
+	// Initialize with sample data
+	initialize() {
+		const sampleUsers: User[] = [];
+		function generateRandomUserData(id: number): User {
+			const genders = ["male", "female"];
+			const jobs = [
+				"Software Engineer",
+				"Data Scientist",
+				"Marketing Manager",
+				"Graphic Designer",
+				"Sales Manager",
+				"Product Manager",
+			];
+			const cities = [
+				"San Francisco",
+				"New York City",
+				"Los Angeles",
+				"Chicago",
+				"Houston",
+				"Phoenix",
+				"Philadelphia",
+				"San Antonio",
+				"San Diego",
+				"Dallas",
+				"San Jose",
+				"Austin",
+				"Jacksonville",
+			];
+			const states = [
+				"California",
+				"New York",
+				"Texas",
+				"Florida",
+				"Illinois",
+				"Pennsylvania",
+				"Ohio",
+				"Georgia",
+				"North Carolina",
+				"Michigan",
+			];
 
-      return {
-        id,
-        first_name: faker.person.firstName(),
-        last_name: faker.person.lastName(),
-        email: `${faker.internet.email()}`,
-        phone: `001-${Math.floor(Math.random() * 900) + 100}-${
-          Math.floor(Math.random() * 900) + 100
-        }-${Math.floor(Math.random() * 10000)}`,
-        street: `${Math.floor(
-          Math.random() * 1000
-        )} ${faker.location.street()}`,
-        city: faker.helpers.arrayElement(cities),
-        state: faker.helpers.arrayElement(states),
-        country: 'USA',
-        zipcode: faker.location.zipCode(),
-        longitude: faker.location.longitude(),
-        latitude: faker.location.latitude(),
-        gender: faker.helpers.arrayElement(genders) as Gender,
-        date_of_birth: faker.date
-          .between({ from: '1980-01-01', to: '2000-01-01' })
-          .toISOString()
-          .split('T')[0],
-        job: faker.helpers.arrayElement(jobs),
-        profile_picture: `https://api.slingacademy.com/public/sample-users/${id}.png`
-      };
-    }
+			return {
+				id,
+				first_name: faker.person.firstName(),
+				last_name: faker.person.lastName(),
+				email: `${faker.internet.email()}`,
+				phone: `001-${Math.floor(Math.random() * 900) + 100}-${
+					Math.floor(Math.random() * 900) + 100
+				}-${Math.floor(Math.random() * 10000)}`,
+				street: `${Math.floor(Math.random() * 1000)} ${faker.location.street()}`,
+				city: faker.helpers.arrayElement(cities),
+				state: faker.helpers.arrayElement(states),
+				country: "USA",
+				zipcode: faker.location.zipCode(),
+				longitude: faker.location.longitude(),
+				latitude: faker.location.latitude(),
+				gender: faker.helpers.arrayElement(genders) as Gender,
+				date_of_birth: faker.date
+					.between({ from: "1980-01-01", to: "2000-01-01" })
+					.toISOString()
+					.split("T")[0],
+				job: faker.helpers.arrayElement(jobs),
+				profile_picture: `https://api.slingacademy.com/public/sample-users/${id}.png`,
+			};
+		}
 
-    // Generate remaining records
-    for (let i = 1; i <= 20; i++) {
-      sampleUsers.push(generateRandomUserData(i));
-    }
+		// Generate remaining records
+		for (let i = 1; i <= 20; i++) {
+			sampleUsers.push(generateRandomUserData(i));
+		}
 
-    this.records = sampleUsers;
-  },
+		this.records = sampleUsers;
+	},
 
-  // Get all users with optional gender filtering and search
-  async getAll({
-    genders = [],
-    search
-  }: {
-    genders?: string[];
-    search?: string;
-  }) {
-    let users = [...this.records];
+	// Get all users with optional gender filtering and search
+	async getAll({ genders = [], search }: { genders?: string[]; search?: string }) {
+		let users = [...this.records];
 
-    // Filter users based on selected genders
-    if (genders.length > 0) {
-      users = users.filter((user) => genders.includes(user.gender));
-    }
+		// Filter users based on selected genders
+		if (genders.length > 0) {
+			users = users.filter((user) => genders.includes(user.gender));
+		}
 
-    // Search functionality across multiple fields
-    if (search) {
-      users = matchSorter(users, search, {
-        keys: [
-          'first_name',
-          'last_name',
-          'email',
-          'job',
-          'city',
-          'street',
-          'state',
-          'country'
-        ]
-      });
-    }
+		// Search functionality across multiple fields
+		if (search) {
+			users = matchSorter(users, search, {
+				keys: ["first_name", "last_name", "email", "job", "city", "street", "state", "country"],
+			});
+		}
 
-    return users;
-  },
+		return users;
+	},
 
-  // Get paginated results with optional gender filtering and search
-  async getUsers({
-    page = 1,
-    limit = 10,
-    genders,
-    search
-  }: {
-    page?: number;
-    limit?: number;
-    genders?: string;
-    search?: string;
-  }) {
-    const gendersArray = genders ? genders.split('.') : [];
-    // console.log('gendersArray', gendersArray);
-    const allUsers = await this.getAll({ genders: gendersArray, search });
-    const totalUsers = allUsers.length;
+	// Get paginated results with optional gender filtering and search
+	async getUsers({
+		page = 1,
+		limit = 10,
+		genders,
+		search,
+	}: {
+		page?: number;
+		limit?: number;
+		genders?: string;
+		search?: string;
+	}) {
+		const gendersArray = genders ? genders.split(".") : [];
+		// console.log('gendersArray', gendersArray);
+		const allUsers = await this.getAll({ genders: gendersArray, search });
+		const totalUsers = allUsers.length;
 
-    // Pagination logic
-    const offset = (page - 1) * limit;
-    const paginatedUsers = allUsers.slice(offset, offset + limit);
+		// Pagination logic
+		const offset = (page - 1) * limit;
+		const paginatedUsers = allUsers.slice(offset, offset + limit);
 
-    // Mock current time
-    const currentTime = new Date().toISOString();
+		// Mock current time
+		const currentTime = new Date().toISOString();
 
-    // Return paginated response
-    return {
-      success: true,
-      time: currentTime,
-      message: 'Sample data for testing and learning purposes',
-      total_users: totalUsers,
-      offset,
-      limit,
-      users: paginatedUsers
-    };
-  }
+		// Return paginated response
+		return {
+			success: true,
+			time: currentTime,
+			message: "Sample data for testing and learning purposes",
+			total_users: totalUsers,
+			offset,
+			limit,
+			users: paginatedUsers,
+		};
+	},
 };
 
 // Initialize sample users
@@ -186,151 +170,188 @@ fakeUsers.initialize();
 
 // Define the shape of Product data
 export type Product = {
-  photo_url: string;
-  name: string;
-  sku: string;
-  status: string;
-  description: string;
-  created_at: string;
-  price: number;
-  id: number;
-  category: string;
-  updated_at: string;
+	photo_url: string;
+	name: string;
+	vendorId: any;
+	sku: string;
+	unit: string;
+	status: string;
+	description: string;
+	created_at: string;
+	unitPrice: any;
+	id: any;
+	category: string;
+	subCategory?: string;
+	subSubCategory?: string;
+	updated_at: string;
+	sellingPrice: any;
+	account: any;
+	salesTaxRule: any;
+	weight: any;
+	weight_unit:any,
+	upc: any;
+	mpn: any;
+	ean: any;
+	isbn: any;
+	fob: any;
+	manufacturer: string;
+	availableColors: string;
+	tags: string;
+	brand: string;
+	sizesRun: string;
+	countryOfManufacture: string;
+	fabricType: string;
+	sizeType: string;
+	rate: number;
 };
 
 // Mock product data store
 export const fakeProducts = {
-  records: [] as Product[], // Holds the list of product objects
+	records: [] as Product[],
 
-  // Initialize with sample data
-  initialize() {
-    const sampleProducts: Product[] = [];
-    function generateRandomProductData(id: number): Product {
-      const categories = [
-        'Electronics',
-        'Furniture',
-        'Clothing',
-        'Toys',
-        'Groceries',
-        'Books',
-        'Jewelry',
-        'Beauty Products'
-      ];
+	// Initialize with sample data
+	initialize() {
+		const sampleProducts: Product[] = [];
+		function generateRandomProductData(id: number): Product {
+			const categories = [
+				"Electronics",
+				"Furniture",
+				"Clothing",
+				"Toys",
+				"Groceries",
+				"Books",
+				"Jewelry",
+				"Beauty Products",
+			];
+			const vendorId = useVendorStore.getState().vendorId;
 
-      return {
-        id,
-        name: faker.commerce.productName(),
-        description: faker.commerce.productDescription().slice(0, 30) + '...',
-        sku: faker.string.uuid().slice(0, 10),
-        status: faker.helpers.arrayElement(['active', 'inactive']),
-        created_at: faker.date
-          .between({ from: '2022-01-01', to: '2023-12-31' })
-          .toISOString(),
-        price: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-        photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
-        category: faker.helpers.arrayElement(categories),
-        updated_at: faker.date.recent().toISOString()
-      };
-    }
+			return {
+				id,
+				vendorId: vendorId,
+				name: faker.commerce.productName(),
+				weight: faker.number.int({ min: 1, max: 100 }),
+				weight_unit: faker.helpers.arrayElement(["kg", "g", "mg", "oz", "lb"]),
+				rate: faker.number.int({ min: 1, max: 5 }),
+				
+				sellingPrice: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
+				sizesRun: faker.helpers.arrayElement(["M-4XL", "S-M", "L-XL", "S-XL", "M-XL"]),
+				countryOfManufacture: faker.helpers.arrayElement(["Nigeria", "Ghana", "Kenya", "South Africa", "Nigeria"]),
+				fabricType: faker.helpers.arrayElement(["Cotton", "Polyester", "Wool", "Silk", "Linen"]),
 
-    // Generate remaining records
-    for (let i = 1; i <= 20; i++) {
-      sampleProducts.push(generateRandomProductData(i));
-    }
+				sizeType: faker.helpers.arrayElement(["Small", "Medium", "Large", "X-Large", "XX-Large"]),
+				account: faker.string.uuid().slice(0, 10),
+				availableColors: faker.helpers.arrayElement(["Red", "Blue", "Green", "Yellow", "Purple"]),
+				tags: faker.helpers.arrayElement(["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"]),
+				salesTaxRule: faker.string.uuid().slice(0, 10),
+				upc: faker.number.int({ min: 100000000000, max: 999999999999 }),
+				mpn: faker.number.int({ min: 1000000000000, max: 9999999999999 }),
+				ean: faker.number.int({ min: 1000000000000, max: 9999999999999 }),
+				isbn: faker.number.int({ min: 1000000000000, max: 9999999999999 }),
+				manufacturer: faker.company.name(),
+				brand: faker.commerce.productName(),
+				fob: faker.number.int({ min: 1, max: 100 }),
+				description: faker.commerce.productDescription().slice(0, 30) + "...",
+				sku: faker.string.uuid().slice(0, 10),
+				unit: faker.helpers.arrayElement(["kg", "pcs", "litre", "pack"]),
+				status: faker.helpers.arrayElement(["active", "inactive"]),
+				created_at: faker.date.between({ from: "2022-01-01", to: "2023-12-31" }).toISOString(),
+				unitPrice: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
+				photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
+				category: faker.helpers.arrayElement(categories),
+				updated_at: faker.date.recent().toISOString(),
+			};
+		}
 
-    this.records = sampleProducts;
-  },
+		// Generate remaining records
+		for (let i = 1; i <= 20; i++) {
+			sampleProducts.push(generateRandomProductData(i));
+		}
 
-  // Get all products with optional category filtering and search
-  async getAll({
-    categories = [],
-    search
-  }: {
-    categories?: string[];
-    search?: string;
-  }) {
-    let products = [...this.records];
+		this.records = sampleProducts;
+	},
 
-    // Filter products based on selected categories
-    if (categories.length > 0) {
-      products = products.filter((product) =>
-        categories.includes(product.category)
-      );
-    }
+	// Get all products with optional category filtering and search
+	async getAll({ categories = [], search }: { categories?: string[]; search?: string }) {
+		let products = [...this.records];
 
-    // Search functionality across multiple fields
-    if (search) {
-      products = matchSorter(products, search, {
-        keys: ['name', 'description', 'category']
-      });
-    }
+		// Filter products based on selected categories
+		if (categories.length > 0) {
+			products = products.filter((product) => categories.includes(product.category));
+		}
 
-    return products;
-  },
+		// Search functionality across multiple fields
+		if (search) {
+			products = matchSorter(products, search, {
+				keys: ["name", "description", "category"],
+			});
+		}
 
-  // Get paginated results with optional category filtering and search
-  async getProducts({
-    page = 1,
-    limit = 10,
-    categories,
-    search
-  }: {
-    page?: number;
-    limit?: number;
-    categories?: string;
-    search?: string;
-  }) {
-    await delay(1000);
-    const categoriesArray = categories ? categories.split('.') : [];
-    const allProducts = await this.getAll({
-      categories: categoriesArray,
-      search
-    });
-    const totalProducts = allProducts.length;
+		return products;
+	},
 
-    // Pagination logic
-    const offset = (page - 1) * limit;
-    const paginatedProducts = allProducts.slice(offset, offset + limit);
+	// Get paginated results with optional category filtering and search
+	async getProducts({
+		page = 1,
+		limit = 10,
+		categories,
+		search,
+	}: {
+		page?: number;
+		limit?: number;
+		categories?: string;
+		search?: string;
+	}) {
+		await delay(1000);
+		const categoriesArray = categories ? categories.split(".") : [];
+		const allProducts = await this.getAll({
+			categories: categoriesArray,
+			search,
+		});
+		const totalProducts = allProducts.length;
 
-    // Mock current time
-    const currentTime = new Date().toISOString();
+		// Pagination logic
+		const offset = (page - 1) * limit;
+		const paginatedProducts = allProducts.slice(offset, offset + limit);
 
-    // Return paginated response
-    return {
-      success: true,
-      time: currentTime,
-      message: 'Sample data for testing and learning purposes',
-      total_products: totalProducts,
-      offset,
-      limit,
-      products: paginatedProducts
-    };
-  },
+		// Mock current time
+		const currentTime = new Date().toISOString();
 
-  // Get a specific product by its ID
-  async getProductById(id: number) {
-    await delay(1000); // Simulate a delay
+		// Return paginated response
+		return {
+			success: true,
+			time: currentTime,
+			message: "Sample data for testing and learning purposes",
+			total_products: totalProducts,
+			offset,
+			limit,
+			products: paginatedProducts,
+		};
+	},
 
-    // Find the product by its ID
-    const product = this.records.find((product) => product.id === id);
+	// Get a specific product by its ID
+	async getProductById(id: number) {
+		await delay(1000); // Simulate a delay
 
-    if (!product) {
-      return {
-        success: false,
-        message: `Product with ID ${id} not found`
-      };
-    }
+		// Find the product by its ID
+		const product = this.records.find((product) => product.id === id);
 
-    // Mock current time
-    const currentTime = new Date().toISOString();
+		if (!product) {
+			return {
+				success: false,
+				message: `Product with ID ${id} not found`,
+			};
+		}
 
-    return {
-      success: true,
-      time: currentTime,
-      message: `Product with ID ${id} found`,
-      product
-    };
-  }
+		// Mock current time
+		const currentTime = new Date().toISOString();
+
+		return {
+			success: true,
+			time: currentTime,
+			message: `Product with ID ${id} found`,
+			product,
+		};
+	},
 };
 
 // Initialize sample products

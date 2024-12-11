@@ -1,6 +1,6 @@
 'use client';
 
-import { CrossIcon, UploadIcon } from 'lucide-react';
+import { CrossIcon, Trash, UploadIcon } from 'lucide-react';
 import Image from 'next/image';
 import * as React from 'react';
 import Dropzone, {
@@ -185,7 +185,7 @@ export function FileUploader(props: FileUploaderProps) {
   const isDisabled = disabled || (files?.length ?? 0) >= maxFiles;
 
   return (
-    <div className="relative flex flex-col gap-6 overflow-hidden">
+    <div className="relative flex  gap-6 overflow-hidden">
       <Dropzone
         onDrop={onDrop}
         accept={accept}
@@ -220,7 +220,7 @@ export function FileUploader(props: FileUploaderProps) {
                 </p>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
+              <div className="flex flex-col items-center justify-center gap-4 sm:px-5 ">
                 <div className="rounded-full border border-dashed p-3">
                   <UploadIcon
                     className="size-7 text-muted-foreground"
@@ -246,7 +246,7 @@ export function FileUploader(props: FileUploaderProps) {
       </Dropzone>
       {files?.length ? (
         <ScrollArea className="h-fit w-full px-3">
-          <div className="max-h-48 space-y-4">
+          <div className="max-h-60 space-y-4">
             {files?.map((file, index) => (
               <FileCard
                 key={index}
@@ -276,8 +276,8 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
           <Image
             src={file.preview}
             alt={file.name}
-            width={48}
-            height={48}
+            width={50}
+            height={50}
             loading="lazy"
             className="aspect-square shrink-0 rounded-md object-cover"
           />
@@ -302,7 +302,7 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
           className="size-7"
           onClick={onRemove}
         >
-          <CrossIcon className="size-4 " aria-hidden="true" />
+          <Trash className="size-4 " aria-hidden="true" />
           <span className="sr-only">Remove file</span>
         </Button>
       </div>

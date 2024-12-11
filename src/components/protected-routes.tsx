@@ -11,10 +11,10 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			router.push("/dashboard");
+			router.push("/vendor/dashboard");
 
 			if (pathname === "/") {
-				router.push("/dashboard");
+				router.push("/vendor/dashboard");
 			}
 		} else {
 			router.push("/");
@@ -22,9 +22,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 				router.push("/");
 			}
 		}
-	}, [isAuthenticated, router]);
-
-	return <>{children}</>;
+	}, [isAuthenticated]);
+	if (isAuthenticated) return <>{children}</>;
 };
 
 export default ProtectedRoute;

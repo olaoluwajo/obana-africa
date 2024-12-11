@@ -1,81 +1,80 @@
-// import {create} from "zustand";
-
-// type AuthState = {
-// 	isAuthenticated: boolean;
-// 	setAuthenticated: (authenticated: boolean) => void;
-// };
-
-// const useAuthStore = create<AuthState>((set) => ({
-// 	isAuthenticated:
-// 		typeof window !== "undefined" && localStorage.getItem("isAuthenticated") === "true",
-// 	setAuthenticated: (authenticated) => {
-// 		set({ isAuthenticated: authenticated });
-// 		if (typeof window !== "undefined") {
-// 			localStorage.setItem("isAuthenticated", String(authenticated));
-// 		}
-// 	},
-// }));
-
-// export default useAuthStore;
-
 import { create } from "zustand";
+import Cookies from "js-cookie";
 
 type AuthState = {
 	isAuthenticated: boolean;
-	setAuthenticated: (authenticated: boolean) => void;
+	role: any | null;
+	setRole: (role: any) => void;
+	setAuthenticated: (authenticated: boolean, token?: string, role?: any) => void;
 	lastActivityTime: number | null;
 	resetLastActivityTime: () => void;
+	clearAuth: () => void;
 };
 
-// 8 hours in milliseconds
-const TIMEOUT_LIMIT = 3 * 60 * 60 * 1000;
+const TIMEOUT_LIMIT = 8 * 60 * 60 * 1000;
 
 const useAuthStore = create<AuthState>((set) => ({
-	isAuthenticated:
-		typeof window !== "undefined" && localStorage.getItem("isAuthenticated") === "true",
+	isAuthenticated: typeof window !== "undefined" && Cookies.get("otpToken") !== undefined,
+	role: Cookies.get("role") || null,
+	setRole: (role) => set({ role }),
 	lastActivityTime:
-		typeof window !== "undefined"
-			? parseInt(localStorage.getItem("lastActivityTime") || "0")
-			: null,
-	setAuthenticated: (authenticated) => {
-		set({ isAuthenticated: authenticated });
+		typeof window !== "undefined" ? parseInt(Cookies.get("lastActivityTime") || "0") : null,
+	setAuthenticated: (authenticated, token, role) => {
+		console.log("Setting authenticated state:", { authenticated, token, role });
+		set({ isAuthenticated: authenticated, role: role || null });
 		if (typeof window !== "undefined") {
 			localStorage.setItem("isAuthenticated", String(authenticated));
-			// Reset the last activity time if authentication changes
-			if (authenticated) {
-				const currentTime = Date.now();
-				localStorage.setItem("lastActivityTime", String(currentTime));
-				set({ lastActivityTime: currentTime });
-			} else {
-				localStorage.removeItem("isAuthenticated");
-				localStorage.removeItem("lastActivityTime");
+			Cookies.set("isAuthenticated", String(authenticated));
+			if (role) {
+				localStorage.setItem("role", role);
+				Cookies.set("role", role, { expires: 1 });
 			}
+		}
+		if (authenticated && token) {
+			const currentTime = Date.now();
+			localStorage.setItem("otpToken", token);
+			localStorage.setItem("isAuthenticated", "true");
+			localStorage.setItem("lastActivityTime", String(currentTime));
+			Cookies.set("otpToken", token, { expires: 1 });
+			Cookies.set("isAuthenticated", "true");
+			Cookies.set("lastActivityTime", String(currentTime), { expires: 1 });
+			set({ lastActivityTime: currentTime });
+		} else {
+			localStorage.removeItem("lastActivityTime");
+			Cookies.remove("lastActivityTime");
 		}
 	},
 	resetLastActivityTime: () => {
 		if (typeof window !== "undefined") {
 			const currentTime = Date.now();
-			localStorage.setItem("lastActivityTime", String(currentTime));
+			Cookies.set("lastActivityTime", String(currentTime), { expires: 1 });
 			set({ lastActivityTime: currentTime });
 		}
+	},
+	clearAuth: () => {
+		localStorage.clear();
+		set({ isAuthenticated: false, role: null });
+		Cookies.remove("isAuthenticated");
+		Cookies.remove("otpToken");
+		Cookies.remove("role");
+		Cookies.remove("lastActivityTime");
 	},
 }));
 
 // Function to check inactivity
 const checkInactivity = () => {
 	if (typeof window !== "undefined") {
-		const lastActivityTime = parseInt(localStorage.getItem("lastActivityTime") || "0");
+		const lastActivityTime = parseInt(Cookies.get("lastActivityTime") || "0");
 		const currentTime = Date.now();
 
-		// If more than 8 hours have passed since the last activity
 		if (currentTime - lastActivityTime > TIMEOUT_LIMIT) {
-			useAuthStore.getState().setAuthenticated(false); // Log the user out
+			useAuthStore.getState().setAuthenticated(false);
 			console.log("User logged out due to inactivity.");
 		}
 	}
 };
 
 // Automatically check for inactivity every 5 minutes (300000 ms)
-setInterval(checkInactivity, 5 * 60 * 1000);
+setInterval(checkInactivity, 50 * 60 * 1000);
 
 export default useAuthStore;

@@ -1,12 +1,12 @@
 import axios from "axios";
 import { getAccessToken } from "./zohoAuthToken";
 
-export default async function checkIfVendorExists(email: string) {
+export default async function getVendorDetails(email: string) {
 	const accessToken = await getAccessToken();
 
 	let page = 1;
 	let hasMorePages = true;
-	let vendorExists = false;
+	let exists = false;
 
 	try {
 		while (hasMorePages) {
@@ -22,19 +22,28 @@ export default async function checkIfVendorExists(email: string) {
 				},
 			});
 
-			// Check if the vendor exists on the current page
-			vendorExists = response.data.contacts.some((contact: any) => contact.email === email);
+			const vendor = response.data.contacts.find((contact: any) => contact.email === email);
+			// console.log("VENDOR", vendor);
 
-			if (vendorExists) {
-				break;
+			if (vendor) {
+				return {
+					exists: true,
+					vendorId: vendor.contact_id,
+				};
 			}
+
+			// console.log("VENDOR", vendor);
+
+			// if (vendor) {
+			// 	break;
+			// }
 
 			// Check if there are more pages
 			hasMorePages = response.data.page_context.has_more_page;
 			page++;
 		}
 
-		return vendorExists;
+		return { exists: false, vendorId: null };
 	} catch (error: any) {
 		console.error("Error checking vendor in Zoho:", error.message);
 		throw new Error("Error checking vendor in Zoho");

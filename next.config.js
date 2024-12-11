@@ -5,7 +5,7 @@ const nextConfig = {
 		config.cache = {
 			type: "filesystem",
 			buildDependencies: {
-				config: [__filename], // Works as expected in CommonJS
+				config: [__filename],
 			},
 		};
 

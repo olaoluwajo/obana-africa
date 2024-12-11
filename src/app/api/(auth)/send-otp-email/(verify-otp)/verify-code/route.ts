@@ -18,8 +18,12 @@ export async function POST(req: NextRequest) {
 		// Verify the JWT token first
 		let decoded;
 		try {
-			decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as { email: string; otp: string };
-			console.log("DECODED", decoded);
+			decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as {
+				email: string;
+				otp: string;
+				role: string;
+			};
+			// console.log("DECODED", decoded);
 		} catch (err) {
 			return NextResponse.json(
 				{ success: false, message: "Invalid or expired token" },
@@ -40,11 +44,25 @@ export async function POST(req: NextRequest) {
 		console.log("STORED OTP", storedOtp);
 
 		if (storedOtp === otp) {
-			console.log("OTP MATCHED");
+			// console.log("OTP MATCHED");
 			if (decoded.otp === otp) {
-				console.log("OTP MATCHED");
-				await deleteOtp(email);
-				return NextResponse.json({ success: true, message: "OTP verified successfully" });
+				// console.log("OTP MATCHED");
+				try {
+					await deleteOtp(email);
+					console.log(`OTP deleted for email: ${email}`);
+				} catch (err) {
+					console.error("Error deleting OTP:", err);
+					return NextResponse.json(
+						{ success: false, message: "Error deleting OTP from database" },
+						{ status: 500 },
+					);
+				}
+				return NextResponse.json({
+					success: true,
+					message: "OTP verified successfully",
+					token,
+					role: decoded.role,
+				});
 			} else {
 				return NextResponse.json(
 					{ success: false, message: "Invalid OTP (JWT mismatch)" },

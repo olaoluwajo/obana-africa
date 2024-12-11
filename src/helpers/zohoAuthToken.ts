@@ -10,6 +10,11 @@ const ZOHO_MAIL_REFRESH_TOKEN = process.env.MAIL_REFRESH_TOKEN;
 const ZOHO_MAIL_CLIENT_ID = process.env.ZOHO_MAIL_CLIENT_ID;
 const ZOHO_MAIL_CLIENT_SECRET = process.env.ZOHO_MAIL_CLIENT_SECRET;
 
+// Zoho Inventory credentials
+const ZOHO_INVENTORY_REFRESH_TOKEN = process.env.ZOHO_INVENTORY_REFRESH_TOKEN;
+const ZOHO_INVENTORY_CLIENT_ID = process.env.ZOHO_MAIL_CLIENT_ID;
+const ZOHO_INVENTORY_CLIENT_SECRET = process.env.ZOHO_MAIL_CLIENT_SECRET;
+
 // Interface to handle token response
 interface ZohoTokenResponse {
 	access_token: string;
@@ -19,8 +24,9 @@ interface ZohoTokenResponse {
 
 let accessTokenExpiry = Date.now();
 let mailAccessTokenExpiry = Date.now();
+let inventoryAccessTokenExpiry = Date.now();
 
-// Function to refresh the Zoho Inventory access token
+// Function to refresh the Zoho Contacts access token
 export async function getAccessToken() {
 	const accessToken = process.env.ZOHO_API_TOKEN;
 
@@ -111,5 +117,53 @@ export async function getMailAccessToken() {
 		return data.access_token;
 	} catch (error: any) {
 		throw new Error(`Error refreshing Zoho Mail access token: ${error.message}`);
+	}
+}
+
+// Function to refresh the Zoho Inventory access token
+export async function getInventoryAccessToken() {
+	const accessToken = process.env.ZOHO_INVENTORY_ACCESS_TOKEN;
+	console.log("ACCESS TOKEN", accessToken);
+
+	// If token is still valid, return it
+	if (accessToken && Date.now() < inventoryAccessTokenExpiry) {
+		return accessToken;
+	}
+
+	console.log("Requesting new Zoho Inventory access token...");
+
+	// Fetch a new access token if the old one is expired
+	try {
+		const response = await axios.post(
+			"https://accounts.zoho.com/oauth/v2/token",
+			new URLSearchParams({
+				refresh_token: ZOHO_INVENTORY_REFRESH_TOKEN || "",
+				client_id: ZOHO_INVENTORY_CLIENT_ID || "",
+				client_secret: ZOHO_INVENTORY_CLIENT_SECRET || "",
+				grant_type: "refresh_token",
+			}),
+			{
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+			},
+		);
+
+		const data = response.data as ZohoTokenResponse;
+
+		// Handle error response from Zoho
+		if (response.status !== 200) {
+			throw new Error(`Failed to refresh Zoho Inventory access token: ${data.error}`);
+		}
+
+		// Save the new token in environment variables
+		process.env.ZOHO_INVENTORY_ACCESS_TOKEN = data.access_token;
+
+		inventoryAccessTokenExpiry = Date.now() + data.expires_in * 1000;
+
+		console.log("ACCESS TOKEN", data.access_token);
+		return data.access_token;
+	} catch (error: any) {
+		throw new Error(`Error refreshing Zoho Inventory access token: ${error.message}`);
 	}
 }

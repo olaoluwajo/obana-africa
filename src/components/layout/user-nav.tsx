@@ -14,6 +14,8 @@ import {
 // import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
+import { toast } from "sonner";
+import { useVendorStore } from "@/stores/useVendorStore";
 
 export function UserNav() {
 	const session = {
@@ -24,17 +26,15 @@ export function UserNav() {
 		},
 	};
 
-
 	const router = useRouter();
 	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
 
 	// Logout handler
 	const handleLogout = () => {
-		setAuthenticated(false);
-
-		localStorage.removeItem("otpToken");
-
-		router.push("/sign-in");
+		useVendorStore.getState().clearVendorId();
+		useAuthStore.getState().clearAuth();
+		router.push("/auth/vendor/sign-in");
+		toast.success("User logged out successfully.");
 	};
 
 	if (session) {
