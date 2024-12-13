@@ -6,17 +6,33 @@ import { CellAction } from "./cell-action";
 
 export const columns: ColumnDef<Product, unknown>[] = [
 	{
-		accessorKey: "photo_url",
+		accessorKey: "cf_singleimage",
 		header: "IMAGE",
 		cell: ({ row }) => {
+			// Parse the image URL from the string
+			const imageUrlString = row.getValue("cf_singleimage") as string;
+			const imageUrl = imageUrlString ? (JSON.parse(imageUrlString)[0] as string) : null;
+
 			return (
 				<div className="relative aspect-square h-10 w-10">
-					<Image
-						src={row.getValue("photo_url")}
-						alt={row.getValue("name")}
-						fill
-						className="rounded-lg object-cover"
-					/>
+					{imageUrl ? (
+						<Image
+							src={imageUrl}
+							alt={row.getValue("name")}
+							fill
+							className="rounded-lg object-cover"
+						/>
+					) : (
+						<div>
+							{" "}
+							<Image
+								src={"/no-image.png"}
+								alt={row.getValue("name")}
+								fill
+								className="rounded-lg object-cover"
+							/>
+						</div>
+					)}
 				</div>
 			);
 		},
@@ -31,8 +47,12 @@ export const columns: ColumnDef<Product, unknown>[] = [
 		header: "NAME",
 	},
 	{
-		accessorKey: "category",
+		accessorKey: "category_name",
 		header: "CATEGORY",
+		cell: ({ row }) => {
+			const category = row.getValue("category_name");
+			return <div>{category?.toString() || "No category Selected"}</div>;
+		},
 	},
 	{
 		accessorKey: "status",
@@ -46,7 +66,7 @@ export const columns: ColumnDef<Product, unknown>[] = [
 			const amount = parseFloat(row.getValue("rate"));
 			const formatted = new Intl.NumberFormat("en-US", {
 				style: "currency",
-				currency: "USD",
+				currency: "NGN",
 			}).format(amount);
 
 			return <div className="place-self-start ">{formatted}</div>;
@@ -55,6 +75,17 @@ export const columns: ColumnDef<Product, unknown>[] = [
 	{
 		accessorKey: "description",
 		header: "DESCRIPTION",
+		cell: ({ row }) => {
+			const description = row.getValue("description");
+
+			const truncatedDescription = description?.toString();
+			const finalDescription =
+				truncatedDescription && truncatedDescription.length > 20
+					? `${truncatedDescription.slice(0, 20)}...`
+					: truncatedDescription;
+
+			return <div>{finalDescription || "No description"}</div>;
+		},
 	},
 
 	{

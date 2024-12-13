@@ -1,28 +1,92 @@
-import { Product } from "@/constants/mock-api";
-import { fakeProducts } from "@/constants/mock-api";
-import { searchParamsCache } from "@/lib/searchparams";
+"use client";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { DataTable as ProductTable } from "@/components/ui/table/data-table";
 import { columns } from "./product-tables/columns";
 
-type ProductListingPage = {};
+interface SearchParams {
+	page: string;
+	q: string;
+	limit: string;
+	categories: string;
+}
 
-export default async function ProductListingPage({}: ProductListingPage) {
-	// Showcasing the use of search params cache in nested RSCs
-	const page = searchParamsCache.get("page");
-	const search = searchParamsCache.get("q");
-	const pageLimit = searchParamsCache.get("limit");
-	const categories = searchParamsCache.get("categories");
+const fetchProducts = async (vendorId: string, searchParams: SearchParams) => {
+	console.log("Fetching products from API...");
+	const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/fetch-products`);
+	url.searchParams.append("vendorId", vendorId);
+	Object.keys(searchParams).forEach((key) => {
+		url.searchParams.append(key, searchParams[key as keyof SearchParams]);
+	});
 
-	const filters = {
-		page,
-		limit: pageLimit,
-		...(search && { search }),
-		...(categories && { categories: categories }),
-	};
+	const response = await fetch(url.toString(), {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
 
-	const data = await fakeProducts.getProducts(filters);
-	const totalProducts = data.total_products;
-	const products: Product[] = data.products;
+	if (!response.ok) {
+		throw new Error("Failed to fetch products");
+	}
+
+	return response.json();
+};
+
+export default function ProductListingPage() {
+	const [vendorId, setVendorId] = useState<string | null>(null);
+	const [isVendorIdLoaded, setVendorIdLoaded] = useState(false);
+
+	// Memoized search parameters
+	const searchParams = useMemo(
+		() => ({
+			page: "1",
+			q: "",
+			limit: "2",
+			categories: "",
+		}),
+		[],
+	);
+
+	useEffect(() => {
+		if (typeof window !== "undefined") {
+			const storedVendorId = localStorage.getItem("vendorId");
+			setVendorId(storedVendorId);
+			setVendorIdLoaded(true);
+		}
+	}, []);
+
+	// Use React Query
+	const { data, isLoading, error, isFetching, isStale } = useQuery({
+		queryKey: ["products", vendorId, searchParams],
+		queryFn: () => fetchProducts(vendorId!, searchParams),
+		enabled: isVendorIdLoaded && !!vendorId, //
+		staleTime: 1000 * 60 * 5,
+	});
+
+	// Debugging logs
+	useEffect(() => {
+		console.log("Query isFetching:", isFetching);
+		console.log("Query isStale:", isStale);
+	}, [isFetching, isStale]);
+
+	// Error state
+	if (error) {
+		return (
+			<div>
+				Error fetching products: {error instanceof Error ? error.message : "Unknown error"}
+			</div>
+		);
+	}
+
+	// Loading state
+	if (isLoading || !vendorId) {
+		return <div>Loading...</div>;
+	}
+
+	// Destructure data
+	const products = data?.products || [];
+	const totalProducts = data?.total_products || 0;
 
 	return <ProductTable columns={columns} data={products} totalItems={totalProducts} />;
 }

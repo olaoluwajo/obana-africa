@@ -59,7 +59,10 @@ export default function AppSidebar() {
 	const pathname = usePathname();
 
 	const handleLogout = () => {
-		useVendorStore.getState().clearVendorId();
+		// useVendorStore.getState().clearVendorId();
+		// useVendorStore.getState().clearVendorName();
+		useVendorStore.getState().clearAll();
+
 		useAuthStore.getState().clearAuth();
 		router.push("/auth/vendor/sign-in");
 		toast.success("User logged out successfully.");

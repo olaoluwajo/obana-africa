@@ -78,13 +78,16 @@ export default function UserAuthForm() {
 			try {
 				const response = await axios.get(`/api/check-vendor-exists?email=${data.email}`);
 				console.log("RESPONSE", response.data);
-				const { exists, vendorId } = response.data;
+				const { exists, vendorId, vendorName } = response.data;
+				// localStorage.setItem("vendorName", vendorName);
+				useVendorStore.getState().setVendorName(vendorName);
 
 				if (exists) {
 					console.log(`Vendor exists with ID: ${vendorId}`);
 					const otpResponse = await axios.post("/api/send-otp-email", {
 						email: data.email,
 						vendorId: vendorId,
+						vendorName: vendorName,
 					});
 
 					console.log("OTP RESPONSE", otpResponse);
@@ -155,7 +158,7 @@ export default function UserAuthForm() {
 			{vendorExistsError && (
 				<div className="text-red-500 mt-4 text-sm text-center">
 					<p>{vendorExistsError}</p>
-					<a href="/sign-up" className="text-blue-500">
+					<a href="/auth/vendor/sign-up" className="text-blue-500">
 						Click here to <span className="font-bold">register</span> as a vendor.
 					</a>
 				</div>

@@ -1,3 +1,4 @@
+"use client";
 import { BarGraph } from "./bar-graph";
 // import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import PageContainer from "@/components/layout/page-container";
@@ -8,14 +9,23 @@ import RecentProducts from "./recent-products";
 // import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useVendorStore } from "@/stores/useVendorStore";
 
 export default function OverViewPage() {
+	const vendorName = useVendorStore((state) => state.vendorName);
+
+	if (!vendorName) {
+		const vendorName = localStorage.getItem("vendorName");
+		console.log("VENDOR NAME", vendorName);
+		useVendorStore.setState({ vendorName: vendorName });
+	}
+
 	return (
 		<PageContainer scrollable>
 			<div className="space-y-2 pb-5">
 				<div className="flex items-center justify-between space-y-2">
 					<h2 className="text-2xl font-bold tracking-tight text-card-foreground">
-						Hi, Welcome back  👋
+						Hi, Welcome back {vendorName} 👋
 					</h2>
 					{/* <div className="hidden items-center space-x-2 md:flex">
             <CalendarDateRangePicker />

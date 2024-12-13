@@ -1,5 +1,5 @@
 "use client";
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useAuthStore from "@/stores/authStore";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -14,6 +14,7 @@ export default function RootLayout({
 	const pathname = usePathname();
 	const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
 	const role = useAuthStore((state: any) => state.role);
+	const queryClient = new QueryClient();
 
 	useEffect(() => {
 		// console.log("Authenticated:", isAuthenticated);
@@ -33,5 +34,6 @@ export default function RootLayout({
 
 	if (!isAuthenticated) return null;
 
-	if (isAuthenticated && role === "vendor") return <div>{children}</div>;
+	if (isAuthenticated && role === "vendor")
+		return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }

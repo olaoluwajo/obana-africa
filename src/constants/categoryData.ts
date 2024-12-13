@@ -42,16 +42,11 @@ export const subCategoryOptions = {
 export const subSubCategoryOptions = {
 	Beauty: [{ value: "Beauty", id: "4650667000010310117" }],
 	Electronics: [
-		{ value: "Phones", id: "111" },
-		{ value: "Laptops", id: "111" },
 	],
 	Headsets: [
-		{ value: "Headphones", id: "111" },
-		{ value: "Earbuds", id: "111" },
 	],
 	Men: [
 		{ value: "T-shirts", id: "4650667000012637679" },
-		{ value: "Jeans", id: "111" },
 		{ value: "Shorts", id: "4650667000010310091" },
 		{ value: "Assesories", id: "4650667000000093018" },
 		{ value: "Sneakers", id: "4650667000012605017" },
@@ -66,7 +61,6 @@ export const subSubCategoryOptions = {
 	Women: [
 		{ value: "Dresses", id: "4650667000012163053" },
 		{ value: "Shirts", id: "4650667000012605033" },
-		{ value: "Skirts", id: "111" },
 		{ value: "Assesories", id: "4650667000000862086" },
 	],
 };

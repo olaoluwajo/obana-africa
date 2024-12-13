@@ -203,6 +203,7 @@ export type Product = {
 	fabricType: string;
 	sizeType: string;
 	rate: number;
+	unitPerBox: any;
 };
 
 // Mock product data store
@@ -232,7 +233,7 @@ export const fakeProducts = {
 				weight: faker.number.int({ min: 1, max: 100 }),
 				weight_unit: faker.helpers.arrayElement(["kg", "g", "mg", "oz", "lb"]),
 				rate: faker.number.int({ min: 1, max: 5 }),
-				
+				unitPerBox: faker.number.int({ min: 1, max: 10 }),
 				sellingPrice: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
 				sizesRun: faker.helpers.arrayElement(["M-4XL", "S-M", "L-XL", "S-XL", "M-XL"]),
 				countryOfManufacture: faker.helpers.arrayElement(["Nigeria", "Ghana", "Kenya", "South Africa", "Nigeria"]),
