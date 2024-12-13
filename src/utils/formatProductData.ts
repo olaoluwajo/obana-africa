@@ -58,7 +58,7 @@ export const formatProductData = (values: FormValues) => {
 		},
 		{
 			api_name: "cf_packs",
-			value: "10",
+			value: values.unitPerBox,
 		},
 		{
 			api_name: "cf_sizes_run",
@@ -77,11 +77,12 @@ export const formatProductData = (values: FormValues) => {
 
 		{
 			api_name: "cf_productimages",
-			value: values.images ? JSON.stringify(values.images) : "[]"
+			value: values.images && values.images.length > 0 ? JSON.stringify(values.images) : "[]",
 		},
 		{
 			api_name: "cf_singleimage",
-			value: "https://ng.jumia.is/cms/0-0-black-friday/2024/Thumbnails/appliances.png",
+			value:
+				values.images && values.images.length > 0 ? JSON.stringify([values.images[0]]) : "[]",
 		},
 		{
 			api_name: "cf_b2b",
@@ -130,6 +131,7 @@ export const formatProductData = (values: FormValues) => {
 	// console.log("formattedCategoryId", formattedCategoryId);
 
 	// console.log("Formatting Product Data:", values);
+	console.log("IMAGES", values.images);
 	const formattedData = {
 		name: values.name,
 		rate: parseFloat(values.sellingPrice),

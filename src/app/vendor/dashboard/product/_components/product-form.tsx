@@ -99,6 +99,7 @@ export const formSchema = z.object({
 	isbn: z.any().optional(),
 	fob: z.any().optional(),
 	vendorId: z.string(),
+	unitPerBox: z.any().optional(),
 });
 
 export default function ProductForm({
@@ -135,6 +136,7 @@ export default function ProductForm({
 		countryOfManufacture: initialData?.countryOfManufacture || "",
 		fabricType: initialData?.fabricType || "",
 		sizeType: initialData?.sizeType || "",
+		unitPerBox: initialData?.unitPerBox || "",
 
 		tags: initialData?.tags || "",
 		// weight: {
@@ -176,7 +178,7 @@ export default function ProductForm({
 		values: defaultValues,
 	});
 
-	// const fabricTypeOptions = ["Cotton", "Polyester", "Wool", "Silk", "Linen"];
+	const fabricTypeOptions = ["Cotton", "Polyester", "Wool", "Silk", "Linen"];
 	// const sizeTypeOptions = ["Small", "Medium", "Large", "X-Large", "XX-Large"];
 
 	// Handle category selection change
@@ -381,24 +383,24 @@ export default function ProductForm({
 								/>
 							</div>
 
-							<FormField
-								control={form.control}
-								name="category"
-								render={({ field }) => (
-									<CategoryInput
-										control={form.control}
-										name="category"
-										label="Category"
-										options={categoryOptions}
-										placeholder="Select category"
-										onChange={(value) => {
-											handleCategoryChange(value);
-											field.onChange(value);
-										}}
-									/>
-								)}
-							/>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+								<FormField
+									control={form.control}
+									name="category"
+									render={({ field }) => (
+										<CategoryInput
+											control={form.control}
+											name="category"
+											label="Category"
+											options={categoryOptions}
+											placeholder="Select category"
+											onChange={(value) => {
+												handleCategoryChange(value);
+												field.onChange(value);
+											}}
+										/>
+									)}
+								/>
 								<FormField
 									control={form.control}
 									name="subCategory"
@@ -429,6 +431,8 @@ export default function ProductForm({
 										</FormItem>
 									)}
 								/>
+							</div>
+							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 								<FormField
 									control={form.control}
 									name="subSubCategory"
@@ -458,6 +462,14 @@ export default function ProductForm({
 											<FormMessage />
 										</FormItem>
 									)}
+								/>
+								<TextInput
+									control={form.control}
+									name="unitPerBox"
+									label="Unit Per Box"
+									placeholder="Enter Unit Per Box"
+									type="number"
+									tooltipContent="The number of units in each box"
 								/>
 							</div>
 						</div>
@@ -512,13 +524,20 @@ export default function ProductForm({
 								/>
 							</div>
 							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								<TextInput
+								<SelectInput
+									control={form.control}
+									name="fabricType"
+									label="Fabric Type"
+									options={fabricTypeOptions}
+									placeholder="Select fabric type"
+								/>
+								{/* <TextInput
 									control={form.control}
 									name="fabricType"
 									label="Fabric Type"
 									placeholder="Enter fabric type"
 									type="text"
-								/>
+								/> */}
 								<TextInput
 									control={form.control}
 									name="sizeType"

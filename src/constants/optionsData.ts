@@ -1,14 +1,13 @@
 export const unitOptions = [
-	"pcs",
+	"Pcs",
 	"kg",
 	"litre",
 	"metre",
-	"box",
+	"Box",
 	"pack",
 	"piece",
 	"set",
 	"pair",
-	"cm",
 	"dozen",
 ];
 

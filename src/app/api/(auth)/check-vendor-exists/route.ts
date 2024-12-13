@@ -11,10 +11,11 @@ export async function GET(request: Request) {
 	}
 
 	try {
-	 const { exists, vendorId } = await getVendorDetails(email);
+		const { exists, vendorId, vendorName, contactName } = await getVendorDetails(email);
 
-		return NextResponse.json({ exists, vendorId });
+		return NextResponse.json({ exists, vendorId, vendorName, contactName });
 	} catch (error) {
+		console.log("ERROR", error);
 		return NextResponse.json({ error: "Error checking vendor" }, { status: 500 });
 	}
 }

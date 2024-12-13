@@ -4,13 +4,13 @@ import { getAccessToken } from "./zohoAuthToken";
 export async function createProduct(vendorId: string, productData: any) {
 	try {
 		const accessToken = await getAccessToken();
-		console.log("Raw Product Data (Before Formatting):", productData);
+		// console.log("Raw Product Data (Before Formatting):", productData);
 
 		// Log formatted data before sending to Zoho
-		console.log("Formatted Product Data (To be sent to Zoho):", {
-			...productData,
-			vendorId,
-		});
+		// console.log("Formatted Product Data (To be sent to Zoho):", {
+		// 	...productData,
+		// 	vendorId,
+		// });
 
 		const response = await axios.post(
 			`https://www.zohoapis.com/inventory/v1/items`,

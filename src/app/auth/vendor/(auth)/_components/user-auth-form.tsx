@@ -78,13 +78,16 @@ export default function UserAuthForm() {
 			try {
 				const response = await axios.get(`/api/check-vendor-exists?email=${data.email}`);
 				console.log("RESPONSE", response.data);
-				const { exists, vendorId } = response.data;
+				const { exists, vendorId, vendorName } = response.data;
+				// localStorage.setItem("vendorName", vendorName);
+				useVendorStore.getState().setVendorName(vendorName);
 
 				if (exists) {
 					console.log(`Vendor exists with ID: ${vendorId}`);
 					const otpResponse = await axios.post("/api/send-otp-email", {
 						email: data.email,
 						vendorId: vendorId,
+						vendorName: vendorName,
 					});
 
 					console.log("OTP RESPONSE", otpResponse);
