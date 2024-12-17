@@ -1,25 +1,33 @@
-import { fakeProducts, Product } from '@/constants/mock-api';
-import { notFound } from 'next/navigation';
-import ProductForm from './product-form';
+import { notFound } from "next/navigation";
+import ProductForm from "./product-form";
+import { fetchProductById } from "@/lib/fetchProducts";
+import { mapProductDataToForm } from "@/utils/mapProductDataToForm";
+import { Product } from "@/constants/mock-api";
 
 type TProductViewPageProps = {
-  productId: string;
+	productId: string;
 };
 
-export default async function ProductViewPage({
-  productId
-}: TProductViewPageProps) {
-  let product = null;
-  let pageTitle = 'Create New Product';
+export default async function ProductViewPage({ productId }: TProductViewPageProps) {
+	let product = null;
+	let pageTitle = "Create New Product";
 
-  if (productId !== 'new') {
-    const data = await fakeProducts.getProductById(Number(productId));
-    product = data.product as Product;
-    if (!product) {
-      notFound();
-    }
-    pageTitle = `Edit Product`;
-  }
+	if (productId !== "new") {
+		// Fetch product data from your backend
+		const data = await fetchProductById(productId);
+		// console.log("data", data);
+		product = data?.item;
+		console.log("product", product);
 
-	return <ProductForm initialData={product} pageTitle={pageTitle} />;
+		if (!product) {
+			notFound();
+		}
+
+		const initialData = mapProductDataToForm(product);
+
+		pageTitle = `Edit Product: ${product.name}`;
+		return <ProductForm initialData={initialData} pageTitle={pageTitle} productId={productId} />;
+	}
+
+	return <ProductForm initialData={product} pageTitle={pageTitle} productId={productId} />;
 }

@@ -25,12 +25,12 @@ export default function OverViewPage() {
 			<div className="space-y-2 pb-5">
 				<div className="flex items-center justify-between space-y-2">
 					<h2 className="text-2xl font-bold tracking-tight text-card-foreground">
-						Hi, Welcome back {vendorName} 👋
+						{/* Hi, Welcome back {vendorName?.toLowerCase()} 👋 */}
+						Hi, Welcome back{" "}
+						{(vendorName?.[0]?.toUpperCase() ?? "") +
+							(vendorName?.slice(1)?.toLowerCase() ?? "")}
+						👋
 					</h2>
-					{/* <div className="hidden items-center space-x-2 md:flex">
-            <CalendarDateRangePicker />
-            <Button>Download</Button>
-          </div> */}
 				</div>
 				<Tabs defaultValue="overview" className="space-y-4">
 					<TabsList>

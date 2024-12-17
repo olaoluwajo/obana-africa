@@ -20,6 +20,7 @@ import * as z from "zod";
 import { useOtpStore } from "@/stores/useOtpStore";
 import useAuthStore from "@/stores/authStore";
 import { useVendorStore } from "@/stores/useVendorStore";
+import Loader from "@/components/loader";
 // import { useVendorStore } from "@/stores/useVendorStore";
 
 // import checkIfVendorExists from "@/helpers/isVendorExistHelper";
@@ -122,39 +123,45 @@ export default function UserAuthForm() {
 	};
 
 	return isAuthenticated ? (
-		<div>Loading...</div>
+		<div className="flex flex-col justify-center items-center">
+			<Loader /> <p>Loading Please wait..</p>
+		</div>
 	) : (
 		<>
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
-					<FormField
-						control={form.control}
-						name="email"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Email</FormLabel>
-								<FormControl>
-									<Input
-										type="email"
-										placeholder="Enter your email..."
-										disabled={isLoading}
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
+			{isLoading ? (
+				<Loader />
+			) : (
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-2">
+						<FormField
+							control={form.control}
+							name="email"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Email</FormLabel>
+									<FormControl>
+										<Input
+											type="email"
+											placeholder="Enter your email..."
+											disabled={isLoading}
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<Button disabled={isLoading} className="ml-auto w-full text-white" type="submit">
+							{isLoading ? "Please wait..." : "Continue With Email"}
+						</Button>
+						{isLoading && (
+							<p className="text-center text-sm text-gray-500">
+								Please sit back, this may take a while confirming your email...
+							</p>
 						)}
-					/>
-					<Button disabled={isLoading} className="ml-auto w-full text-white" type="submit">
-						{isLoading ? "Please wait..." : "Continue With Email"}
-					</Button>
-					{isLoading && (
-						<p className="text-center text-sm text-gray-500">
-							Please sit back, this may take a while confirming your email...
-						</p>
-					)}
-				</form>
-			</Form>
+					</form>
+				</Form>
+			)}
 			{vendorExistsError && (
 				<div className="text-red-500 mt-4 text-sm text-center">
 					<p>{vendorExistsError}</p>
