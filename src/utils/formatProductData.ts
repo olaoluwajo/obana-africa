@@ -173,7 +173,7 @@ export const formatProductData = (values: FormValues) => {
 				// account_identifier: "",
 				// formatted_name: "Zoho Commerce",
 				status: "active",
-				name: "zstore",
+				// name: "zstore",
 				channel_name: values.name,
 				channel_sku: values.sku,
 			},

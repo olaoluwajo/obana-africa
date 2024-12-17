@@ -1,8 +1,10 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DataTable as ProductTable } from "@/components/ui/table/data-table";
 import { columns } from "./product-tables/columns";
+import Loader from "@/components/loader";
+import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
 
 interface SearchParams {
 	page: string;
@@ -42,7 +44,7 @@ export default function ProductListingPage() {
 		() => ({
 			page: "1",
 			q: "",
-			limit: "2",
+			limit: "",
 			categories: "",
 		}),
 		[],
@@ -60,7 +62,7 @@ export default function ProductListingPage() {
 	const { data, isLoading, error, isFetching, isStale } = useQuery({
 		queryKey: ["products", vendorId, searchParams],
 		queryFn: () => fetchProducts(vendorId!, searchParams),
-		enabled: isVendorIdLoaded && !!vendorId, //
+		enabled: isVendorIdLoaded && !!vendorId,
 		staleTime: 1000 * 60 * 5,
 	});
 
@@ -81,12 +83,21 @@ export default function ProductListingPage() {
 
 	// Loading state
 	if (isLoading || !vendorId) {
-		return <div>Loading...</div>;
+		return (
+			<div className="text-card-foreground">
+				<Loader />
+			</div>
+		);
 	}
 
-	// Destructure data
 	const products = data?.products || [];
 	const totalProducts = data?.total_products || 0;
 
-	return <ProductTable columns={columns} data={products} totalItems={totalProducts} />;
+	return (
+		<>
+			<Suspense fallback={<DataTableSkeleton columnCount={7} rowCount={10} />}>
+				<ProductTable columns={columns} data={products} totalItems={totalProducts} />;
+			</Suspense>
+		</>
+	);
 }

@@ -5,23 +5,9 @@ import { useQueryState } from "nuqs";
 import { useCallback, useMemo } from "react";
 
 export const CATEGORY_OPTIONS = [
-	{ value: "Men", label: "Men" },
-	{ value: "Women", label: "Women" },
 	{ value: "fashion", label: "Fashion" },
-	{ value: "T-shirts", label: "T-shirts" },
-	{ value: "Shorts", label: "Shorts" },
-	{ value: "Assesories", label: "Assesories" },
-	{ value: "Sneakers", label: "Sneakers" },
-	{ value: "Trousers", label: "Trousers" },
-	{ value: "Polo", label: "Polo" },
-	{ value: "Shirts", label: "Shirts" },
-	{ value: "Hoodies", label: "Hoodies" },
-	{ value: "Jackets", label: "Jackets" },
-	{ value: "Smart Pants", label: "Smart Pants" },
-	{ value: "Sweatshirts", label: "Sweatshirts" },
 	{ value: "Beauty Products", label: "Beauty Products" },
 	{ value: "Electronics", label: "Electronics" },
-	{ value: "Headsets", label: "Headsets" },
 ];
 export function useProductTableFilters() {
 	const [searchQuery, setSearchQuery] = useQueryState(

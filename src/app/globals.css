@@ -132,3 +132,9 @@ input[type="number"] {
 input[type="number"]::-ms-clear {
 	display: none;
 }
+
+/* Custom styles for the PhotoSwipe image modal */
+.pswp__img {
+	border-radius: 12px;
+	object-fit: contain;
+}

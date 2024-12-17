@@ -40,7 +40,7 @@ export function DataTable<TData extends Product, TValue>({
 	columns,
 	data,
 	totalItems,
-	pageSizeOptions = [10, 20, 30, 40, 50],
+	pageSizeOptions = [10, 20, 30, 40, 50, 100, 200],
 }: DataTableProps<TData, TValue>) {
 	const [currentPage, setCurrentPage] = useQueryState(
 		"page",

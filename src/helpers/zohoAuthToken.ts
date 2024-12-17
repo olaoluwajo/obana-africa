@@ -63,6 +63,7 @@ export async function getAccessToken() {
 
 		// Save the new token in environment variables
 		process.env.ZOHO_API_TOKEN = data.access_token;
+		console.log("REFRESHED TOKEN", data.access_token);
 
 		accessTokenExpiry = Date.now() + data.expires_in * 1000;
 

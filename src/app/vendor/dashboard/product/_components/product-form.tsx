@@ -41,6 +41,7 @@ import {
 	subCategoryOptions,
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
+import { createProduct } from "@/lib/create-product-utils";
 
 const MAX_FILE_SIZE = 5000000;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -48,14 +49,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 export const formSchema = z.object({
 	image: z
 		.any()
-		.nullable()
-		.refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-		.optional()
-		.refine(
-			(files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-			".jpg, .jpeg, .png and .webp files are accepted.",
-		)
-		.optional(),
+		.nullable(),
 	name: z.string().min(5, {
 		message: "Product name must be at least 5 characters.",
 	}),
@@ -105,9 +99,11 @@ export const formSchema = z.object({
 export default function ProductForm({
 	initialData,
 	pageTitle,
+	productId,
 }: {
-	initialData: Product | null;
+	initialData: Product | any;
 	pageTitle: string;
+	productId: string;
 }) {
 	const vendorId = useVendorStore((state) => state.vendorId);
 	if (!vendorId) {
@@ -119,6 +115,7 @@ export default function ProductForm({
 	}
 
 	const defaultValues = {
+		image: initialData?.image || "",
 		name: initialData?.name || "",
 		sku: initialData?.sku || "",
 		vendorId: vendorId || "",
@@ -180,6 +177,7 @@ export default function ProductForm({
 
 	const fabricTypeOptions = ["Cotton", "Polyester", "Wool", "Silk", "Linen"];
 	// const sizeTypeOptions = ["Small", "Medium", "Large", "X-Large", "XX-Large"];
+	const unitPerBoxOptions = ["5", "6", "7", "8", "9", "10", "12", "15", "20", "25", "30", "50"];
 
 	// Handle category selection change
 	const handleCategoryChange = (category: any) => {
@@ -207,31 +205,6 @@ export default function ProductForm({
 	const handleSubSubCategoryChange = (subSubCategory: any) => {
 		setSelectedSubSubCategory(subSubCategory);
 	};
-
-	// Handle unit selection change
-	// const handleUnitChange = (unit: any) => {
-	// 	setSelectedUnit(unit);
-	// };
-
-	// Handle manufacturer selection change
-	// const handleManufacturerChange = (manufacturer: any) => {
-	// 	setSelectedManufacturer(manufacturer);
-	// };
-
-	// Handle brand selection change
-	// const handleBrandChange = (brand: any) => {
-	// 	setSelectedBrand(brand);
-	// };
-
-	// function onSubmit(values: z.infer<typeof formSchema>) {
-	// 	console.log(values);
-	// }
-
-	// const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-	// 	if (e.target.files) {
-	// 		setImages(Array.from(e.target.files));
-	// 	}
-	// };
 
 	const uploadImages = async (images: File[]): Promise<string[]> => {
 		const urls: string[] = [];
@@ -284,27 +257,32 @@ export default function ProductForm({
 		console.log("Formatted Product Data", formatProductData(values));
 
 		try {
-			if (images.length > 0) {
-				const uploadedUrls = await uploadImages(images);
-				setUploadedUrls(uploadedUrls);
-				console.log("UPLOADED URLS", uploadedUrls);
+			// if (images.length > 0) {
+			// 	const uploadedUrls = await uploadImages(images);
+			// 	setUploadedUrls(uploadedUrls);
+			// 	console.log("UPLOADED URLS", uploadedUrls);
+			// }
+
+			// const formattedProductData = formatProductData({
+			// 	...values,
+			// 	images: uploadedUrls,
+			// });
+			// console.log("Formatted Product Data with images", formattedProductData);
+
+			// const response = await axios.post("/api/create-product", {
+			// 	vendorId: values.vendorId,
+			// 	productData: formattedProductData,
+			// });
+			if (productId === "new") {
+				const productData: any = await createProduct(values, images);
+				console.log("Product created successfully", productData.data);
+				toast.success(`Product Name: ${productData.item.name} created successfully`);
+				router.push("/vendor/dashboard/[productId]/view");
+				setIsLoading(false);
+			} else {
+				// await editProduct(productId);
+				console.log("Product", productId);
 			}
-
-			const formattedProductData = formatProductData({
-				...values,
-				images: uploadedUrls,
-			});
-			console.log("Formatted Product Data with images", formattedProductData);
-
-			const response = await axios.post("/api/create-product", {
-				vendorId: values.vendorId,
-				productData: formattedProductData,
-			});
-
-			console.log("Product created successfully", response.data);
-			toast.success(`Product Name : ${response.data.item.name}  created successfully`);
-			router.push("/vendor/dashboard/product");
-			setIsLoading(false);
 		} catch (error: any) {
 			if (error.response) {
 				console.error(error.response);
@@ -463,13 +441,13 @@ export default function ProductForm({
 										</FormItem>
 									)}
 								/>
-								<TextInput
+
+								<SelectInput
 									control={form.control}
 									name="unitPerBox"
 									label="Unit Per Box"
+									options={unitPerBoxOptions}
 									placeholder="Enter Unit Per Box"
-									type="number"
-									tooltipContent="The number of units in each box"
 								/>
 							</div>
 						</div>
@@ -705,7 +683,11 @@ export default function ProductForm({
 							)}
 						/>
 						<Button disabled={isLoading} type="submit">
-							{isLoading ? "Adding Product..." : "Add Product"}
+							{isLoading
+								? "Saving..."
+								: productId === "new"
+								? "Add Product"
+								: "Update Product"}
 						</Button>
 					</form>
 				</Form>

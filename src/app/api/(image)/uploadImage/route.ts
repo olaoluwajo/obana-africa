@@ -14,12 +14,6 @@ console.log("Cloudinary Config:", {
 });
 
 
-// export const config = {
-// 	api: {
-// 		bodyParser: false,
-// 	},
-// };
-
 export const runtime = "nodejs";
 
 // Named export for POST method
