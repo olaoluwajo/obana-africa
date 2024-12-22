@@ -1,3 +1,7 @@
+type SubSubCategoryOptions = {
+	[key: string]: { value: string; id: string }[]; // Add the index signature
+};
+
 export const categoryOptions = [
 	{
 		value: "beauty",
@@ -39,12 +43,10 @@ export const subCategoryOptions = {
 	],
 };
 
-export const subSubCategoryOptions = {
+export const subSubCategoryOptions: SubSubCategoryOptions = {
 	Beauty: [{ value: "Beauty", id: "4650667000010310117" }],
-	Electronics: [
-	],
-	Headsets: [
-	],
+	Electronics: [],
+	Headsets: [],
 	Men: [
 		{ value: "T-shirts", id: "4650667000012637679" },
 		{ value: "Shorts", id: "4650667000010310091" },

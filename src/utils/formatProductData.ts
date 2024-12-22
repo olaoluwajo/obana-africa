@@ -103,11 +103,6 @@ export const formatProductData = (values: FormValues) => {
 		subCategory?: string;
 		subSubCategory?: string;
 	}): string | null => {
-		// console.log("Category:", category);
-		// console.log("SubCategory:", subCategory);
-		// console.log("SubSubCategory:", subSubCategory);
-
-		// First, check if subSubCategory is available, if so, get its ID
 		if (subSubCategory) {
 			const subSubCategoryId =
 				subSubCategoryOptions[subCategory as keyof typeof subSubCategoryOptions]?.find(
@@ -203,7 +198,7 @@ export const formatProductData = (values: FormValues) => {
 		is_storage_location_enabled: false,
 		is_fulfillable: false,
 
-		part_number: "",
+		part_number: values.mpn,
 		is_combo_product: false,
 		image_sync_in_progress: false,
 		package_details: {
