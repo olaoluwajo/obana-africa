@@ -40,7 +40,7 @@ import {
 	subCategoryOptions,
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
-import { createProduct } from "@/lib/create-product-utils";
+import { createProduct, editProduct } from "@/lib/product-utils";
 
 export const formSchema = z.object({
 	image: z.any().nullable(),
@@ -190,8 +190,8 @@ export default function ProductForm({
 			setVendorName(storedVendorName);
 			setProductCount(Number(storedProductCount));
 		}
-		console.log("Vendor form newname", storedVendorName);
-		console.log("Product count", storedProductCount);
+		// console.log("Vendor form newname", storedVendorName);
+		// console.log("Product count", storedProductCount);
 	}, []);
 
 	useEffect(() => {
@@ -205,7 +205,7 @@ export default function ProductForm({
 
 		setSku(generatedSku);
 		setValue("sku", generatedSku);
-		console.log("Genrated sku", generatedSku);
+		// console.log("Genrated sku", generatedSku);
 	}, [brandName, productCount, vendorName, setValue]);
 
 	const handleBrandChange = (brand: string) => {
@@ -246,18 +246,25 @@ export default function ProductForm({
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		const promise = () =>
-			new Promise((resolve) => setTimeout(() => resolve({ name: values.name }), 3000));
+			new Promise((resolve) => setTimeout(() => resolve({ name: values.name }), 4000));
 
 		// console.log(values);
 		setIsLoading(true);
-		toast.promise(promise, {
-			// loading: "Adding Product, Please wait...",
-			loading: `Adding Product ${values.name}, Please wait...`,
-			// success: (data: any) => {
-			// 	return `Product ${data.name}  created successfully`;
-			// },
-			error: "Error",
-		});
+		if (productId === "new") {
+			toast.promise(promise, {
+				// loading: "Adding Product, Please wait...",
+				loading: `Adding Product ${values.name}, Please wait...`,
+				// success: (data: any) => {
+				// 	return `Product ${data.name}  created successfully`;
+				// },
+				error: "Error",
+			});
+		} else {
+			toast.promise(promise, {
+				loading: `Updating Product ${values.name}, Please wait...`,
+				error: "Error",
+			});
+		}
 
 		console.log("Formatted Product Data", formatProductData(values));
 
@@ -269,9 +276,13 @@ export default function ProductForm({
 				router.push(`/vendor/dashboard/product`);
 				setIsLoading(false);
 			} else {
-				// await editProduct(productId);
-				console.log("Product", productId);
 				// toast.success(`Product Name: ${values.name} updated successfully`);
+
+				console.log("Product", productId);
+				const productData: any = await editProduct(productId, values, images);
+				toast.success(`Product ${productData.item.name} updated successfully`);
+				router.push(`/vendor/dashboard/product/view/${productId}`);
+				setIsLoading(false);
 			}
 		} catch (error: any) {
 			if (error.response) {
@@ -385,8 +396,77 @@ export default function ProductForm({
 									)}
 								/>
 							</div>
-							<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-								{selectedCategory && (
+							{productId === "new" ? (
+								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+									{selectedCategory && (
+										<FormField
+											control={form.control}
+											name="subCategory"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Sub Category</FormLabel>
+													<Select
+														value={selectedSubCategory}
+														onValueChange={(value) => {
+															handleSubCategoryChange(value);
+															field.onChange(value);
+														}}
+														disabled={!selectedCategory}>
+														<FormControl>
+															<SelectTrigger>
+																<SelectValue placeholder="Select Sub Sub-Category" />
+															</SelectTrigger>
+														</FormControl>
+														<SelectContent>
+															{availableSubCategories.map((subCategory) => (
+																<SelectItem key={subCategory} value={subCategory}>
+																	{subCategory}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									)}
+									{selectedSubCategory && (
+										<FormField
+											control={form.control}
+											name="subSubCategory"
+											render={({ field }) => (
+												<FormItem>
+													<FormLabel>Sub Sub-Category</FormLabel>
+													<Select
+														value={selectedSubSubCategory}
+														onValueChange={(value) => {
+															handleSubSubCategoryChange(value);
+															field.onChange(value);
+														}}
+														disabled={!selectedSubCategory}>
+														<FormControl>
+															<SelectTrigger>
+																<SelectValue placeholder="Select Sub Sub-Category" />
+															</SelectTrigger>
+														</FormControl>
+														<SelectContent>
+															{availableSubSubCategories.map((subSubCategory) => (
+																<SelectItem
+																	key={subSubCategory}
+																	value={subSubCategory}>
+																	{subSubCategory}
+																</SelectItem>
+															))}
+														</SelectContent>
+													</Select>
+													<FormMessage />
+												</FormItem>
+											)}
+										/>
+									)}
+								</div>
+							) : (
+								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 									<FormField
 										control={form.control}
 										name="subCategory"
@@ -399,7 +479,7 @@ export default function ProductForm({
 														handleSubCategoryChange(value);
 														field.onChange(value);
 													}}
-													disabled={!selectedCategory}>
+											>
 													<FormControl>
 														<SelectTrigger>
 															<SelectValue placeholder="Select Sub Sub-Category" />
@@ -417,8 +497,6 @@ export default function ProductForm({
 											</FormItem>
 										)}
 									/>
-								)}
-								{selectedSubCategory && (
 									<FormField
 										control={form.control}
 										name="subSubCategory"
@@ -431,7 +509,7 @@ export default function ProductForm({
 														handleSubSubCategoryChange(value);
 														field.onChange(value);
 													}}
-													disabled={!selectedSubCategory}>
+											>
 													<FormControl>
 														<SelectTrigger>
 															<SelectValue placeholder="Select Sub Sub-Category" />
@@ -451,8 +529,8 @@ export default function ProductForm({
 											</FormItem>
 										)}
 									/>
-								)}
-							</div>
+								</div>
+							)}
 						</div>
 						<FormField
 							control={form.control}
@@ -731,7 +809,7 @@ export default function ProductForm({
 										label="Opening Stock"
 										placeholder="Enter opening stock"
 										type="number"
-										disabled={true}
+										// disabled={true}
 										tooltipContent="The number of initial stock of items available"
 									/>
 									<TextInput

@@ -51,8 +51,24 @@ export const createProduct = async (values: any, images: File[]) => {
 	}
 };
 
-
 //edit product function
 
+export const editProduct = async (productId: string, values: any, images: File[]) => {
+	const uploadedUrls = images.length > 0 ? await uploadImages(images) : [];
+	const formattedProductData = formatProductData({
+		...values,
+		images: uploadedUrls,
+	});
+	console.log('ProductId',productId)
+	console.log(formattedProductData);
 
-
+	try {
+		const response = await axios.put(`/api/edit-product`, {
+			productData: formattedProductData,
+			productId,
+		});
+		return response.data;
+	} catch (error: any) {
+		throw new Error(error.response?.data.message || "Error editing product");
+	}
+};

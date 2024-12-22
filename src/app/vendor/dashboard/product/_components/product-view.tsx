@@ -16,6 +16,7 @@ import {
 	Timer,
 } from "lucide-react";
 import ImageGallery from "./image-gallery";
+import ProductActions from "./product-actions";
 
 type ProductViewPageProps = {
 	params: any;
@@ -65,11 +66,23 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 		</div>
 	);
 
-	async function handleEdit() {
+	console.log("Type of productId:", typeof productId);
+	console.log("Value of productId:", productId);
+
+	async function handleEdit(productId: any) {
 		"use server";
+		if (!productId) {
+			console.error("Product ID is required.");
+			return;
+		}
 		// Logic to navigate to an edit form ( `/edit-product/${productId}`)
 		console.log("Redirecting to edit page...");
-		redirect(`/edit-product/${productId}`);
+		try {
+			console.log(`Redirecting to edit page for product ID: ${productId}`);
+			redirect(`/vendor/dashboard/product/${productId}`);
+		} catch (error) {
+			console.error("Error during redirection:", error);
+		}
 	}
 
 	async function handleDelete() {
@@ -84,7 +97,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 
 	return (
 		<div className="container mx-auto px-4 py-8 bg-white shadow-lg rounded-lg text-card-fore">
-			{/* Image Gallery */}
 			<div className="mb-8">
 				<h2 className="text-2xl font-bold mb-4 flex items-center text-card-foreground">
 					<Package className="mr-2 text-blue-600" size={24} />
@@ -305,23 +317,7 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 			</h3>
 			<p className="text-gray-700 italic">{product.description || "No description available"}</p>
 
-			<div className="mt-6 flex justify-end space-x-4">
-				<button
-					onClick={handleEdit}
-					className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-					Edit Product
-				</button>
-				<button
-					onClick={handleEdit}
-					className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-					Duplicate
-				</button>
-				<button
-					onClick={handleDelete}
-					className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
-					Delete Product
-				</button>
-			</div>
+			<ProductActions productId={productId} />
 		</div>
 	);
 }

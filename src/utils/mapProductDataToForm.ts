@@ -6,7 +6,6 @@ import {
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
 
-
 type FormValues = z.infer<typeof formSchema> & {
 	images?: string[];
 	initialStock?: number;
@@ -34,26 +33,24 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	);
 	const imagesField = customFields.find((field: any) => field.api_name === "cf_productimages");
 
-	const formattedCategory = formattedCategoryId({
-		category: product?.category,
-		subCategory: product?.subCategory,
-		subSubCategory: product?.subSubCategory,
-	});
+	// const { category, subCategory, subSubCategory } = determineCategoryHierarchy(product?.category);
+
+	const { category, subCategory, subSubCategory } = findCategoryHierarchy(product?.category_id);
 
 	return {
 		name: product?.name || "",
 		sku: product?.sku || "",
-		productCode:productCodeField?.value || "",
+		productCode: productCodeField?.value || "",
 		vendorId: product?.vendor_id || "",
 		unit: product?.unit || "",
-		category: product?.category || "",
-		subCategory: product?.subCategory || "",
-		subSubCategory: product?.subSubCategory || "",
+		category: category || "",
+		subCategory: subCategory || "",
+		subSubCategory: subSubCategory || "",
 		sellingPrice: product?.rate?.toString() || "",
 		account: product?.account_name || "Sales",
 		salesTaxRule: product?.sales_tax_rule || "",
 		description: product?.description || "",
-		unitPrice: unitPriceField?.unit_price || "",
+		unitPrice: unitPriceField?.value || "",
 		availableColors: colorField?.value || "",
 		unitPerBox: unitPerBoxField?.value || "",
 		fabricType: fabricTypeField?.value || "",
@@ -64,45 +61,63 @@ export const mapProductDataToForm = (product: any): FormValues => {
 		tags: tagsField?.value || "",
 		weight_unit: product?.package_details?.weight_unit || "",
 		weight: product?.package_details?.weight || "",
-		image: imagesField?.value ? JSON.parse(imagesField.value) : [],
+		images: imagesField?.value ? JSON.parse(imagesField.value) : [],
 		brand: product?.brand || "",
 		manufacturer: product?.manufacturer || "",
 		upc: product?.upc || "",
 		ean: product?.ean || "",
 		isbn: product?.isbn || "",
-		mpn: product?.mpn || "",
+		mpn: product?.part_number || "",
 		availableStock: product?.available_for_sale_stock || "",
 		openingStock: product?.initial_stock || "",
 	};
 };
 
-const formattedCategoryId = ({
-	category,
-	subCategory,
-	subSubCategory,
-}: {
-	category: string;
-	subCategory?: string;
-	subSubCategory?: string;
-}): string | null => {
-	if (subSubCategory) {
-		const subSubCategoryId =
-			subSubCategoryOptions[subCategory as keyof typeof subSubCategoryOptions]?.find(
-				(item: any) => item.value === subSubCategory,
-			)?.id || null;
-		if (subSubCategoryId) return subSubCategoryId;
+const findCategoryHierarchy = (categoryId: string) => {
+	let result = {
+		category: "",
+		subCategory: "",
+		subSubCategory: "",
+	};
+
+
+	const matchedCategory = categoryOptions.find((cat) => cat.id === categoryId);
+	if (matchedCategory) {
+		result.category = matchedCategory.value;
+		return result;
 	}
 
-	if (subCategory) {
-		const selectedCategory = categoryOptions.find((cat) => cat.value === category);
-		if (selectedCategory) {
-			const selectedSubCategory = selectedCategory.subCategories.find(
-				(subCat) => subCat.value === subCategory,
-			);
-			if (selectedSubCategory) return selectedSubCategory.id;
+
+	// 2. Check if categoryId matches any subcategory
+	for (const mainCategory of categoryOptions) {
+		const matchedSubCategory = mainCategory.subCategories?.find(
+			(subCat) => subCat.id === categoryId,
+		);
+		if (matchedSubCategory) {
+			result.category = mainCategory.value;
+			result.subCategory = matchedSubCategory.value;
+			return result;
 		}
 	}
 
-	const selectedCategory = categoryOptions.find((cat) => cat.value === category);
-	return selectedCategory?.id || null;
+
+	// 3. Check if categoryId matches any sub-subcategory
+	for (const mainCategory of categoryOptions) {
+		for (const subCategory of mainCategory.subCategories || []) {
+			const matchedSubSubCategory = subSubCategoryOptions[subCategory.value]?.find(
+				(subSubCat: any) => subSubCat.id === categoryId,
+			);
+			console.log('matchedSubSubCategory',matchedSubSubCategory)
+			if (matchedSubSubCategory) {
+				result.category = mainCategory.value;
+				result.subCategory = subCategory.value;
+				result.subSubCategory = matchedSubSubCategory.value;
+				return result;
+			}
+		}
+	}
+
+	// If no match is found, return the empty result
+	console.log("RESULT", result);
+	return result;
 };
