@@ -52,3 +52,7 @@ export const createProduct = async (values: any, images: File[]) => {
 };
 
 
+//edit product function
+
+
+

@@ -41,7 +41,7 @@ export async function fetchProducts({
 
 			return {
 				products: filteredProducts,
-				total_products: filteredProducts.length, // Return count of filtered products
+				total_products: filteredProducts.length,
 			};
 		} else {
 			throw new Error(`Error fetching products: ${response.data.message}`);

@@ -15,6 +15,7 @@ interface TextInputProps {
 	onChange?: (value: any) => void;
 	disabled?: boolean;
 	required?: boolean;
+	value?: any;
 }
 
 const TextInput: React.FC<TextInputProps> = ({

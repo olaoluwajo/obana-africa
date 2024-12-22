@@ -6,7 +6,7 @@ import {
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
 
-type FormValues = z.infer<typeof formSchema> & { images?: string[] };
+type FormValues = z.infer<typeof formSchema> & { images?: string[], initialStock?: number , availableStock?:number};
 
 export const formatProductData = (values: FormValues) => {
 	const customFields = [
@@ -28,7 +28,7 @@ export const formatProductData = (values: FormValues) => {
 		{
 			// index: 5,
 			api_name: "cf_incoterms",
-			value: "Incotermsfield Not done",
+			value: values.incoterms,
 		},
 		{
 			// index: 6,
@@ -88,6 +88,10 @@ export const formatProductData = (values: FormValues) => {
 			api_name: "cf_b2b",
 			value: "YES",
 		},
+		{
+			api_name: "cf_product_code_vendor",
+			value: values.productCode,
+		},
 	];
 
 	const formattedCategoryId = ({
@@ -144,6 +148,8 @@ export const formatProductData = (values: FormValues) => {
 		ean: values.ean,
 		isbn: values.isbn,
 		brand: values.brand,
+		initial_stock: values.openingStock,
+		available_for_sale_stock: values.availableStock,
 		manufacturer: values.manufacturer,
 		// category_id: formattedCategoryId,
 		category_id: formattedCategoryId({
@@ -205,7 +211,7 @@ export const formatProductData = (values: FormValues) => {
 			// width: "20",
 			// height: "30",
 			weight: values.weight,
-			weight_unit: values.weight_unit,
+			weight_unit: values.weight_unit ||'kg',
 			// dimension_unit: "cm",
 		},
 	};

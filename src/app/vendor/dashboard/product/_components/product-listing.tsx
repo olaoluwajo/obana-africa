@@ -92,7 +92,7 @@ export default function ProductListingPage() {
 
 	const products = data?.products || [];
 	const totalProducts = data?.total_products || 0;
-
+	localStorage.setItem("productCount", String(totalProducts));
 	return (
 		<>
 			<Suspense fallback={<DataTableSkeleton columnCount={7} rowCount={10} />}>
