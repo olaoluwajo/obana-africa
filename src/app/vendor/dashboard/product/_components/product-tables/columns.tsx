@@ -57,7 +57,17 @@ export const columns: ColumnDef<Product, unknown>[] = [
 	{
 		accessorKey: "status",
 		header: "STATUS",
+		cell: ({ row }) => {
+			const status = row.getValue("status");
+
+			const statusStyles = `mx-auto flex justify-center items-center mr-3 text-white px-3 py-1 rounded-full ${
+				status === "active" ? "bg-green-400" : "bg-red-400"
+			}`;
+
+			return <div className={statusStyles}>{String(status)}</div>;
+		},
 	},
+
 	{
 		accessorKey: "rate",
 		accessorFn: (row) => row.rate,

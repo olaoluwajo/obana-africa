@@ -45,11 +45,24 @@ export async function POST(req: Request) {
 		const accountId = process.env.ZOHO_MAIL_ACCOUNT_ID;
 
 		const emailData = {
-			fromAddress: "'VENDOR OTP' <ochije.nnani@iconholding.africa>",
+			fromAddress: "'OBANA.AFRICA VENDOR' <ochije.nnani@iconholding.africa>",
 			toAddress: email,
-			subject: "Your OTP Code",
-			content: `<p>Your 6-digit OTP code is:<h1><strong>${otp}</strong></h1></p>`,
+			subject: `${otp} is your vendor verification code`,
+			content: `
+    <div style="font-family: Arial, sans-serif; text-align: center; border: 1px solid #ddd; padding: 20px; max-width: 600px; margin: auto;">
+      <img src="https://www.obana.africa/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fobana.africa.6c072a90.png&w=1920&q=75" alt="Obana Office Logo" style="width: 100px; margin-bottom: 20px;" />
+      <p style="font-size: 18px; color: #555;">Dear ${email},</p>
+
+      <p style="font-size: 16px; color: #555;">There is the final step to complete the vendor login</p>
+      <h1 style="font-size: 32px; color: #007BFF;">${otp}</h1>
+      <p style="font-size: 14px; color: #999;">If you didn't request this verification code, you can safely ignore this email. Someone else might have typed your email address by mistake.</p>
+      <p style="font-size: 14px; color: #999;">This email has been automatically generated. Please do not reply.</p>
+      <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
+      <p style="font-size: 12px; color: #999;">To learn more about obana.africa, click here. <a href="https://www.obana.africa/about" style="color: #007BFF;">info.obana</a></p>
+    </div>
+  `,
 		};
+
 
 		const apiUrl = `https://mail.zoho.com/api/accounts/${accountId}/messages`;
 

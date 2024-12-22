@@ -54,7 +54,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 						Copy SKU
 					</DropdownMenuItem>
 					<DropdownMenuItem
-						onClick={() => router.push(`/vendor/dashboard/product/${data.item_id}/view`)}>
+						onClick={() => router.push(`/vendor/dashboard/product/view/${data.item_id}`)}>
 						<Eye className="mr-2 h-4 w-4" /> View details
 					</DropdownMenuItem>
 					<DropdownMenuItem

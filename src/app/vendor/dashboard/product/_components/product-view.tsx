@@ -1,4 +1,6 @@
 import { fetchProductById } from "@/lib/fetchProducts";
+import { format } from "date-fns";
+import { redirect } from "next/navigation";
 
 import {
 	Package,
@@ -19,13 +21,18 @@ type ProductViewPageProps = {
 	params: any;
 };
 
+const formatDate = (dateString: any) => {
+	const date = new Date(dateString);
+	return format(date, "yyyy-MM-dd HH:mm");
+};
+
 export default async function SingleProductView({ params }: ProductViewPageProps) {
 	const { productId } = params;
 	// console.log("Product ID:", productId);
 
 	const data = await fetchProductById(productId);
 	const product = data?.item;
-	// console.log(product.name, product);
+	console.log(product.name, product);
 
 	// Parse images from custom_field_hash
 	const productImages = product?.custom_field_hash?.cf_productimages
@@ -60,10 +67,9 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 
 	async function handleEdit() {
 		"use server";
-		// Logic to navigate to an edit form (e.g., `/edit-product/${productId}`)
-		//  redirect(`/edit-product/${productId}`);
+		// Logic to navigate to an edit form ( `/edit-product/${productId}`)
 		console.log("Redirecting to edit page...");
-		// Redirect logic (use Next.js routing or your preferred method)
+		redirect(`/edit-product/${productId}`);
 	}
 
 	async function handleDelete() {
@@ -72,7 +78,7 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 		const confirmed = confirm("Are you sure you want to delete this product?");
 		if (confirmed) {
 			console.log(`Deleting product with ID: ${productId}`);
-			// Call delete API here (e.g., await deleteProduct(productId))
+			//  delete API  ( await deleteProduct(productId))
 		}
 	}
 
@@ -134,6 +140,11 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							value={product.sku}
 						/>
 						<DetailItem
+							icon={<Ruler className="text-green-500" size={20} />}
+							label="VENDOR SKU"
+							value={product.custom_field_hash.cf_product_code_vendor}
+						/>
+						<DetailItem
 							icon={<Flag className="text-green-500" size={20} />}
 							label="Brand"
 							value={product.brand}
@@ -149,9 +160,15 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							value={`${product.stock_on_hand} units`}
 						/>
 						<DetailItem
-							icon={<Timer className="text-red-500" size={20} />}
+							icon={<Timer className="text-blue-500" size={20} />}
 							label="Created Time"
-							value={product.created_time} 						/>
+							value={formatDate(product.created_time)}
+						/>
+						<DetailItem
+							icon={<Timer className="text-red-500" size={20} />}
+							label="Last Updated Time"
+							value={formatDate(product.last_modified_time)}
+						/>
 					</div>
 
 					{/* Pricing Details */}
@@ -184,7 +201,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 					</h3>
 					<div className="grid grid-cols-2 gap-4">
 						<DetailItem label="Color" value={product.custom_field_hash.cf_color || "N/A"} />
-						<DetailItem label="Vendor" value={product.vendor_name} />
 						<DetailItem
 							label="Fabric Type"
 							value={product.custom_field_hash.cf_fabric_type || "N/A"}
@@ -194,8 +210,8 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							value={product.custom_field_hash.cf_sizes_run || "N/A"}
 						/>
 						<DetailItem
-							label="Sales Person"
-							value={product.custom_field_hash.cf_sales_person || "N/A"}
+							label="Country of Manufacture"
+							value={product.custom_field_hash.cf_country_of_manufactutre || "N/A"}
 						/>
 					</div>
 				</div>

@@ -6,7 +6,12 @@ import {
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
 
-type FormValues = z.infer<typeof formSchema> & { images?: string[] };
+
+type FormValues = z.infer<typeof formSchema> & {
+	images?: string[];
+	initialStock?: number;
+	availableStock?: number;
+};
 
 export const mapProductDataToForm = (product: any): FormValues => {
 	// Map the product data to the form data structure
@@ -20,6 +25,10 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	const unitPerBoxField = customFields.find((field: any) => field.api_name === "cf_packs");
 	const unitPriceField = customFields.find((field: any) => field.api_name === "cf_item_price");
 	const sizeRunField = customFields.find((field: any) => field.api_name === "cf_sizes_run");
+	const sizeTypeField = customFields.find((field: any) => field.api_name === "cf_size_type");
+	const productCodeField = customFields.find(
+		(field: any) => field.api_name === "cf_product_code_vendor",
+	);
 	const countryOfManufactureField = customFields.find(
 		(field: any) => field.customfield_id === "4650667000013664890",
 	);
@@ -34,6 +43,7 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	return {
 		name: product?.name || "",
 		sku: product?.sku || "",
+		productCode:productCodeField?.value || "",
 		vendorId: product?.vendor_id || "",
 		unit: product?.unit || "",
 		category: product?.category || "",
@@ -48,6 +58,7 @@ export const mapProductDataToForm = (product: any): FormValues => {
 		unitPerBox: unitPerBoxField?.value || "",
 		fabricType: fabricTypeField?.value || "",
 		sizesRun: sizeRunField?.value || "",
+		sizeType: sizeTypeField?.value || "",
 		countryOfManufacture: countryOfManufactureField?.value || "",
 		fob: fobField?.value || "",
 		tags: tagsField?.value || "",
@@ -60,6 +71,8 @@ export const mapProductDataToForm = (product: any): FormValues => {
 		ean: product?.ean || "",
 		isbn: product?.isbn || "",
 		mpn: product?.mpn || "",
+		availableStock: product?.available_for_sale_stock || "",
+		openingStock: product?.initial_stock || "",
 	};
 };
 
