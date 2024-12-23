@@ -25,12 +25,16 @@ export default async function getVendorDetails(email: string) {
 				const vendor = response.data.contacts.find((contact: any) => contact.email === email);
 
 				if (vendor) {
-					// console.log("VENDOR FOUND", vendor);
+					console.log("VENDOR FOUND", vendor);
 					return {
 						exists: true,
 						vendorId: vendor.contact_id,
 						vendorName: vendor.contact_name,
 						contactName: vendor.vendor_name,
+						firstName: vendor.first_name,
+						lastName: vendor.last_name,
+						vendorEmail: vendor.email,
+						phone: vendor.phone,
 					};
 				}
 

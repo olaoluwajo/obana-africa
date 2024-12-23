@@ -23,6 +23,7 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	const colorField = customFields.find((field: any) => field.api_name === "cf_color");
 	const unitPerBoxField = customFields.find((field: any) => field.api_name === "cf_packs");
 	const unitPriceField = customFields.find((field: any) => field.api_name === "cf_item_price");
+	const incotermsField = customFields.find((field: any) => field.api_name === "cf_incoterms");
 	const sizeRunField = customFields.find((field: any) => field.api_name === "cf_sizes_run");
 	const sizeTypeField = customFields.find((field: any) => field.api_name === "cf_size_type");
 	const productCodeField = customFields.find(
@@ -36,6 +37,7 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	// const { category, subCategory, subSubCategory } = determineCategoryHierarchy(product?.category);
 
 	const { category, subCategory, subSubCategory } = findCategoryHierarchy(product?.category_id);
+	console.log("solution", category, subCategory, subSubCategory);
 
 	return {
 		name: product?.name || "",
@@ -56,12 +58,14 @@ export const mapProductDataToForm = (product: any): FormValues => {
 		fabricType: fabricTypeField?.value || "",
 		sizesRun: sizeRunField?.value || "",
 		sizeType: sizeTypeField?.value || "",
+		incoterms: incotermsField?.value || "",
 		countryOfManufacture: countryOfManufactureField?.value || "",
 		fob: fobField?.value || "",
 		tags: tagsField?.value || "",
 		weight_unit: product?.package_details?.weight_unit || "",
 		weight: product?.package_details?.weight || "",
-		images: imagesField?.value ? JSON.parse(imagesField.value) : [],
+		image: imagesField?.value ? JSON.parse(imagesField.value) : [],
+		// image: imagesField?.value ? JSON.parse(imagesField.value).map((img: any) => img.url) : [],
 		brand: product?.brand || "",
 		manufacturer: product?.manufacturer || "",
 		upc: product?.upc || "",
@@ -80,13 +84,11 @@ const findCategoryHierarchy = (categoryId: string) => {
 		subSubCategory: "",
 	};
 
-
 	const matchedCategory = categoryOptions.find((cat) => cat.id === categoryId);
 	if (matchedCategory) {
 		result.category = matchedCategory.value;
 		return result;
 	}
-
 
 	// 2. Check if categoryId matches any subcategory
 	for (const mainCategory of categoryOptions) {
@@ -100,24 +102,22 @@ const findCategoryHierarchy = (categoryId: string) => {
 		}
 	}
 
-
 	// 3. Check if categoryId matches any sub-subcategory
 	for (const mainCategory of categoryOptions) {
 		for (const subCategory of mainCategory.subCategories || []) {
 			const matchedSubSubCategory = subSubCategoryOptions[subCategory.value]?.find(
 				(subSubCat: any) => subSubCat.id === categoryId,
 			);
-			console.log('matchedSubSubCategory',matchedSubSubCategory)
 			if (matchedSubSubCategory) {
 				result.category = mainCategory.value;
 				result.subCategory = subCategory.value;
 				result.subSubCategory = matchedSubSubCategory.value;
+				// console.log("RESULT111", result);
 				return result;
 			}
 		}
 	}
 
-	// If no match is found, return the empty result
-	console.log("RESULT", result);
+	// console.log("RESULTMAPP", result);
 	return result;
 };

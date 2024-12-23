@@ -17,13 +17,14 @@ export default async function ProductViewPage({ productId }: TProductViewPagePro
 		const data = await fetchProductById(productId);
 		// console.log("data", data);
 		product = data?.item;
-		console.log("product", product);
+		// console.log("product", product);
 
 		if (!product) {
 			notFound();
 		}
 
 		const initialData = mapProductDataToForm(product);
+		console.log("initial data", initialData);
 
 		pageTitle = `Edit Product: ${product.name}`;
 		return <ProductForm initialData={initialData} pageTitle={pageTitle} productId={productId} />;

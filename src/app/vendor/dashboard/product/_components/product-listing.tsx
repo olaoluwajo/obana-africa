@@ -14,7 +14,7 @@ interface SearchParams {
 }
 
 const fetchProducts = async (vendorId: string, searchParams: SearchParams) => {
-	console.log("Fetching products from API...");
+	// console.log("Fetching products from API...");
 	const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/fetch-products`);
 	url.searchParams.append("vendorId", vendorId);
 	Object.keys(searchParams).forEach((key) => {
@@ -65,12 +65,6 @@ export default function ProductListingPage() {
 		enabled: isVendorIdLoaded && !!vendorId,
 		staleTime: 1000 * 60 * 5,
 	});
-
-	// Debugging logs
-	useEffect(() => {
-		console.log("Query isFetching:", isFetching);
-		console.log("Query isStale:", isStale);
-	}, [isFetching, isStale]);
 
 	// Error state
 	if (error) {

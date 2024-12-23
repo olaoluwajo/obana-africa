@@ -506,3 +506,51 @@ export const brandOptions = [
 	"I SAW FIRST",
 	"HUDSON & BARROW",
 ];
+
+export const incotermsOptions = ["EXW", "FOB / FAS", " DAP / DDP", "CIP / CIF"];
+
+export const fobOptions = [
+	"Lagos - Nigeria",
+	"London - UK",
+	"Mumbai - india",
+	"New York - USA",
+	"Paris - France",
+	"Singapore - Singapore",
+	"Tokyo - Japan",
+	"Washington DC - USA",
+	"Guangzhou - China",
+	"Berlin - Germany",
+	"Istanbul - Turkey",
+	"Barcelona - Spain",
+	"Sydney - Australia",
+	"Melbourne - Australia",
+	"Beijing - China",
+	"Bangkok - Thailand",
+	"Nairobi - Kenya",
+];
+
+export const fabricTypeOptions = [
+	"Cotton",
+	"Polyester",
+	"Wool",
+	"Silk",
+	"Linen",
+	"Leather",
+	"Chiffon",
+	"Crepe",
+];
+// const sizeTypeOptions = ["Small", "Medium", "Large", "X-Large", "XX-Large"];
+export const unitPerBoxOptions = [
+	"5",
+	"6",
+	"7",
+	"8",
+	"9",
+	"10",
+	"12",
+	"15",
+	"20",
+	"25",
+	"30",
+	"50",
+];

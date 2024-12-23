@@ -36,36 +36,44 @@ import { useVendorStore } from "@/stores/useVendorStore";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
 
-// import Image from 'next/image';
-
-export const company = {
-	name: "Acme Inc",
-	logo: "/logo.webp",
-	plan: "Enterprise",
-};
-
 type IconType = keyof typeof Icons;
 
 export default function AppSidebar() {
+	const {
+		vendorFirstName,
+		vendorEmail: vendorEmailFromStore,
+	} = useVendorStore((state) => ({
+		vendorFirstName: state.vendorFirstName,
+		vendorEmail: state.vendorEmail,
+	}));
+
+	React.useEffect(() => {
+		const storedFirstName = localStorage.getItem("vendorFirstName");
+		const storedEmail = localStorage.getItem("vendorEmail");
+
+		if (storedFirstName) useVendorStore.getState().setVendorFirstName(storedFirstName);
+		if (storedEmail) useVendorStore.getState().setVendorEmail(storedEmail);
+	}, []);
+
+	// console.log("SESSION", vendorId, vendorName, vendorFirstName, vendorLastName, vendorEmailFromStore);
+
 	const router = useRouter();
 	// const { data: session } = useSession();
-	const session = {
-		user: {
-			name: "John Doe",
-			email: "john@example.com",
-			image: "/path/to/profile-image.jpg",
-		},
-	};
+
+	// const session = {
+	// 	user: {
+	// 		name: "John Doe",
+	// 		email: "john@example.com",
+	// 		image: "/path/to/profile-image.jpg",
+	// 	},
+	// };
 	const pathname = usePathname();
 
 	const handleLogout = () => {
-		// useVendorStore.getState().clearVendorId();
-		// useVendorStore.getState().clearVendorName();
 		useVendorStore.getState().clearAll();
-
 		useAuthStore.getState().clearAuth();
 		router.push("/auth/vendor/sign-in");
-		toast.success("User logged out successfully.");
+		toast.success("You have been logged out successfully.");
 	};
 
 	return (
@@ -73,26 +81,9 @@ export default function AppSidebar() {
 			<SidebarHeader>
 				<div className="flex gap-2 mt-4 ml-4 text-sidebar-accent-foreground   justify-start items-center">
 					<div className="mt-4 flex">
-						{/* <company.logo className="size-4" /> */}
-
-						{/* <Image
-              src={company.logo || '/logo.webp'}
-              alt={`${company.name || 'Company'} logo`}
-              width={170}
-              height={170}
-              className=""
-              unoptimized
-            />
-             */}
-
 						{/* eslint-disable-next-line @next/next/no-img-element */}
 						<h1 className="text-white text-[28px]">Obana.africa</h1>
-						{/* <img src="/logo.webp" alt="logo" className="w-[170px]" /> */}
 					</div>
-					{/* <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">{company.name}</span>
-            <span className="truncate text-xs">{company.plan}</span>
-          </div> */}
 				</div>
 			</SidebarHeader>
 			<SidebarContent className="overflow-x-hidden">
@@ -161,18 +152,19 @@ export default function AppSidebar() {
 									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground ">
 									<Avatar className="h-8 w-8 rounded-lg text-sidebar-accent-foreground">
 										<AvatarImage
-											src={session?.user?.image || ""}
-											alt={session?.user?.name || ""}
+											src={vendorFirstName || ""}
+											alt={vendorFirstName || ""}
 										/>
 										<AvatarFallback className="rounded-lg">
-											{session?.user?.name?.slice(0, 2)?.toUpperCase() || "CN"}
+											{vendorFirstName?.slice(0, 2)?.toUpperCase() || "CN"}
 										</AvatarFallback>
 									</Avatar>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate font-semibold">
-											{session?.user?.name || ""}
+											{vendorFirstName || ""}
 										</span>
-										<span className="truncate text-xs">{session?.user?.email || ""}</span>
+										<span className="truncate text-xs">{vendorEmailFromStore || ""}</span>
+										{/* <span className="truncate text-xs">{session?.user?.email || ""}</span> */}
 									</div>
 									<ChevronsUpDown className="ml-auto size-4" />
 								</SidebarMenuButton>
@@ -186,20 +178,20 @@ export default function AppSidebar() {
 									<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 										<Avatar className="h-8 w-8 rounded-lg">
 											<AvatarImage
-												src={session?.user?.image || ""}
-												alt={session?.user?.name || ""}
+												src={vendorFirstName || ""}
+												alt={vendorFirstName || ""}
 											/>
 											<AvatarFallback className="rounded-lg">
-												{session?.user?.name?.slice(0, 2)?.toUpperCase() || "CN"}
+												{vendorFirstName?.slice(0, 2)?.toUpperCase() || "CN"}
 											</AvatarFallback>
 										</Avatar>
 										<div className="grid flex-1 text-left text-sm leading-tight">
 											<span className="truncate font-semibold">
-												{session?.user?.name || ""}
+												{vendorFirstName || ""}
 											</span>
 											<span className="truncate text-xs">
 												{" "}
-												{session?.user?.email || ""}
+												{vendorEmailFromStore || ""}
 											</span>
 										</div>
 									</div>

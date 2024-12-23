@@ -197,7 +197,7 @@ function VerifyPageContent() {
 				<div className="flex justify-center ">
 					<Button
 						variant="link"
-						onClick={() => router.push("/sign-in")}
+						onClick={() => router.push("/auth/vendor/sign-in")}
 						className="w-full mx-auto text-blue-500">
 						Back to Login
 					</Button>

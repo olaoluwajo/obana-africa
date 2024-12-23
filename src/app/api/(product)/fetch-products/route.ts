@@ -27,11 +27,13 @@ export async function GET(request: Request) {
 						Authorization: `Zoho-oauthtoken ${accessToken}`,
 					},
 					params: {
+						applied_filter: "Status.All",
 						organization_id: process.env.ZOHO_ORG_ID,
 						page: currentPage,
 						per_page: 200,
 						usestate: true,
 						vendor_id: vendorId,
+						sort_column: "created_time",
 						sort_order: "D",
 						search_criteria: q ? [{ column_name: "name", search_text: q }] : [],
 						categories: categories,

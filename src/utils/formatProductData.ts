@@ -130,7 +130,7 @@ export const formatProductData = (values: FormValues) => {
 	// console.log("formattedCategoryId", formattedCategoryId);
 
 	// console.log("Formatting Product Data:", values);
-	console.log("IMAGES", values.images);
+	// console.log("IMAGES", values.images);
 	const formattedData = {
 		name: values.name,
 		rate: parseFloat(values.sellingPrice),
