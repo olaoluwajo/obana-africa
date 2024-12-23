@@ -79,7 +79,8 @@ export default function UserAuthForm() {
 			try {
 				const response = await axios.get(`/api/check-vendor-exists?email=${data.email}`);
 				console.log("RESPONSE", response.data);
-				const { exists, vendorId, vendorName } = response.data;
+				const { exists, vendorId, vendorName, firstName, lastName, vendorEmail } =
+					response.data;
 				// localStorage.setItem("vendorName", vendorName);
 				useVendorStore.getState().setVendorName(vendorName);
 
@@ -92,6 +93,10 @@ export default function UserAuthForm() {
 					});
 
 					console.log("OTP RESPONSE", otpResponse);
+
+					useVendorStore.getState().setVendorFirstName(firstName);
+					useVendorStore.getState().setVendorLastName(lastName);
+					useVendorStore.getState().setVendorEmail(vendorEmail);
 
 					const result = otpResponse.data;
 					console.log("RESULT", result);

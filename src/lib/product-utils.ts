@@ -59,7 +59,7 @@ export const editProduct = async (productId: string, values: any, images: File[]
 		...values,
 		images: uploadedUrls,
 	});
-	console.log('ProductId',productId)
+	console.log("ProductId", productId);
 	console.log(formattedProductData);
 
 	try {
@@ -70,5 +70,24 @@ export const editProduct = async (productId: string, values: any, images: File[]
 		return response.data;
 	} catch (error: any) {
 		throw new Error(error.response?.data.message || "Error editing product");
+	}
+};
+
+// Delete product function
+export const deleteProduct = async (productId: string): Promise<void> => {
+	try {
+		const response = await axios.delete(`/api/delete-product`, {
+			data: {
+				productId,
+			},
+		});
+
+		if (response.status !== 200) {
+			console.log("EROR", response.data);
+			throw new Error(response.data || "Failed to delete product.");
+		}
+	} catch (error: any) {
+		console.log("EROR", error.response?.data);
+		throw new Error(error.response?.data.message || "Error deleting product");
 	}
 };

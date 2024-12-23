@@ -11,9 +11,18 @@ export async function GET(request: Request) {
 	}
 
 	try {
-		const { exists, vendorId, vendorName, contactName } = await getVendorDetails(email);
+		const { exists, vendorId, vendorName, contactName, firstName, lastName, vendorEmail } =
+			await getVendorDetails(email);
 
-		return NextResponse.json({ exists, vendorId, vendorName, contactName });
+		return NextResponse.json({
+			exists,
+			vendorId,
+			vendorName,
+			contactName,
+			firstName,
+			lastName,
+			vendorEmail,
+		});
 	} catch (error) {
 		console.log("ERROR", error);
 		return NextResponse.json({ error: "Error checking vendor" }, { status: 500 });

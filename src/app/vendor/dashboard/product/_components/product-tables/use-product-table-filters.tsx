@@ -32,7 +32,7 @@ export function useProductTableFilters() {
 		return !!searchQuery || !!categoriesFilter;
 	}, [searchQuery, categoriesFilter]);
 
-	console.log("categoriesFilter:", categoriesFilter);
+	// console.log("categoriesFilter:", categoriesFilter);
 
 	// Handle category selection change (optional custom function)
 	const handleCategoryChange = (category: string) => {

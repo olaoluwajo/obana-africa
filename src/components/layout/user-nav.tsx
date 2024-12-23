@@ -16,8 +16,22 @@ import { useRouter } from "next/navigation";
 import useAuthStore from "@/stores/authStore";
 import { toast } from "sonner";
 import { useVendorStore } from "@/stores/useVendorStore";
+import { useEffect } from "react";
 
 export function UserNav() {
+	const { vendorFirstName, vendorEmail: vendorEmailFromStore } = useVendorStore((state) => ({
+		vendorFirstName: state.vendorFirstName,
+		vendorEmail: state.vendorEmail,
+	}));
+
+	useEffect(() => {
+		const storedFirstName = localStorage.getItem("vendorFirstName");
+		const storedEmail = localStorage.getItem("vendorEmail");
+
+		if (storedFirstName) useVendorStore.getState().setVendorFirstName(storedFirstName);
+		if (storedEmail) useVendorStore.getState().setVendorEmail(storedEmail);
+	}, []);
+
 	const session = {
 		user: {
 			name: "John Doe",
@@ -46,17 +60,17 @@ export function UserNav() {
 				<DropdownMenuTrigger asChild>
 					<Button variant="ghost" className="relative h-8 w-8 rounded-full">
 						<Avatar className="h-8 w-8 text-sidebar-accent-foreground">
-							<AvatarImage src={session.user?.image ?? ""} alt={session.user?.name ?? ""} />
-							<AvatarFallback>{session.user?.name?.[0]}</AvatarFallback>
+							<AvatarImage src={vendorFirstName ?? ""} alt={vendorFirstName ?? ""} />
+							<AvatarFallback>{vendorFirstName?.[0]}</AvatarFallback>
 						</Avatar>
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent className="w-56" align="end" forceMount>
 					<DropdownMenuLabel className="font-normal">
 						<div className="flex flex-col space-y-1">
-							<p className="text-sm font-medium leading-none">{session.user?.name}</p>
+							<p className="text-sm font-medium leading-none">{vendorFirstName}</p>
 							<p className="text-xs leading-none text-muted-foreground">
-								{session.user?.email}
+								{vendorEmailFromStore}
 							</p>
 						</div>
 					</DropdownMenuLabel>

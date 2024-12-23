@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 		}
 
 		const productResponse = await createProduct(vendorId, productData);
-		console.log("PRODUCT RESPONSE", productResponse);
+		// console.log("PRODUCT RESPONSE", productResponse);
 
 		// Return the product creation response
 		return NextResponse.json(productResponse);

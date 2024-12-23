@@ -13,12 +13,11 @@ console.log("Cloudinary Config:", {
 	api_secret: process.env.CLOUDINARY_API_SECRET ? "Loaded" : "Not Loaded",
 });
 
-
 export const runtime = "nodejs";
 
 // Named export for POST method
 export async function POST(req: Request) {
-	console.log("REQUEST", req);
+	// console.log("REQUEST", req);
 	try {
 		// Parse the FormData from the request
 		const formData = await req.formData();

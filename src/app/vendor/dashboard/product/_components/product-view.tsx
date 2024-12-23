@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ImageGallery from "./image-gallery";
 import ProductActions from "./product-actions";
+import { deleteProduct } from "@/lib/product-utils";
 
 type ProductViewPageProps = {
 	params: any;
@@ -33,7 +34,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 
 	const data = await fetchProductById(productId);
 	const product = data?.item;
-	console.log(product.name, product);
 
 	// Parse images from custom_field_hash
 	const productImages = product?.custom_field_hash?.cf_productimages
@@ -66,9 +66,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 		</div>
 	);
 
-	console.log("Type of productId:", typeof productId);
-	console.log("Value of productId:", productId);
-
 	async function handleEdit(productId: any) {
 		"use server";
 		if (!productId) {
@@ -91,6 +88,8 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 		const confirmed = confirm("Are you sure you want to delete this product?");
 		if (confirmed) {
 			console.log(`Deleting product with ID: ${productId}`);
+			await deleteProduct(productId);
+			redirect(`/vendor/dashboard/product`);
 			//  delete API  ( await deleteProduct(productId))
 		}
 	}
