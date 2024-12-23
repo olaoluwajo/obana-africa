@@ -103,7 +103,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 								<Edit className="mr-2 h-4 w-4" /> Update Product
 							</DropdownMenuItem>
 							<DropdownMenuItem
-								onClick={() => router.push(`/vendor/dashboard/product/${data.item_id}`)}>
+								onClick={() =>
+									router.push(`/vendor/dashboard/product/${data.item_id}?duplicate=true`)
+								}>
 								<CopyPlus className="mr-2 h-4 w-4" />
 								Duplicate
 							</DropdownMenuItem>

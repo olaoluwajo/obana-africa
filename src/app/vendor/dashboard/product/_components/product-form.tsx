@@ -111,10 +111,12 @@ export default function ProductForm({
 	initialData,
 	pageTitle,
 	productId,
+	isDuplicating = false,
 }: {
 	initialData: Product | any;
 	pageTitle: string;
 	productId: string;
+	isDuplicating?: boolean;
 }) {
 	const vendorId = useVendorStore((state) => state.vendorId);
 	if (!vendorId) {
@@ -126,9 +128,11 @@ export default function ProductForm({
 	}
 
 	const defaultValues = {
+		...initialData,
+		sku: isDuplicating ? "" : initialData?.sku || "",
+		productCode: isDuplicating ? "" : initialData?.productCode || "",
+		name: isDuplicating ? `Copy of ${initialData?.name}` : initialData?.name || "",
 		image: initialData?.image || "",
-		name: initialData?.name || "",
-		sku: initialData?.sku || "",
 		vendorId: vendorId || "",
 		unit: initialData?.unit || "Box",
 		category: initialData?.category || "",
@@ -146,9 +150,6 @@ export default function ProductForm({
 		sizeType: initialData?.sizeType || "",
 		unitPerBox: initialData?.unitPerBox || "",
 		incoterms: initialData?.incoterms || "",
-		openingStock: initialData?.openingStock || "",
-		availableStock: initialData?.availableStock || "",
-		productCode: initialData?.productCode || "",
 		tags: initialData?.tags || "",
 		weight_unit: initialData?.weight_unit || "kg",
 		weight: initialData?.weight || "",
@@ -159,6 +160,8 @@ export default function ProductForm({
 		fob: initialData?.fob || "",
 		manufacturer: initialData?.manufacturer || "",
 		brand: initialData?.brand || "",
+		openingStock: isDuplicating ? "0" : initialData?.openingStock || "",
+		availableStock: isDuplicating ? "0" : initialData?.availableStock || "",
 	};
 
 	const router = useRouter();
@@ -300,7 +303,7 @@ export default function ProductForm({
 		console.log("Formatted Product Data", formatProductData(values));
 
 		try {
-			if (productId === "new") {
+		  if (productId === "new" || isDuplicating) {
 				const productData: any = await createProduct(values, images);
 				console.log("Product created successfully", productData);
 				toast.success(`Product Name: ${productData.item.name} created successfully`);
