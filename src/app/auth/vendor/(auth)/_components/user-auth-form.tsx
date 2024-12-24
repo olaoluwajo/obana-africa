@@ -46,7 +46,7 @@ export default function UserAuthForm() {
 	// };
 	const form = useForm<UserFormValue>({
 		resolver: zodResolver(formSchema),
-		// defaultValues,
+		defaultValues: { email: "" },
 	});
 
 	useEffect(() => {
@@ -78,7 +78,7 @@ export default function UserAuthForm() {
 		startTransition(async () => {
 			try {
 				const response = await axios.get(`/api/check-vendor-exists?email=${data.email}`);
-				console.log("RESPONSE", response.data);
+				// console.log("RESPONSE", response.data);
 				const { exists, vendorId, vendorName, firstName, lastName, vendorEmail } =
 					response.data;
 				// localStorage.setItem("vendorName", vendorName);
@@ -99,7 +99,7 @@ export default function UserAuthForm() {
 					useVendorStore.getState().setVendorEmail(vendorEmail);
 
 					const result = otpResponse.data;
-					console.log("RESULT", result);
+					// console.log("RESULT", result);
 
 					if (result.success) {
 						useVendorStore.getState().setVendorId(vendorId);

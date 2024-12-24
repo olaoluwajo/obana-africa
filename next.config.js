@@ -37,10 +37,6 @@ const nextConfig = {
 	},
 
 	transpilePackages: ["geist"],
-
-	experimental: {
-		runtime: "nodejs",
-	},
 };
 
 module.exports = nextConfig;
