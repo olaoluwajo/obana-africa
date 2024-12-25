@@ -99,7 +99,7 @@ export function DataTable<TData extends Product, TValue>({
 							</TableRow>
 						))}
 					</TableHeader>
-					<TableBody className="text-card-foreground">
+					<TableBody className="text-card-foreground text-xs">
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>

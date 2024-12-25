@@ -6,7 +6,11 @@ import {
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
 
-type FormValues = z.infer<typeof formSchema> & { images?: string[], initialStock?: number , availableStock?:number};
+type FormValues = z.infer<typeof formSchema> & {
+	images?: string[];
+	initialStock?: number;
+	availableStock?: number;
+};
 
 export const formatProductData = (values: FormValues) => {
 	const customFields = [
@@ -38,8 +42,9 @@ export const formatProductData = (values: FormValues) => {
 		{
 			// index: 7,
 			api_name: "cf_sample_available",
-			// value: "Yes",
-			selected_option_id: "4650667000011592023",
+			value: values.sampleAvailable,
+			// selected_option_id: "4650667000011592023",
+			// selected_option_id: "4650667000011592021",
 		},
 		{
 			// index: 8,
@@ -206,7 +211,7 @@ export const formatProductData = (values: FormValues) => {
 			// width: "20",
 			// height: "30",
 			weight: values.weight,
-			weight_unit: values.weight_unit ||'kg',
+			weight_unit: values.weight_unit || "kg",
 			// dimension_unit: "cm",
 		},
 	};

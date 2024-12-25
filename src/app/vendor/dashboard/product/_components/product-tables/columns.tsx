@@ -3,6 +3,7 @@ import { Product } from "@/constants/mock-api";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 import { CellAction } from "./cell-action";
+import { useRouter } from "next/navigation";
 
 export const columns: ColumnDef<Product, unknown>[] = [
 	{
@@ -12,9 +13,14 @@ export const columns: ColumnDef<Product, unknown>[] = [
 			// Parse the image URL from the string
 			const imageUrlString = row.getValue("cf_singleimage") as string;
 			const imageUrl = imageUrlString ? (JSON.parse(imageUrlString)[0] as string) : null;
+			const router = useRouter();
+
+			const itemId = row.original.item_id;
 
 			return (
-				<div className="relative aspect-square h-10 w-10">
+				<div
+					className="relative aspect-square h-10 w-10 cursor-pointer"
+					onClick={() => router.push(`/vendor/dashboard/product/view/${itemId}`)}>
 					{imageUrl ? (
 						<Image
 							src={imageUrl}
@@ -38,13 +44,22 @@ export const columns: ColumnDef<Product, unknown>[] = [
 		},
 	},
 	{
-		accessorKey: "sku",
-		header: "SKU",
+		accessorKey: "cf_product_code_vendor",
+		header: "PRODUCT CODE(vendor)",
 	},
+	{
+		accessorKey: "sku",
+		header: "PRODUCT CODE(obana)",
+	},
+
 	{
 		accessorKey: "name",
 		accessorFn: (row) => row.name,
-		header: "NAME",
+		header: "PRODUCT NAME",
+	},
+	{
+		accessorKey: "stock_on_hand",
+		header: "STOCK",
 	},
 	{
 		accessorKey: "category_name",
@@ -71,7 +86,7 @@ export const columns: ColumnDef<Product, unknown>[] = [
 	{
 		accessorKey: "rate",
 		accessorFn: (row) => row.rate,
-		header: () => <div className="">PRICE</div>,
+		header: () => <div className="">PRICE PER BOX</div>,
 		cell: ({ row }) => {
 			const amount = parseFloat(row.getValue("rate"));
 			const formatted = new Intl.NumberFormat("en-US", {
