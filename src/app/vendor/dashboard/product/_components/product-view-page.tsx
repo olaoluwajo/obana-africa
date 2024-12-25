@@ -24,7 +24,7 @@ export default async function ProductViewPage({ productId }: TProductViewPagePro
 		}
 
 		const initialData = mapProductDataToForm(product);
-		console.log("initial data", initialData);
+		// console.log("initial data", initialData);
 
 		if (isDuplicating) {
 			pageTitle = `Create New Product (Copied from: ${product.name})`;

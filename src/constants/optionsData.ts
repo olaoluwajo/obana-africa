@@ -1,3 +1,8 @@
+export const sampleAvailableOptions = [
+	"Yes",
+	"No",
+
+];
 export const unitOptions = [
 	"Pcs",
 	"kg",
@@ -553,4 +558,23 @@ export const unitPerBoxOptions = [
 	"25",
 	"30",
 	"50",
+];
+
+export const availableColorOptions = [
+	"Mixed Colors",
+	"White",
+	"Black",
+	"Grey",
+	"Navy Blue",
+	"Brown",
+	"Red",
+	"Royal Blue",
+	"Yellow",
+	"Green (Olive or Forest)",
+	"Pink (Blush or Hot Pink)",
+	"Orange (Burnt Orange)",
+	"Purple (Lavender or Plum)",
+	"Beige",
+	"Maroon",
+	"Khaki",
 ];

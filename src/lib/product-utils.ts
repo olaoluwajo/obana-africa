@@ -47,6 +47,7 @@ export const createProduct = async (values: any, images: File[]) => {
 		});
 		return response.data;
 	} catch (error: any) {
+		console.error('RESPONSE ERROR',error.response)
 		throw new Error(error.response?.data.message || "Error creating product");
 	}
 };

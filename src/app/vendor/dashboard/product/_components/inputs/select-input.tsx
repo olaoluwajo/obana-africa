@@ -8,6 +8,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import { MessageCircleQuestion } from "lucide-react";
 
 interface SelectInputProps {
 	control: any;
@@ -15,7 +17,9 @@ interface SelectInputProps {
 	label: string;
 	options: string[];
 	placeholder: string;
+	tooltipContent?: string;
 	disabled?: boolean;
+	required?: boolean;
 	onChange?: (value: string) => void;
 }
 
@@ -25,8 +29,10 @@ const SelectInput: React.FC<SelectInputProps> = ({
 	label,
 	options,
 	placeholder,
+	tooltipContent,
 	disabled,
 	onChange,
+	required = false,
 }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filteredOptions, setFilteredOptions] = useState(options);
@@ -45,7 +51,21 @@ const SelectInput: React.FC<SelectInputProps> = ({
 			name={name}
 			render={({ field }) => (
 				<FormItem>
-					<FormLabel>{label}</FormLabel>
+					<FormLabel className={`${required ? "text-red-500" : ""}`}>{label}</FormLabel>
+					{tooltipContent && (
+						<Tooltip.Root>
+							<Tooltip.Trigger>
+								<MessageCircleQuestion size={12} className="text-black/40 mr-2" />
+							</Tooltip.Trigger>
+							<Tooltip.Content
+								side="top"
+								sideOffset={2}
+								className="bg-black/80 text-white px-2 py-1 rounded-md text-xs max-w-[200px]">
+								{tooltipContent}
+								<Tooltip.Arrow className="fill-black/80" />
+							</Tooltip.Content>
+						</Tooltip.Root>
+					)}
 					<Select
 						value={field.value}
 						onValueChange={(value) => {
@@ -89,4 +109,3 @@ const SelectInput: React.FC<SelectInputProps> = ({
 };
 
 export default SelectInput;
-

@@ -6,7 +6,7 @@ export async function POST(request: Request) {
 		const body = await request.json();
 		const { vendorId, productData } = body;
 		console.log("VENDOR ID", vendorId);
-		console.log("PRODUCT DATA", productData);
+		// console.log("PRODUCT DATA", productData);
 
 		if (!vendorId) {
 			console.error("Vendor ID missing in the request body");

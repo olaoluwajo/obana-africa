@@ -37,7 +37,7 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	// const { category, subCategory, subSubCategory } = determineCategoryHierarchy(product?.category);
 
 	const { category, subCategory, subSubCategory } = findCategoryHierarchy(product?.category_id);
-	console.log("solution", category, subCategory, subSubCategory);
+	// console.log("solution", category, subCategory, subSubCategory);
 
 	return {
 		name: product?.name || "",
