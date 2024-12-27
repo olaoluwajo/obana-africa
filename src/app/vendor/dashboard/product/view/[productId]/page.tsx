@@ -4,8 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { Heading } from "@/components/ui/heading";
 import PageContainer from "@/components/layout/page-container";
 import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
-import SingleProductView from "../../_components/product-view";
-import { SearchParams } from "nuqs/server";
+import SingleProductView from "../../_components/single-product-view";
 
 export const metadata = {
 	title: "Dashboard: Products View",

@@ -323,8 +323,8 @@ export default function ProductForm({
 				console.log("Product", productId);
 				const productData: any = await editProduct(productId, values, images);
 				toast.success(`Product ${productData.item.name} updated successfully`);
-				router.refresh();
-				router.push(`/vendor/dashboard/product/view/${productId}`);
+				// router.refresh();
+				router.replace(`/vendor/dashboard/product/view/${productId}`);
 				setIsLoading(false);
 			}
 		} catch (error: any) {
@@ -799,7 +799,6 @@ export default function ProductForm({
 							/>
 
 							<Separator />
-						
 
 							<SalesInformation control={form.control} />
 

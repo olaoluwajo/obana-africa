@@ -37,6 +37,9 @@ const nextConfig = {
 	},
 
 	transpilePackages: ["geist"],
+	redirects: async () => {
+		return [];
+	},
 };
 
 module.exports = nextConfig;

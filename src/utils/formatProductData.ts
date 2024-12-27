@@ -39,12 +39,18 @@ export const formatProductData = (values: FormValues) => {
 			api_name: "cf_fob",
 			value: values.fob,
 		},
+		// {
+		// 	// index: 7,
+		// 	api_name: "cf_sample_available",
+		// 	value: values.sampleAvailable,
+		// 	// selected_option_id: "4650667000011592023",
+		// 	// selected_option_id: "4650667000011592021",
+		// },
 		{
-			// index: 7,
 			api_name: "cf_sample_available",
-			value: values.sampleAvailable,
-			// selected_option_id: "4650667000011592023",
-			// selected_option_id: "4650667000011592021",
+			// value: values.sampleAvailable,
+			selected_option_id:
+				values.sampleAvailable === "yes" ? "4650667000011592023" : "4650667000011592021",
 		},
 		{
 			// index: 8,
