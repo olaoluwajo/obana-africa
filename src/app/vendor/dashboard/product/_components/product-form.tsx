@@ -109,9 +109,11 @@ export const formSchema = z.object({
 	availableStock: z.any().optional(),
 	sampleAvailable: z.any().optional(),
 
-	productCode: z.string().min(1, {
-		message: "Your Product code is compulsory",
-	}),
+	productCode: z.string().optional(),
+	status: z.string().optional(),
+	// productCode: z.string().min(1, {
+	// 	message: "Your Product code is compulsory",
+	// }),
 });
 
 export default function ProductForm({
@@ -122,7 +124,7 @@ export default function ProductForm({
 }: {
 	initialData: Product | any;
 	pageTitle: string;
-	productId: string;
+	productId: any;
 	isDuplicating?: boolean;
 }) {
 	const vendorId = useVendorStore((state) => state.vendorId);
@@ -163,12 +165,13 @@ export default function ProductForm({
 		upc: initialData?.upc || "",
 		mpn: initialData?.mpn || "",
 		ean: initialData?.ean || "",
+		status: initialData?.status || "",
 		isbn: initialData?.isbn || "",
 		fob: initialData?.fob || "",
 		sampleAvailable: initialData?.sampleAvailable || "Yes",
 		manufacturer: initialData?.manufacturer || "",
 		brand: initialData?.brand || "",
-		openingStock: isDuplicating ? "0" : initialData?.openingStock || "",
+		openingStock: isDuplicating ? "0" : "",
 		availableStock: isDuplicating ? "0" : initialData?.availableStock || "",
 	};
 
@@ -392,9 +395,9 @@ export default function ProductForm({
 			<CardContent>
 				{isLoading ? (
 					productId === "new" ? (
-						<Loader message="Adding product Please wait..." />
+						<Loader message="Adding product Please wait..." fullscreen={false} />
 					) : (
-						<Loader message="Editing product Please wait..." />
+						<Loader message="Editing product Please wait..." fullscreen={false} />
 					)
 				) : (
 					<Form {...form}>
@@ -534,11 +537,15 @@ export default function ProductForm({
 											form.setValue("sizeType", type);
 											form.setValue("sizesRun", sizes.join(", "));
 										}}
+										tooltipContent="Select your product size type and the size ranges"
 									/>
 									<AvailableColorsInput
 										onChange={(value: any) => form.setValue("availableColors", value)}
 										tooltipContent="Select your product available colors or enter your custom mixed colors"
 									/>
+								</div>
+								<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+									{" "}
 									<SelectInput
 										control={form.control}
 										name="fabricType"
@@ -546,8 +553,6 @@ export default function ProductForm({
 										options={fabricTypeOptions}
 										placeholder="Select fabric type"
 									/>
-								</div>
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
 									<FormField
 										control={form.control}
 										name="category"
@@ -800,7 +805,7 @@ export default function ProductForm({
 
 							<Separator />
 
-							<SalesInformation control={form.control} />
+							<SalesInformation control={form.control} productId={productId} />
 
 							<Button disabled={isLoading} type="submit">
 								{isLoading

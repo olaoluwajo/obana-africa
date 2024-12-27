@@ -42,6 +42,7 @@ export const mapProductDataToForm = (product: any): FormValues => {
 	return {
 		name: product?.name || "",
 		sku: product?.sku || "",
+		status: product?.status || "",
 		productCode: productCodeField?.value || "",
 		vendorId: product?.vendor_id || "",
 		unit: product?.unit || "",

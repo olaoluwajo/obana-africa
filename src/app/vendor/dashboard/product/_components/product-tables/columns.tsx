@@ -51,12 +51,22 @@ export const columns: ColumnDef<Product, unknown>[] = [
 		accessorKey: "sku",
 		header: "PRODUCT CODE(obana)",
 	},
-
 	{
 		accessorKey: "name",
-		accessorFn: (row) => row.name,
 		header: "PRODUCT NAME",
+		cell: ({ row }) => {
+			const productName = row.getValue("name");
+
+			const truncatedProductName = productName?.toString();
+			const finalProductName =
+				truncatedProductName && truncatedProductName.length > 18
+					? `${truncatedProductName.slice(0, 18)}...`
+					: truncatedProductName;
+
+			return <div>{finalProductName || "No product name"}</div>;
+		},
 	},
+
 	{
 		accessorKey: "stock_on_hand",
 		header: "STOCK",
@@ -75,9 +85,14 @@ export const columns: ColumnDef<Product, unknown>[] = [
 		cell: ({ row }) => {
 			const status = row.getValue("status");
 
-			const statusStyles = `mx-auto flex justify-center items-center mr-3 text-white px-3 py-1 rounded-full ${
-				status === "active" ? "bg-green-400" : "bg-red-400"
+			const statusStyles = `inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
+				status === "active"
+					? "border-transparent bg-[#4D9257] text-secondary-foreground hover:bg-[#4D9257]/80"
+					: "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80"
 			}`;
+			// const statusStyles = `mx-auto flex justify-center items-center mr-3 text-white px-3 py-1 rounded-full ${
+			// 	status === "active" ? "bg-green-400" : "bg-red-400"
+			// }`;
 
 			return <div className={statusStyles}>{String(status)}</div>;
 		},
@@ -89,14 +104,22 @@ export const columns: ColumnDef<Product, unknown>[] = [
 		header: () => <div className="">PRICE PER BOX</div>,
 		cell: ({ row }) => {
 			const amount = parseFloat(row.getValue("rate"));
-			const formatted = new Intl.NumberFormat("en-US", {
-				style: "currency",
-				currency: "NGN",
-			}).format(amount);
+			const formatPriceToNaira = (price: number) => {
+				return `₦${price.toLocaleString("en-NG", {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				})}`;
+			};
+			const formatted = formatPriceToNaira(amount);
+			// const formatted = new Intl.NumberFormat("en-US", {
+			// 	style: "currency",
+			// 	currency: "NGN",
+			// }).format(amount);
 
 			return <div className="place-self-start ">{formatted}</div>;
 		},
 	},
+
 	{
 		accessorKey: "description",
 		header: "DESCRIPTION",

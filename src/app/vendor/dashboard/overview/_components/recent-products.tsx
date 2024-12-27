@@ -1,3 +1,5 @@
+"use client";
+
 import {
 	Table,
 	TableBody,
@@ -8,73 +10,94 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-
-const recentProducts = [
-	{
-		id: 1,
-		name: "White T-Shirt",
-		status: true,
-		qty: 25,
-		price: "N45.00",
-	},
-	{
-		id: 2,
-		name: "Black T-Shirt",
-		status: true,
-		qty: 29,
-		price: "N25.00",
-	},
-	{
-		id: 3,
-		name: "Blue T-Shirt",
-		status: false,
-		qty: 15,
-		price: "N36.99",
-	},
-	{
-		id: 4,
-		name: "Red T-Shirt",
-		status: true,
-		qty: 32,
-		price: "N22.50",
-	},
-	{
-		id: 5,
-		name: "Yellow T-Shirt",
-		status: false,
-		qty: 10,
-		price: "N15.20",
-	},
-];
+import { useEffect, useState, useMemo } from "react";
+import { fetchProducts } from "@/utils/fetchProducts";
+import Loader from "@/components/loader";
 
 const RecentProducts = () => {
+	const [products, setProducts] = useState([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+	const [vendorId, setVendorId] = useState<string | null>(null);
+
+	// Memoized search parameters
+	const searchParams = useMemo(
+		() => ({
+			page: "1",
+			q: "",
+			limit: "10",
+			categories: "",
+		}),
+		[],
+	);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const storedVendorId = localStorage.getItem("vendorId");
+				if (!storedVendorId) {
+					throw new Error("Vendor ID not found in localStorage");
+				}
+
+				setVendorId(storedVendorId);
+				const data = await fetchProducts(storedVendorId, searchParams);
+				setProducts(data.products || []);
+			} catch (err) {
+				setError(err instanceof Error ? err.message : "Unknown error");
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchData();
+	}, [searchParams]);
+
+
+		const formatPriceToNaira = (price: number) => {
+			return `₦${price.toLocaleString("en-NG", {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+			})}`;
+		};
+
+	if (error) {
+		return <div className="text-red-500">Error loading recent products: {error}</div>;
+	}
+
 	return (
-		<Table>
-			<TableCaption>A list of your recently uploaded products.</TableCaption>
-			<TableHeader>
-				<TableRow>
-					<TableHead>Product name</TableHead>
-					<TableHead>Status</TableHead>
-					<TableHead>Quantity</TableHead>
-					<TableHead className="text-right">Price</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				{recentProducts.map((product) => (
-					<TableRow key={product.id}>
-						<TableCell className="font-medium">{product.name}</TableCell>
-						{/* <TableCell>{product.status ? 'Enabled' : 'Disabled'}</TableCell> */}
-						<TableCell>
-							<Badge variant={product.status ? "outline" : "active"}>
-								{product.status ? "Enabled" : "Disabled"}
-							</Badge>
-						</TableCell>
-						<TableCell>{product.qty}</TableCell>
-						<TableCell className="text-right">{product.price}</TableCell>
-					</TableRow>
-				))}
-			</TableBody>
-		</Table>
+		<>
+			{isLoading ? (
+				<Loader fullscreen={false} />
+			) : (
+				<Table>
+					<TableCaption>A list of your recently uploaded products.</TableCaption>
+					<TableHeader>
+						<TableRow>
+							<TableHead>Product name</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Quantity</TableHead>
+							<TableHead className="text-right">Price</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{products.map((product: any) => (
+							<TableRow key={product.id} className="text-xs">
+								<TableCell className="font-medium">{product.name}</TableCell>
+								<TableCell>
+									<Badge variant={product.status === "active" ? "active" : "destructive"}>
+										{product.status === "active" ? "Active" : "In-active"}
+									</Badge>
+								</TableCell>
+								<TableCell>{product.stock_on_hand}</TableCell>
+								<TableCell className="text-right">
+									{formatPriceToNaira(product.rate)}
+								</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			)}
+		</>
 	);
 };
 

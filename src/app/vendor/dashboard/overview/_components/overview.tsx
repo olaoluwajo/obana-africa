@@ -1,10 +1,14 @@
 "use client";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { BarGraph } from "./bar-graph";
 // import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import PageContainer from "@/components/layout/page-container";
 import RecentSales from "./recent-sales";
 import FailedProducts from "./failed-products";
 import RecentProducts from "./recent-products";
+import Cookies from "js-cookie";
+import { fetchProducts } from "@/utils/fetchProducts";
 
 // import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,13 +16,50 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useVendorStore } from "@/stores/useVendorStore";
 
 export default function OverViewPage() {
+	const [activeProducts, setActiveProducts] = useState(0);
 	const vendorName = useVendorStore((state) => state.vendorName);
+	const [isLoading, setIsLoading] = useState(true);
 
 	if (!vendorName) {
-		const vendorName = localStorage.getItem("vendorName");
-		console.log("VENDOR NAME", vendorName);
+		const vendorName = Cookies.get("vendorName");
+		// console.log("VENDOR NAME", vendorName);
 		useVendorStore.setState({ vendorName: vendorName });
 	}
+	const totalProducts = localStorage.getItem("productCount");
+	// const totalProducts = Cookies.get("productCount");
+
+	// Fetch active products count from API
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const storedVendorId = localStorage.getItem("vendorId");
+				if (!storedVendorId) {
+					throw new Error("Vendor ID not found in localStorage");
+				}
+
+				// Fetch all products
+				const data = await fetchProducts(storedVendorId);
+
+				// Extract products and count active ones
+				const products = data.products || [];
+				// console.log(products);
+
+				// Count products with status "active"
+				const activeProductsCount = products.filter(
+					(product: any) => product.status === "active",
+				).length;
+
+				// Update state with active products count
+				setActiveProducts(activeProductsCount);
+			} catch (err) {
+				console.error(err instanceof Error ? err.message : "Unknown error");
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchData();
+	}, []);
 
 	return (
 		<PageContainer scrollable>
@@ -57,8 +98,8 @@ export default function OverViewPage() {
 									</svg>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">N45,231.89</div>
-									<p className="text-xs text-muted-foreground">+20.1% from last month</p>
+									<div className="text-2xl font-bold">N0.00</div>
+									<p className="text-xs text-muted-foreground">+0.0% from last month</p>
 								</CardContent>
 							</Card>
 							<Card>
@@ -79,7 +120,7 @@ export default function OverViewPage() {
 									</svg>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">+2350</div>
+									<div className="text-2xl font-bold"> {totalProducts}</div>
 									<p className="text-xs text-muted-foreground">+180.1% from last month</p>
 								</CardContent>
 							</Card>
@@ -100,13 +141,15 @@ export default function OverViewPage() {
 									</svg>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">+12,234</div>
-									<p className="text-xs text-muted-foreground">+19% from last month</p>
+									<div className="text-2xl font-bold">+0</div>
+									<p className="text-xs text-muted-foreground">+0% from last month</p>
 								</CardContent>
 							</Card>
 							<Card>
 								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">Active Now</CardTitle>
+									<CardTitle className="text-sm font-medium">
+										Active Now Products
+									</CardTitle>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 24 24"
@@ -120,8 +163,8 @@ export default function OverViewPage() {
 									</svg>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">+573</div>
-									<p className="text-xs text-muted-foreground">+201 since last hour</p>
+									<div className="text-2xl font-bold">+{activeProducts}</div>
+									<p className="text-xs text-muted-foreground">+0 since last hour</p>
 								</CardContent>
 							</Card>
 						</div>
@@ -145,7 +188,7 @@ export default function OverViewPage() {
 							<Card className="col-span-3">
 								<CardHeader>
 									<CardTitle>Recent Orders</CardTitle>
-									<CardDescription>You made 265 sales this month.</CardDescription>
+									<CardDescription>You made 0 sales this month.</CardDescription>
 								</CardHeader>
 								<CardContent>
 									<RecentSales />
@@ -153,8 +196,8 @@ export default function OverViewPage() {
 							</Card>
 							<Card className="col-span-4">
 								<CardHeader>
-									<CardTitle>Failed Added Products</CardTitle>
-									<CardDescription>You have 2 failed products</CardDescription>
+									<CardTitle>Recent Orders</CardTitle>
+									<CardDescription>You have made 0 sales this month</CardDescription>
 								</CardHeader>
 								<CardContent>
 									<FailedProducts />

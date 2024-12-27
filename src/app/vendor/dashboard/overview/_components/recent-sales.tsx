@@ -7,14 +7,15 @@ const RecentSales = () => {
       <div className="flex items-center">
         <Avatar className="h-9 w-9">
           <AvatarImage src="/avatars/01.png" alt="Avatar" />
-          <AvatarFallback>T</AvatarFallback>
+          <AvatarFallback></AvatarFallback>
         </Avatar>
         <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">White T-Shirt</p>
-          {/* <p className="text-sm text-muted-foreground">olivia.martin@email.com</p> */}
+          <p className="text-sm font-medium leading-none"></p>
+          {/* <p className="text-sm font-medium leading-none">White T-Shirt</p> */}
         </div>
         <div className="ml-auto font-medium">
-          <Badge variant={'outline'} >SOLD</Badge>
+          <Badge variant={'outline'} ></Badge>
+          {/* <Badge variant={'outline'} >SOLD</Badge> */}
         </div>
       </div>
     </div>
