@@ -60,8 +60,8 @@ export const editProduct = async (productId: string, values: any, images: File[]
 		...values,
 		images: uploadedUrls,
 	});
-	console.log("ProductId", productId);
-	console.log(formattedProductData);
+	// console.log("ProductId", productId);
+	// console.log(formattedProductData);
 
 	try {
 		const response = await axios.put(`/api/edit-product`, {

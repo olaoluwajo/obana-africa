@@ -3,11 +3,11 @@
 import React from "react";
 import OverViewPage from "./overview/_components/overview";
 
-const Dashboard = () => {
+const Page = () => {
 	return <OverViewPage />;
 
 	// <OverViewPage />;;
 };
 
-export default Dashboard;
+export default Page;
 

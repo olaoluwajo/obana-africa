@@ -39,10 +39,7 @@ import useAuthStore from "@/stores/authStore";
 type IconType = keyof typeof Icons;
 
 export default function AppSidebar() {
-	const {
-		vendorFirstName,
-		vendorEmail: vendorEmailFromStore,
-	} = useVendorStore((state) => ({
+	const { vendorFirstName, vendorEmail: vendorEmailFromStore } = useVendorStore((state) => ({
 		vendorFirstName: state.vendorFirstName,
 		vendorEmail: state.vendorEmail,
 	}));
@@ -51,22 +48,16 @@ export default function AppSidebar() {
 		const storedFirstName = localStorage.getItem("vendorFirstName");
 		const storedEmail = localStorage.getItem("vendorEmail");
 
-		if (storedFirstName) useVendorStore.getState().setVendorFirstName(storedFirstName);
-		if (storedEmail) useVendorStore.getState().setVendorEmail(storedEmail);
-	}, []);
-
-	// console.log("SESSION", vendorId, vendorName, vendorFirstName, vendorLastName, vendorEmailFromStore);
+		if (storedFirstName && storedFirstName !== vendorFirstName) {
+			useVendorStore.getState().setVendorFirstName(storedFirstName);
+		}
+		if (storedEmail && storedEmail !== vendorEmailFromStore) {
+			useVendorStore.getState().setVendorEmail(storedEmail);
+		}
+	}, [vendorFirstName, vendorEmailFromStore]);
 
 	const router = useRouter();
-	// const { data: session } = useSession();
 
-	// const session = {
-	// 	user: {
-	// 		name: "John Doe",
-	// 		email: "john@example.com",
-	// 		image: "/path/to/profile-image.jpg",
-	// 	},
-	// };
 	const pathname = usePathname();
 
 	const handleLogout = () => {

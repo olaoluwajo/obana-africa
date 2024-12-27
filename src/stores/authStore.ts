@@ -11,7 +11,7 @@ type AuthState = {
 	clearAuth: () => void;
 };
 
-const TIMEOUT_LIMIT = 2 * 24 * 60 * 60 * 1000;
+const TIMEOUT_LIMIT = 7 * 24 * 60 * 60 * 1000;
 
 const useAuthStore = create<AuthState>((set) => ({
 	isAuthenticated: typeof window !== "undefined" && Cookies.get("otpToken") !== undefined,
