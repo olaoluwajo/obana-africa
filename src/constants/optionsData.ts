@@ -1,8 +1,4 @@
-export const sampleAvailableOptions = [
-	"Yes",
-	"No",
-
-];
+export const sampleAvailableOptions = ["Yes", "No"];
 export const unitOptions = [
 	"Pcs",
 	"kg",
@@ -577,4 +573,121 @@ export const availableColorOptions = [
 	"Beige",
 	"Maroon",
 	"Khaki",
+];
+
+interface SizeTypeOption {
+	type: string;
+	categories: {
+		name: string;
+		subcategories: {
+			name: string;
+			sizes: string[];
+		}[];
+	}[];
+}
+
+export const sizeTypeOptions: SizeTypeOption[] = [
+	{
+		type: "Apparel",
+		categories: [
+			{
+				name: "Men's",
+				subcategories: [
+					{ name: "Shirts", sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"] },
+					{ name: "T-Shirts", sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"] },
+					{ name: "Pants", sizes: ["28", "30", "32", "34", "36", "38", "40", "42", "44"] },
+					{ name: "Shorts", sizes: ["S", "M", "L", "XL", "2XL"] },
+					{ name: "Jackets/Coats", sizes: ["S", "M", "L", "XL", "2XL", "3XL"] },
+					{ name: "Sweaters", sizes: ["S", "M", "L", "XL", "2XL"] },
+					{ name: "Suits", sizes: ["36", "38", "40", "42", "44", "46", "48"] },
+					{ name: "Vests", sizes: ["S", "M", "L", "XL", "2XL"] },
+					{ name: "Polos", sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL"] },
+					{ name: "Tracksuits", sizes: ["S", "M", "L", "XL", "2XL"] },
+				],
+			},
+			{
+				name: "Women's",
+				subcategories: [
+					{ name: "Dresses", sizes: ["6", "8", "10", "12", "14", "16", "18", "20", "22"] },
+					{ name: "Tops", sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL"] },
+					{ name: "Skirts", sizes: ["6", "8", "10", "12", "14", "16", "18", "20"] },
+					{ name: "Pants", sizes: ["6", "8", "10", "12", "14", "16", "18", "20", "22"] },
+					{ name: "Shorts", sizes: ["XS", "S", "M", "L", "XL"] },
+					{ name: "Jackets/Coats", sizes: ["XS", "S", "M", "L", "XL", "2XL"] },
+					{ name: "Blouses", sizes: ["XS", "S", "M", "L", "XL", "2XL"] },
+					{ name: "Tunic Tops", sizes: ["XS", "S", "M", "L", "XL"] },
+					{ name: "Leggings", sizes: ["XS", "S", "M", "L", "XL", "2XL"] },
+					{ name: "Cardigans", sizes: ["XS", "S", "M", "L", "XL", "2XL"] },
+				],
+			},
+			{
+				name: "Unisex",
+				subcategories: [
+					{ name: "Hoodies", sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL"] },
+					{ name: "Sweatshirts", sizes: ["XS", "S", "M", "L", "XL", "2XL"] },
+					{ name: "Ponchos", sizes: ["S", "M", "L", "XL"] },
+					{ name: "Kimono Jackets", sizes: ["S", "M", "L", "XL"] },
+				],
+			},
+		],
+	},
+	{
+		type: "Shoes",
+		categories: [
+			{
+				name: "Men's Shoes",
+				subcategories: [
+					{
+						name: "Casual Shoes/Boots",
+						sizes: ["7", "8", "9", "10", "11", "12", "13", "14"],
+					},
+					{ name: "Dress Shoes", sizes: ["7", "8", "9", "10", "11", "12", "13"] },
+					{ name: "Sports Shoes", sizes: ["7", "8", "9", "10", "11", "12", "13", "14"] },
+					{ name: "Sandals/Flip Flops", sizes: ["7", "8", "9", "10", "11", "12"] },
+				],
+			},
+			{
+				name: "Women's Shoes",
+				subcategories: [
+					{ name: "Flats", sizes: ["5", "6", "7", "8", "9", "10", "11", "12"] },
+					{ name: "Heels", sizes: ["5", "6", "7", "8", "9", "10", "11", "12"] },
+					{ name: "Boots", sizes: ["5", "6", "7", "8", "9", "10", "11", "12"] },
+					{ name: "Sports Shoes", sizes: ["5", "6", "7", "8", "9", "10", "11", "12"] },
+					{ name: "Sandals/Flip Flops", sizes: ["5", "6", "7", "8", "9", "10", "11"] },
+				],
+			},
+			{
+				name: "Unisex Shoes",
+				subcategories: [
+					{ name: "Slippers", sizes: ["5", "6", "7", "8", "9", "10", "11", "12", "13"] },
+					{ name: "Sneakers", sizes: ["7", "8", "9", "10", "11", "12"] },
+				],
+			},
+		],
+	},
+	{
+		type: "Accessories",
+		categories: [
+			{
+				name: "Hats/Headwear",
+				subcategories: [
+					{ name: "Baseball Caps", sizes: ["One Size", "S/M", "M/L", "L/XL"] },
+					{ name: "Beanies", sizes: ["One Size"] },
+					{ name: "Fedoras", sizes: ["S", "M", "L", "XL"] },
+					{ name: "Bucket Hats", sizes: ["One Size"] },
+					{ name: "Sun Hats", sizes: ["One Size", "S/M", "M/L", "L/XL"] },
+				],
+			},
+			{
+				name: "Gloves",
+				subcategories: [
+					{ name: "Winter Gloves", sizes: ["S", "M", "L", "XL"] },
+					{ name: "Leather Gloves", sizes: ["S", "M", "L", "XL"] },
+					{ name: "Sports Gloves", sizes: ["S", "M", "L", "XL"] },
+					{ name: "Fingerless Gloves", sizes: ["S", "M", "L", "XL"] },
+				],
+			},
+			// Add other accessories categories as needed
+		],
+	},
 ];

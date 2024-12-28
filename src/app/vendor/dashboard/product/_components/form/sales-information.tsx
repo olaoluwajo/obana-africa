@@ -1,6 +1,6 @@
 import React from "react";
-import TextInput from "../inputs/text-input";
-import { Control, Controller } from "react-hook-form";
+import {TextInput} from "../inputs/text-input";
+import {  Controller } from "react-hook-form";
 
 interface SalesInfoFormProps {
 	control: any;

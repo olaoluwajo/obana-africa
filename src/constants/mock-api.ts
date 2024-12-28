@@ -54,85 +54,9 @@ export const fakeProducts = {
 	// Initialize with sample data
 	initialize() {
 		const sampleProducts: Product[] = [];
-		function generateRandomProductData(id: number): Product {
-			const categories = [
-				"Electronics",
-				"Furniture",
-				"Clothing",
-				"Toys",
-				"Groceries",
-				"Books",
-				"Jewelry",
-				"Beauty Products",
-			];
-			const vendorId = useVendorStore.getState().vendorId;
-
-			return {
-				id,
-				item_id: id,
-				vendorId: vendorId,
-				name: faker.commerce.productName(),
-				weight: faker.number.int({ min: 1, max: 100 }),
-				weight_unit: faker.helpers.arrayElement(["kg", "g", "mg", "oz", "lb"]),
-				rate: faker.number.int({ min: 1, max: 5 }),
-				unitPerBox: faker.number.int({ min: 1, max: 10 }),
-				sellingPrice: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-				sizesRun: faker.helpers.arrayElement(["M-4XL", "S-M", "L-XL", "S-XL", "M-XL"]),
-				countryOfManufacture: faker.helpers.arrayElement([
-					"Nigeria",
-					"Ghana",
-					"Kenya",
-					"South Africa",
-					"Nigeria",
-				]),
-				fabricType: faker.helpers.arrayElement([
-					"Cotton",
-					"Polyester",
-					"Wool",
-					"Silk",
-					"Linen",
-				]),
-
-				sizeType: faker.helpers.arrayElement([
-					"Small",
-					"Medium",
-					"Large",
-					"X-Large",
-					"XX-Large",
-				]),
-				account: faker.string.uuid().slice(0, 10),
-				availableColors: faker.helpers.arrayElement([
-					"Red",
-					"Blue",
-					"Green",
-					"Yellow",
-					"Purple",
-				]),
-				tags: faker.helpers.arrayElement(["Tag1", "Tag2", "Tag3", "Tag4", "Tag5"]),
-				salesTaxRule: faker.string.uuid().slice(0, 10),
-				upc: faker.number.int({ min: 100000000000, max: 999999999999 }),
-				mpn: faker.number.int({ min: 1000000000000, max: 9999999999999 }),
-				ean: faker.number.int({ min: 1000000000000, max: 9999999999999 }),
-				isbn: faker.number.int({ min: 1000000000000, max: 9999999999999 }),
-				manufacturer: faker.company.name(),
-				brand: faker.commerce.productName(),
-				fob: faker.number.int({ min: 1, max: 100 }),
-				description: faker.commerce.productDescription().slice(0, 30) + "...",
-				sku: faker.string.uuid().slice(0, 10),
-				unit: faker.helpers.arrayElement(["kg", "pcs", "litre", "pack"]),
-				status: faker.helpers.arrayElement(["active", "inactive"]),
-				created_at: faker.date.between({ from: "2022-01-01", to: "2023-12-31" }).toISOString(),
-				unitPrice: parseFloat(faker.commerce.price({ min: 5, max: 500, dec: 2 })),
-				photo_url: `https://api.slingacademy.com/public/sample-products/${id}.png`,
-				category: faker.helpers.arrayElement(categories),
-				updated_at: faker.date.recent().toISOString(),
-			};
-		}
 
 		// Generate remaining records
-		for (let i = 1; i <= 20; i++) {
-			sampleProducts.push(generateRandomProductData(i));
-		}
+		for (let i = 1; i <= 20; i++) {}
 
 		this.records = sampleProducts;
 	},

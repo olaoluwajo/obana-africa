@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { fetchProductById } from "@/lib/fetchProducts";
 import { format } from "date-fns";
 
@@ -34,7 +34,7 @@ import {
 import ImageGallery from "./image-gallery";
 import ProductActions from "./product-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import React from "react";
+import React, { useEffect } from "react";
 
 type ProductViewPageProps = {
 	params: any;
@@ -195,9 +195,14 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							/>
 							<DetailItem
 								icon={<Box className="text-orange-600" />}
-								label="Unit"
+								label="Unit of Measurement"
 								value={product.unit}
 							/>
+							<DetailItem
+								icon={<PackageCheck className="text-blue-600" />}
+								label="Unit Per Box"
+								value={product.custom_field_hash.cf_packs}
+							/>{" "}
 							<DetailItem
 								icon={<Droplet className="text-cyan-600" />}
 								label="Weight"
@@ -324,24 +329,27 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								}).format(product.custom_field_hash.cf_item_price_unformatted)}
 							/>
 							<DetailItem
+								icon={<CircleDollarSign className="text-green-600" />}
+								label="Price Per Pack"
+								value={new Intl.NumberFormat("en-NG", {
+									style: "currency",
+									currency: "NGN",
+								}).format(product.rate)}
+							/>
+							<DetailItem
 								icon={<PackageCheck className="text-blue-600" />}
 								label="Opening Stock"
 								value={product.initial_stock}
-							/>{" "}
-							<DetailItem
-								icon={<PackageCheck className="text-blue-600" />}
-								label="Stock Per Box"
-								value={product.custom_field_hash.cf_packs}
-							/>{" "}
-							<DetailItem
-								icon={<Archive className="text-amber-600" />}
-								label="Committed Stock"
-								value={`${product.custom_field_hash.cf_committed_stock || 0} units`}
 							/>
 							<DetailItem
 								icon={<ShoppingCart className="text-purple-600" />}
 								label="Available to Sell"
 								value={`${product.available_for_sale_stock} units`}
+							/>
+							<DetailItem
+								icon={<Archive className="text-amber-600" />}
+								label="Committed Stock"
+								value={`${product.custom_field_hash.cf_committed_stock || 0} units`}
 							/>
 							<DetailItem
 								icon={<Truck className="text-orange-600" />}
@@ -364,27 +372,36 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 						<div className="grid grid-cols-2 gap-4">
 							<DetailItem
 								icon={<Percent className="text-pink-600" />}
-								label="Payable Commission"
+								label="Commission Rate"
 								value={`${COMMISSION_PERCENTAGE}%`}
 							/>
 							<DetailItem
 								icon={<CircleDollarSign className="text-emerald-600" />}
-								label="Payable Amount"
+								label="Payable Commision"
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",
 								}).format((parseFloat(product.rate) * COMMISSION_PERCENTAGE) / 100)}
 							/>
+							{/* <DetailItem
+								icon={<CircleDollarSign className="text-emerald-600" />}
+								label="Total Sale Amount"
+								value={new Intl.NumberFormat("en-NG", {
+									style: "currency",
+									currency: "NGN",
+								}).format(product.rate)}
+							/> */}
 
 							<DetailItem
 								icon={<CircleDollarSign className="text-purple-600" />}
-								label="Price After Commission"
+								label="Payable After Commission"
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",
 								}).format(calculateCommissionPrice(product.rate))}
 							/>
-
+						</div>
+						<div className="grid grid-cols-2 gap-4">
 							<DetailItem
 								icon={<Timer className="text-blue-500" size={20} />}
 								label="Created Time"
@@ -400,13 +417,7 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 				</Card>
 			</div>
 
-			{/* Description */}
-			<h3 className="text-xl text-card-foreground font-semibold border-b pb-2 mt-6">
-				Product Description
-			</h3>
-			<p className="text-gray-700 italic">{product.description || "No description available"}</p>
-
-			<ProductActions productId={productId} />
+			<ProductActions productId={productId} initialStatus={product.status} />
 		</div>
 	);
 }
