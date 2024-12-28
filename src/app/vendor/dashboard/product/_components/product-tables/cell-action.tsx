@@ -9,10 +9,9 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// import { Product } from "@/constants/data";
 import { Product } from "@/constants/mock-api";
-import { deleteProduct } from "@/lib/product-utils";
-import { CopyPlus, Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
+import axios from "axios";
+import { ArchiveX, CopyPlus, Edit, Eye, MoreHorizontal, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,58 +27,56 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 	const [errorMessage, setErrorMessage] = useState("");
 	const router = useRouter();
 
-	const onConfirm = async () => {
+	const toggleItemStatus = async () => {
+		setLoading(true);
+
 		try {
-			setLoading(true);
-			await deleteProduct(data.item_id);
-			toast.success(`Product deleted successfully`);
-			router.refresh();
-			setSuccessModalOpen(true);
-		} catch (error: any) {
-			console.log("ERROR", error);
-			setErrorMessage(error.message);
-			// setErrorMessage("Failed to delete the product. Please try again.");
-			setSuccessModalOpen(true);
+			const response = await axios.post("/api/toggle-status", {
+				itemId: data.item_id,
+				currentStatus: data.status,
+			});
+
+			if (response.data.success) {
+				toast.success(
+					`Product status updated to ${data.status === "active" ? "inactive" : "active"}`,
+				);
+
+				// Force a hard refresh of the page
+				window.location.reload();
+
+				// Alternative approach using router
+				router.push(window.location.pathname);
+				router.refresh();
+			} else {
+				console.error("Failed to toggle item status:", response.data.message);
+				toast.error("Failed to update product status");
+			}
+		} catch (error) {
+			console.error("Error:", error);
+			toast.error("An error occurred while updating the status");
 		} finally {
-			setOpen(false);
 			setLoading(false);
-			router.refresh();
+			setOpen(false);
 		}
 	};
 
 	return (
 		<>
 			{loading ? (
-				// Show loading state
-				<Loader message="Deleting product..." />
+				<Loader message="Processing..." />
 			) : (
 				<>
-					{/* Confirmation Modal */}
 					<AlertModal
 						isOpen={open}
 						onClose={() => setOpen(false)}
-						onConfirm={onConfirm}
+						onConfirm={toggleItemStatus}
 						loading={loading}
 						title="Are you sure?"
-						description="This action cannot be undone."
+						description={`This will set the product status to ${
+							data.status === "active" ? "inactive" : "active"
+						}.`}
 					/>
 
-					{/* Success/Error Modal */}
-					{successModalOpen && (
-						<AlertModal
-							isOpen={successModalOpen}
-							onClose={() => setSuccessModalOpen(false)}
-							onConfirm={() => setSuccessModalOpen(false)}
-							loading={loading}
-							title={errorMessage ? "Error" : "Success"}
-							description={errorMessage || "Product deleted successfully!"}
-							success={errorMessage === ""}
-							cancelLabel="Close"
-							confirmLabel={errorMessage ? "Okay" : "Okay"}
-						/>
-					)}
-
-					{/* Dropdown menu for other actions */}
 					<DropdownMenu modal={false}>
 						<DropdownMenuTrigger asChild>
 							<Button variant="ghost" className="h-8 w-8 p-0">
@@ -110,7 +107,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 								Duplicate
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setOpen(true)}>
-								<Trash className="mr-2 h-4 w-4" /> Delete
+								{data.status === "active" ? (
+									<ArchiveX className="mr-2 h-4 w-4 text-red-600" />
+								) : (
+									<ShoppingBag className="mr-2 h-4 w-4 text-green-600" />
+								)}
+								Set {data.status === "active" ? "Inactive" : "Active"}
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>

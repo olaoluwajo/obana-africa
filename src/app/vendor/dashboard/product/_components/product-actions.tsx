@@ -3,8 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import ItemToggleButton from "./toogle-btn";
 
-export default function ProductActions({ productId }: { productId: string }) {
+export default function ProductActions({
+	productId,
+	initialStatus,
+}: {
+	productId: string;
+	initialStatus: any;
+}) {
 	const router = useRouter();
 	const [loadingStates, setLoadingStates] = useState({
 		edit: false,
@@ -64,13 +71,8 @@ export default function ProductActions({ productId }: { productId: string }) {
 				{loadingStates.duplicate ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
 				Duplicate
 			</button>
-			<button
-				onClick={handleDelete}
-				disabled={loadingStates.delete}
-				className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
-				{loadingStates.delete ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-				Delete Product
-			</button>
+
+			<ItemToggleButton itemId={productId} initialStatus={initialStatus} />
 		</div>
 	);
 }

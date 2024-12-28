@@ -1,60 +1,42 @@
 "use client";
 import * as React from "react";
 
-import { FileUploader } from "@/components/file-uploader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
 import { Product } from "@/constants/mock-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
-	brandOptions,
-	fabricTypeOptions,
 	fobOptions,
 	incotermsOptions,
-	manufacturerOptions,
-	unitOptions,
-	unitPerBoxOptions,
-	sampleAvailableOptions,
 } from "@/constants/optionsData";
-import TextInput from "./inputs/text-input";
-import SelectInput from "./inputs/select-input";
-import CategoryInput from "./inputs/category-input";
 import { toast } from "sonner";
 import { useVendorStore } from "@/stores/useVendorStore";
 import { useRouter } from "next/navigation";
 import { formatProductData } from "@/utils/formatProductData";
 import {
-	categoryOptions,
 	subCategoryOptions,
 	subSubCategoryOptions,
 } from "@/constants/categoryData";
 import { createProduct, editProduct } from "@/lib/product-utils";
 import Loader from "@/components/loader";
-import AvailableColorsInput from "./inputs/available-color-input";
-import SizeSelector from "./inputs/size-selector";
 import VendorInformation from "./form/vendor-information";
 import SalesInformation from "./form/sales-information";
+import ProductBasicInfo from "./form/product-basic-info";
+import { ProductCategorySection } from "./form/category-section";
+import {
+	ProductCodes,
+	ProductDescription,
+	ProductIdentifiers,
+	ProductManufacturingInfo,
+	ProductSizeAndColor,
+} from "./form/product-identifier";
 
 export const formSchema = z.object({
 	image: z.any().nullable(),
@@ -214,15 +196,24 @@ export default function ProductForm({
 	useEffect(() => {
 		const vendorPrefix = vendorName ? vendorName.slice(0, 3).toUpperCase() : "";
 		const brandPrefix = brandName ? brandName.slice(0, 3).toUpperCase() : "";
-		// Generate SKU
-		const generatedSku = brandName
-			? `B-${vendorPrefix}${String(productCount + 1).padStart(5, "0")}-${brandPrefix}`
-			: `B-${vendorPrefix}${String(productCount + 1).padStart(5, "0")}`;
+
+		let generatedSku = "";
+
+		if (productId === "new") {
+			// Increment the product count for new products
+			generatedSku = brandName
+				? `B-${vendorPrefix}${String(productCount + 1).padStart(5, "0")}-${brandPrefix}`
+				: `B-${vendorPrefix}${String(productCount + 1).padStart(5, "0")}`;
+		} else {
+			// Use the current SKU without incrementing the product count
+			generatedSku = brandName
+				? `B-${vendorPrefix}${String(productCount).padStart(5, "0")}-${brandPrefix}`
+				: `B-${vendorPrefix}${String(productCount).padStart(5, "0")}`;
+		}
 
 		setSku(generatedSku);
 		setValue("sku", generatedSku);
-		// console.log("Genrated sku", generatedSku);
-	}, [brandName, productCount, vendorName, setValue]);
+	}, [brandName, productCount, vendorName, setValue, productId]);
 
 	// SELLING PRICE CALCULATION
 	const unitPerBox = watch("unitPerBox");
@@ -345,47 +336,16 @@ export default function ProductForm({
 		}
 	}
 
-	React.useEffect(() => {
-		if (productId !== "new" && initialData?.image) {
-			// Function to fetch and convert URL to File
-			const urlToFile = async (url: string, index: number) => {
-				try {
-					const response = await fetch(url);
-					const blob = await response.blob();
-					const fileName = `Product-image-${index + 1}.jpg`;
-					const file = new File([blob], fileName, { type: blob.type });
-					Object.assign(file, { preview: url });
-					return file;
-				} catch (error) {
-					console.error(`Error converting URL to file: ${error}`);
-					return null;
-				}
-			};
-
-			// Convert all URLs to Files
-			const loadImages = async () => {
-				const imageUrls = Array.isArray(initialData.image)
-					? initialData.image
-					: [initialData.image];
-
-				const filePromises = imageUrls.map((url: any, index: any) => urlToFile(url, index));
-				const files = await Promise.all(filePromises);
-				const validFiles = files.filter((file): file is File => file !== null);
-				setImages(validFiles);
-			};
-
-			loadImages();
-
-			// Cleanup
-			return () => {
-				images.forEach((file: any) => {
-					if (file.preview) {
-						URL.revokeObjectURL(file.preview);
-					}
-				});
-			};
-		}
-	}, [productId, initialData?.image]);
+	const categoryProps = {
+		selectedCategory,
+		selectedSubCategory,
+		selectedSubSubCategory,
+		handleCategoryChange,
+		handleSubCategoryChange,
+		handleSubSubCategoryChange,
+		availableSubCategories,
+		availableSubSubCategories,
+	};
 
 	return (
 		<Card className="mx-auto w-full">
@@ -394,409 +354,37 @@ export default function ProductForm({
 			</CardHeader>
 			<CardContent>
 				{isLoading ? (
-					productId === "new" ? (
-						<Loader message="Adding product Please wait..." fullscreen={false} />
-					) : (
-						<Loader message="Editing product Please wait..." fullscreen={false} />
-					)
+					<Loader
+						message={`${productId === "new" ? "Adding" : "Editing"} product Please wait...`}
+						fullscreen={false}
+					/>
 				) : (
 					<Form {...form}>
 						<h1 className="text-2xl font-bold">Product Information</h1>
 						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-							<FormField
-								control={form.control}
-								name="image"
-								render={({ field }) => (
-									<div className="space-y-6">
-										<FormItem className="w-full">
-											<FormLabel>Images</FormLabel>
-											<FormControl>
-												<FileUploader
-													value={images}
-													onValueChange={(files) => setImages(files)}
-													maxFiles={8}
-													maxSize={4 * 1024 * 1024}
-													disabled={isLoading}
-												/>
-											</FormControl>
-											<Separator />
-											<FormMessage />
-										</FormItem>
-									</div>
-								)}
+							<ProductBasicInfo
+								productId={productId}
+								form={form}
+								images={images}
+								setImages={setImages}
+								isLoading={isLoading}
+								initialData={initialData}
 							/>
 
-							<div className="grid grid-cols-1 gap-6 md:grid-cols-1">
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-									<TextInput
-										control={form.control}
-										name="name"
-										label="Product Name *"
-										placeholder="Enter Product name"
-										type="text"
-										required={true}
-									/>
-									<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-										<FormField
-											control={form.control}
-											name="weight"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Weight</FormLabel>
+							<ProductIdentifiers form={form} />
 
-													{/* Wrapper to contain both input and select */}
-													<FormControl className="">
-														<div className="relative">
-															<Input
-																type="number"
-																placeholder="Enter weight"
-																value={field.value || ""}
-																disabled
-																// onChange={(e) =>
-																// 	field.onChange({
-																// 		...field.value,
-																// 		value: Number(e.target.value),
-																// 	})
-																// }
-																onChange={(e) => field.onChange(e.target.value)}
-																className="w-full pr-16"
-															/>
+							<ProductSizeAndColor form={form} />
 
-															{/* Dropdown for units (kg, g, lb, oz) */}
-															<div className="absolute right-0 top-1/2 transform -translate-y-1/2">
-																<FormField
-																	control={form.control}
-																	name="weight_unit"
-																	render={({ field: unitField }) => (
-																		<Select
-																			value={unitField.value}
-																			disabled
-																			onValueChange={unitField.onChange}>
-																			<SelectTrigger className="border-none bg-slate-200">
-																				<SelectValue placeholder="Unit" />
-																			</SelectTrigger>
-																			<SelectContent>
-																				<SelectItem value="kg">kg</SelectItem>
-																				<SelectItem value="g">g</SelectItem>
-																				<SelectItem value="lb">lb</SelectItem>
-																				<SelectItem value="oz">oz</SelectItem>
-																			</SelectContent>
-																		</Select>
-																	)}
-																/>
-															</div>
-														</div>
-													</FormControl>
+							<ProductCategorySection form={form} productId={productId} {...categoryProps} />
 
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-									</div>
-								</div>
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-									<TextInput
-										control={form.control}
-										name="productCode"
-										label="Product Code(vendor) *"
-										placeholder="Enter your Product code"
-										type="text"
-										required={true}
-									/>
-									<TextInput
-										control={form.control}
-										name="sku"
-										label="Product Code(obana) *"
-										placeholder="Generated SKU"
-										type="text"
-										value={form.watch("sku")}
-										required={true}
-										disabled={true}
-										tooltipContent="The Stock Keeping Unit of the item"
-									/>
-									<div className="grid grid-cols-2 gap-6 md:grid-cols-2">
-										<SelectInput
-											control={form.control}
-											name="unit"
-											label="Unit of Measurement"
-											options={unitOptions}
-											placeholder="Select Unit..."
-										/>
-										<SelectInput
-											control={form.control}
-											name="unitPerBox"
-											label="Unit Per Box"
-											options={unitPerBoxOptions}
-											placeholder="Select Unit Per Box"
-										/>
-									</div>
-								</div>
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-									<SizeSelector
-										onValuesChange={(type, sizes) => {
-											form.setValue("sizeType", type);
-											form.setValue("sizesRun", sizes.join(", "));
-										}}
-										tooltipContent="Select your product size type and the size ranges"
-									/>
-									<AvailableColorsInput
-										onChange={(value: any) => form.setValue("availableColors", value)}
-										tooltipContent="Select your product available colors or enter your custom mixed colors"
-									/>
-								</div>
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-									{" "}
-									<SelectInput
-										control={form.control}
-										name="fabricType"
-										label="Fabric Type"
-										options={fabricTypeOptions}
-										placeholder="Select fabric type"
-									/>
-									<FormField
-										control={form.control}
-										name="category"
-										render={({ field }) => (
-											<CategoryInput
-												control={form.control}
-												name="category"
-												label="Category"
-												options={categoryOptions}
-												placeholder="Select category"
-												onChange={(value) => {
-													handleCategoryChange(value);
-													field.onChange(value);
-												}}
-											/>
-										)}
-									/>
-									{productId === "new" ? (
-										// <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-										<>
-											{selectedCategory && (
-												<FormField
-													control={form.control}
-													name="subCategory"
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Sub Category</FormLabel>
-															<Select
-																value={selectedSubCategory}
-																onValueChange={(value) => {
-																	handleSubCategoryChange(value);
-																	field.onChange(value);
-																}}
-																disabled={!selectedCategory}>
-																<FormControl>
-																	<SelectTrigger>
-																		<SelectValue placeholder="Select Sub Sub-Category" />
-																	</SelectTrigger>
-																</FormControl>
-																<SelectContent>
-																	{availableSubCategories.map((subCategory) => (
-																		<SelectItem
-																			key={subCategory}
-																			value={subCategory}>
-																			{subCategory}
-																		</SelectItem>
-																	))}
-																</SelectContent>
-															</Select>
-															<FormMessage />
-														</FormItem>
-													)}
-												/>
-											)}
-											{selectedSubCategory && (
-												<FormField
-													control={form.control}
-													name="subSubCategory"
-													render={({ field }) => (
-														<FormItem>
-															<FormLabel>Sub Sub-Category</FormLabel>
-															<Select
-																value={selectedSubSubCategory}
-																onValueChange={(value) => {
-																	handleSubSubCategoryChange(value);
-																	field.onChange(value);
-																}}
-																disabled={!selectedSubCategory}>
-																<FormControl>
-																	<SelectTrigger>
-																		<SelectValue placeholder="Select Sub Sub-Category" />
-																	</SelectTrigger>
-																</FormControl>
-																<SelectContent>
-																	{availableSubSubCategories.map(
-																		(subSubCategory) => (
-																			<SelectItem
-																				key={subSubCategory}
-																				value={subSubCategory}>
-																				{subSubCategory}
-																			</SelectItem>
-																		),
-																	)}
-																</SelectContent>
-															</Select>
-															<FormMessage />
-														</FormItem>
-													)}
-												/>
-											)}{" "}
-										</>
-									) : (
-										// </div>
-										// <div className="grid grid-cols-1 gap-6 md:grid-cols-1">
-										<>
-											<FormField
-												control={form.control}
-												name="subCategory"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Sub Category</FormLabel>
-														<Select
-															value={selectedSubCategory}
-															onValueChange={(value) => {
-																handleSubCategoryChange(value);
-																field.onChange(value);
-															}}>
-															<FormControl>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select Sub Sub-Category" />
-																</SelectTrigger>
-															</FormControl>
-															<SelectContent>
-																{availableSubCategories.map((subCategory) => (
-																	<SelectItem
-																		key={subCategory}
-																		value={subCategory}>
-																		{subCategory}
-																	</SelectItem>
-																))}
-															</SelectContent>
-														</Select>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-											<FormField
-												control={form.control}
-												name="subSubCategory"
-												render={({ field }) => (
-													<FormItem>
-														<FormLabel>Sub Sub-Category</FormLabel>
-														<Select
-															value={selectedSubSubCategory}
-															onValueChange={(value) => {
-																handleSubSubCategoryChange(value);
-																field.onChange(value);
-															}}>
-															<FormControl>
-																<SelectTrigger>
-																	<SelectValue placeholder="Select Sub Sub-Category" />
-																</SelectTrigger>
-															</FormControl>
-															<SelectContent>
-																{availableSubSubCategories.map((subSubCategory) => (
-																	<SelectItem
-																		key={subSubCategory}
-																		value={subSubCategory}>
-																		{subSubCategory}
-																	</SelectItem>
-																))}
-															</SelectContent>
-														</Select>
-														<FormMessage />
-													</FormItem>
-												)}
-											/>
-										</>
-									)}
-								</div>
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-									<TextInput
-										control={form.control}
-										name="countryOfManufacture"
-										label="Country of Manufacture"
-										placeholder="Enter country of manufacture"
-										type="text"
-									/>
-									<SelectInput
-										control={form.control}
-										name="manufacturer"
-										label="Manufacturer"
-										options={manufacturerOptions}
-										placeholder="Select Manufacturer..."
-										tooltipContent="Select your product manufacturer"
-									/>
-									<SelectInput
-										control={form.control}
-										name="brand"
-										label="Brand *"
-										options={brandOptions}
-										required={true}
-										placeholder="Select Brand..."
-										onChange={handleBrandChange}
-										tooltipContent="Select your product Brand"
-									/>
-								</div>
-								<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-									<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-										<TextInput
-											control={form.control}
-											name="isbn"
-											label="ISBN"
-											placeholder="Enter ISBN"
-											type="number"
-											tooltipContent="Thirteen digit unique commercial book identifier (International Standard Book Number)"
-										/>
-										<TextInput
-											control={form.control}
-											name="upc"
-											label="UPC"
-											placeholder="Enter UPC"
-											type="number"
-											tooltipContent="Twelve digit unique number associated with the bar code(Universal Product Code)"
-										/>
-									</div>
-									<div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-										<TextInput
-											control={form.control}
-											name="mpn"
-											label="MPN"
-											placeholder="Enter MPN"
-											type="number"
-											tooltipContent="	Manufacturing Part Number unambiguously identifies a part	design"
-										/>
-										<TextInput
-											control={form.control}
-											name="ean"
-											label="EAN"
-											placeholder="Enter EAN"
-											type="number"
-											tooltipContent="	Thirteen digit unique number (International Article Number)"
-										/>
-									</div>
-								</div>
-							</div>
-							<FormField
-								control={form.control}
-								name="description"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Description</FormLabel>
-										<FormControl>
-											<Textarea
-												placeholder="Enter product description"
-												className="resize-none"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
+							<ProductManufacturingInfo form={form} handleBrandChange={handleBrandChange} />
+
+							<ProductCodes form={form} />
+
+							<ProductDescription form={form} />
+
 							<Separator />
+
 							<VendorInformation
 								control={form.control}
 								fobOptions={fobOptions}
@@ -807,13 +395,7 @@ export default function ProductForm({
 
 							<SalesInformation control={form.control} productId={productId} />
 
-							<Button disabled={isLoading} type="submit">
-								{isLoading
-									? "Adding product..."
-									: productId === "new"
-									? "Add Product"
-									: "Update Product"}
-							</Button>
+							<SubmitButton isLoading={isLoading} productId={productId} />
 						</form>
 					</Form>
 				)}
@@ -821,3 +403,12 @@ export default function ProductForm({
 		</Card>
 	);
 }
+
+// Submit Button Component
+const SubmitButton = ({ isLoading, productId }: any) => (
+	<Button disabled={isLoading} type="submit">
+		{isLoading ? "Adding product..." : productId === "new" ? "Add Product" : "Update Product"}
+	</Button>
+);
+
+export { SubmitButton };

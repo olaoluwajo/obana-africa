@@ -45,11 +45,23 @@ export const columns: ColumnDef<Product, unknown>[] = [
 	},
 	{
 		accessorKey: "cf_product_code_vendor",
-		header: "PRODUCT CODE(vendor)",
+		// header: "PRODUCT CODE(vendor)",
+		header: "PRODUCT CODE(Vendor)",
+		cell: ({ row }) => {
+			const productCode = row.getValue("cf_product_code_vendor");
+
+			const truncatedProductCode = productCode?.toString();
+			const finalProductCode =
+				truncatedProductCode && truncatedProductCode.length > 18
+					? `${truncatedProductCode.slice(0, 18)}...`
+					: truncatedProductCode;
+
+			return <div>{finalProductCode || "No product code"}</div>;
+		},
 	},
 	{
 		accessorKey: "sku",
-		header: "PRODUCT CODE(obana)",
+		header: "PRODUCT CODE(Obana)",
 	},
 	{
 		accessorKey: "name",

@@ -22,7 +22,8 @@ export default function RootLayout({
 
 		if (role === "vendor") {
 			console.log("Redirecting to vendor dashboard...");
-			router.push("/vendor/dashboard");
+			// router.push("/vendor/dashboard");
+			router.push(window.location.pathname);
 		} else if (role === "admin") {
 			console.log("Redirecting to admin dashboard...");
 			router.push("/admin/dashboard");

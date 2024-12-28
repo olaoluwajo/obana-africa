@@ -3,6 +3,13 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Input } from "@/components/ui/input";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { MessageCircleQuestion } from "lucide-react";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 interface TextInputProps {
 	control: any;
@@ -18,7 +25,7 @@ interface TextInputProps {
 	value?: any;
 }
 
-const TextInput: React.FC<TextInputProps> = ({
+export const TextInput: React.FC<TextInputProps> = ({
 	control,
 	name,
 	label,
@@ -71,4 +78,53 @@ const TextInput: React.FC<TextInputProps> = ({
 	);
 };
 
-export default TextInput;
+export const WeightInput = ({ form }: any) => (
+	<FormField
+		control={form.control}
+		name="weight"
+		render={({ field }) => (
+			<FormItem>
+				<FormLabel>Weight</FormLabel>
+				<FormControl>
+					<div className="relative">
+						<Input
+							type="number"
+							placeholder="Enter weight"
+							value={field.value || ""}
+							disabled
+							onChange={(e) => field.onChange(e.target.value)}
+							className="w-full pr-16"
+						/>
+						<div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+							<WeightUnitSelect form={form} />
+						</div>
+					</div>
+				</FormControl>
+				<FormMessage />
+			</FormItem>
+		)}
+	/>
+);
+
+export const WeightUnitSelect = ({ form }: any) => (
+	<FormField
+		control={form.control}
+		name="weight_unit"
+		render={({ field }) => (
+			<Select value={field.value} disabled onValueChange={field.onChange}>
+				<SelectTrigger className="border-none bg-slate-200">
+					<SelectValue placeholder="Unit" />
+				</SelectTrigger>
+				<SelectContent>
+					{["kg", "g", "lb", "oz"].map((unit) => (
+						<SelectItem key={unit} value={unit}>
+							{unit}
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+		)}
+	/>
+);
+
+// export default TextInput;

@@ -1,6 +1,6 @@
 import React from "react";
 import SelectInput from "../inputs/select-input";
-import TextInput from "../inputs/text-input";
+import {TextInput} from "../inputs/text-input";
 
 interface VendorInformationProps {
 	control: any;
