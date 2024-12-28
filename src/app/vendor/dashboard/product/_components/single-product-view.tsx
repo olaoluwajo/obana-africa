@@ -1,6 +1,6 @@
+'use client'
 import { fetchProductById } from "@/lib/fetchProducts";
 import { format } from "date-fns";
-import { redirect } from "next/navigation";
 
 import {
 	Package,
@@ -33,7 +33,6 @@ import {
 
 import ImageGallery from "./image-gallery";
 import ProductActions from "./product-actions";
-import { deleteProduct } from "@/lib/product-utils";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import React from "react";
 
@@ -164,12 +163,21 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								icon={<Box className="text-purple-600" />}
 								label="Product Name"
 								value={product.name}
-							/>
+							/>{" "}
 							<DetailItem
 								icon={<Tag className="text-blue-600" />}
 								label="SKU"
 								value={product.sku}
 							/>
+							<div className="col-span-2">
+								{/* Description */}
+								<h3 className="text-xl text-card-foreground font-semibold border-b pb-2 mt-6">
+									Product Description
+								</h3>
+								<p className="text-gray-700 italic">
+									{product.description || "No description available"}
+								</p>
+							</div>
 							<DetailItem
 								icon={<Store className="text-green-600" />}
 								label="Category"
@@ -200,7 +208,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								label="Dimensions"
 								value={`${product.package_details.length}x${product.package_details.width}x${product.package_details.height} ${product.package_details.dimension_unit}`}
 							/>
-
 							{/* Colors with tag-like display */}
 							<div className="col-span-2">
 								<div className="mb-2 flex items-center">
@@ -214,7 +221,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								label="Size Type"
 								value={product.custom_field_hash.cf_size_type}
 							/>
-
 							<div>
 								<div className="mb-2 flex items-center">
 									<Shirt className="text-teal-600 mr-2" />
@@ -222,7 +228,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								</div>
 								{renderTagList(product.custom_field_hash.cf_sizes_run)}
 							</div>
-
 							<DetailItem
 								icon={<Shirt className="text-emerald-600" />}
 								label="Fabric Type"
@@ -322,11 +327,21 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								icon={<PackageCheck className="text-blue-600" />}
 								label="Opening Stock"
 								value={product.initial_stock}
+							/>{" "}
+							<DetailItem
+								icon={<PackageCheck className="text-blue-600" />}
+								label="Stock Per Box"
+								value={product.custom_field_hash.cf_packs}
+							/>{" "}
+							<DetailItem
+								icon={<Archive className="text-amber-600" />}
+								label="Committed Stock"
+								value={`${product.custom_field_hash.cf_committed_stock || 0} units`}
 							/>
 							<DetailItem
 								icon={<ShoppingCart className="text-purple-600" />}
 								label="Available to Sell"
-								value={`${product.stock_on_hand} units`}
+								value={`${product.available_for_sale_stock} units`}
 							/>
 							<DetailItem
 								icon={<Truck className="text-orange-600" />}
@@ -349,20 +364,16 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 						<div className="grid grid-cols-2 gap-4">
 							<DetailItem
 								icon={<Percent className="text-pink-600" />}
-								label="Commission Percentage"
+								label="Payable Commission"
 								value={`${COMMISSION_PERCENTAGE}%`}
 							/>
 							<DetailItem
 								icon={<CircleDollarSign className="text-emerald-600" />}
-								label="Commission Amount"
+								label="Payable Amount"
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",
-								}).format(
-									(parseFloat(product.custom_field_hash.cf_item_price_unformatted) *
-										COMMISSION_PERCENTAGE) /
-										100,
-								)}
+								}).format((parseFloat(product.rate) * COMMISSION_PERCENTAGE) / 100)}
 							/>
 
 							<DetailItem
@@ -371,17 +382,9 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",
-								}).format(
-									calculateCommissionPrice(
-										product.custom_field_hash.cf_item_price_unformatted,
-									),
-								)}
+								}).format(calculateCommissionPrice(product.rate))}
 							/>
-							<DetailItem
-								icon={<Archive className="text-amber-600" />}
-								label="Committed Stock"
-								value={`${product.custom_field_hash.cf_committed_stock || 0} units`}
-							/>
+
 							<DetailItem
 								icon={<Timer className="text-blue-500" size={20} />}
 								label="Created Time"

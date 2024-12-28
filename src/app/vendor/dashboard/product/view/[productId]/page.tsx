@@ -1,10 +1,11 @@
-import ProductTableAction from "../../_components/product-tables/product-table-action";
+// import ProductTableAction from "../../_components/product-tables/product-table-action";
 import { Suspense } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Heading } from "@/components/ui/heading";
 import PageContainer from "@/components/layout/page-container";
-import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
+// import { DataTableSkeleton } from "@/components/ui/table/data-table-skeleton";
 import SingleProductView from "../../_components/single-product-view";
+import Loader from "@/components/loader";
 
 export const metadata = {
 	title: "Dashboard: Products View",
@@ -26,7 +27,13 @@ export default async function Page({ params }: PageProps) {
 				</div>
 				<Separator />
 				{/* <ProductTableAction /> */}
-				<Suspense fallback={<DataTableSkeleton columnCount={2} rowCount={10} />}>
+				<Suspense
+					fallback={
+						<Loader
+							fullscreen={false}
+							message="Loading Product details please hold on a minute..."
+						/>
+					}>
 					{productId ? (
 						<SingleProductView params={{ productId }} />
 					) : (

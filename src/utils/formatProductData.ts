@@ -150,6 +150,7 @@ export const formatProductData = (values: FormValues) => {
 		purchase_description: "Purchase Description",
 		// category: formattedCategory,
 		sku: values.sku,
+		status: values.status,
 		upc: values.upc,
 		ean: values.ean,
 		isbn: values.isbn,
@@ -177,19 +178,19 @@ export const formatProductData = (values: FormValues) => {
 		last_modified_time: new Date().toISOString(),
 		custom_fields: customFields,
 
-		sales_channels: [
-			{
-				// integration_id: 206,
-				// product_mapping_id: 206,
-				// channel_product_id: "",
-				// account_identifier: "",
-				// formatted_name: "Zoho Commerce",
-				status: "active",
-				// name: "zstore",
-				channel_name: values.name,
-				channel_sku: values.sku,
-			},
-		],
+		// sales_channels: [
+		// 	{
+		// 		// integration_id: 206,
+		// 		// product_mapping_id: 206,
+		// 		// channel_product_id: "",
+		// 		// account_identifier: "",
+		// 		// formatted_name: "Zoho Commerce",
+		// 		status: "active",
+		// 		// name: "zstore",
+		// 		channel_name: values.name,
+		// 		channel_sku: values.sku,
+		// 	},
+		// ],
 
 		reorder_level: "",
 		minimum_order_quantity: "",
