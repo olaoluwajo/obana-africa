@@ -219,12 +219,12 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 									<Palette className="text-pink-600 mr-2" />
 									<span className="font-medium">Available Colors</span>
 								</div>
-								{renderTagList(product.custom_field_hash.cf_color)}
+								{renderTagList(product.custom_field_hash.cf_color) || "No Colors available"}
 							</div>
 							<DetailItem
 								icon={<Shirt className="text-emerald-600" />}
 								label="Size Type"
-								value={product.custom_field_hash.cf_size_type}
+								value={product.custom_field_hash.cf_size_type || "No Size available"}
 							/>
 							<div>
 								<div className="mb-2 flex items-center">
@@ -338,22 +338,22 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							/>
 							<DetailItem
 								icon={<PackageCheck className="text-blue-600" />}
-								label="Opening Stock"
+								label="Opening Stock(Box)"
 								value={product.initial_stock}
 							/>
 							<DetailItem
 								icon={<ShoppingCart className="text-purple-600" />}
-								label="Available to Sell"
+								label="Available to Sell(Box)"
 								value={`${product.available_for_sale_stock} units`}
 							/>
 							<DetailItem
 								icon={<Archive className="text-amber-600" />}
-								label="Committed Stock"
-								value={`${product.custom_field_hash.cf_committed_stock || 0} units`}
+								label="Committed Stock(Box)"
+								value={`${product.actual_committed_stock || 0} units`}
 							/>
 							<DetailItem
 								icon={<Truck className="text-orange-600" />}
-								label="Quantity in Transit"
+								label="Quantity in Transit(Box)"
 								value={product.quantity_in_transit}
 							/>
 						</div>
@@ -374,6 +374,14 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								icon={<Percent className="text-pink-600" />}
 								label="Commission Rate"
 								value={`${COMMISSION_PERCENTAGE}%`}
+							/>{" "}
+							<DetailItem
+								icon={<CircleDollarSign className="text-emerald-600" />}
+								label="Total Sales Amount"
+								value={new Intl.NumberFormat("en-NG", {
+									style: "currency",
+									currency: "NGN",
+								}).format(product.rate)}
 							/>
 							<DetailItem
 								icon={<CircleDollarSign className="text-emerald-600" />}
@@ -383,15 +391,6 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 									currency: "NGN",
 								}).format((parseFloat(product.rate) * COMMISSION_PERCENTAGE) / 100)}
 							/>
-							{/* <DetailItem
-								icon={<CircleDollarSign className="text-emerald-600" />}
-								label="Total Sale Amount"
-								value={new Intl.NumberFormat("en-NG", {
-									style: "currency",
-									currency: "NGN",
-								}).format(product.rate)}
-							/> */}
-
 							<DetailItem
 								icon={<CircleDollarSign className="text-purple-600" />}
 								label="Payable After Commission"

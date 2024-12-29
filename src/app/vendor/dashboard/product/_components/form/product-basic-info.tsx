@@ -31,7 +31,7 @@ export default function ProductBasicInfo({
 		const loadInitialImages = async () => {
 			// Check if we have initial image data and we're not in "new" mode
 			if (productId !== "new" && initialData?.image) {
-				console.log("Initial data image:", initialData?.image);
+				// console.log("Initial data image:", initialData?.image);
 
 				// Convert string to array if single image
 				const imageUrls = Array.isArray(initialData.image)
@@ -147,9 +147,13 @@ export default function ProductBasicInfo({
 				{images.length < 4 && (
 					<label
 						htmlFor="image"
-						className="flex justify-center items-center flex-col h-[200px] cursor-pointer border-dashed border-2 border-slate-700 rounded-md hover:border-red-500 bg-slate-100 w-full">
+						className="flex justify-center items-center flex-col h-[200px] cursor-pointer border-dashed border-2 border-slate-700 rounded-md hover:border-red-500 bg-slate-100 w-full ">
 						<Images />
 						<span> Add Images</span>
+						<span className="text-xs text-center px-8 ">
+							You can add up to 4 images, each not exceeding 5 MB in size and 7000 X 7000
+							pixels resolution.
+						</span>
 					</label>
 				)}
 				<input onChange={imageHandle} multiple type="file" className="hidden" id="image" />

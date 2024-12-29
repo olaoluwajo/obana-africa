@@ -178,6 +178,9 @@ export const formatProductData = (values: FormValues) => {
 		last_modified_time: new Date().toISOString(),
 		custom_fields: customFields,
 
+		initial_stock_rate: values.sellingPrice,
+		// initial_stock_rate: parseFloat(values.sellingPrice),
+
 		// sales_channels: [
 		// 	{
 		// 		// integration_id: 206,
