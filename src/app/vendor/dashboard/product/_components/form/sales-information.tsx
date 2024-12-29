@@ -1,13 +1,55 @@
-import React from "react";
-import {TextInput} from "../inputs/text-input";
-import {  Controller } from "react-hook-form";
+import React, { useEffect } from "react";
+import { TextInput } from "../inputs/text-input";
+import { Controller, useWatch } from "react-hook-form";
+import { MessageCircleQuestion } from "lucide-react";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 interface SalesInfoFormProps {
 	control: any;
 	productId: any;
+	setValue: any;
+	clearErrors: any; // Add clearErrors as a prop
+	setError: any; // Add setError as a prop
 }
 
-const SalesInformation: React.FC<SalesInfoFormProps> = ({ control, productId }) => {
+const SalesInformation: React.FC<SalesInfoFormProps> = ({
+	control,
+	productId,
+	setValue,
+	clearErrors,
+	setError,
+}) => {
+	// Watch the values of openingStockUnit and unitPerBox
+	const watchOpeningStockUnit = useWatch({
+		control,
+		name: "openingStockUnit",
+	});
+	const watchUnitPerBox = useWatch({
+		control,
+		name: "unitPerBox",
+	});
+
+	useEffect(() => {
+		if (watchOpeningStockUnit && watchUnitPerBox) {
+			const calculatedStock = Number(watchOpeningStockUnit) / Number(watchUnitPerBox);
+
+			// Check if the result is a whole number
+			if (calculatedStock % 1 !== 0) {
+				// Set form error for openingStock
+				setError("openingStock", {
+					type: "manual",
+					message: `Opening Stock Unit must be a multiple of Units Per Box (${watchUnitPerBox})`,
+				});
+			} else {
+				clearErrors("openingStock");
+			}
+
+			setValue("openingStock", calculatedStock.toFixed(2));
+		} else {
+			setValue("openingStock", "");
+		}
+	}, [watchOpeningStockUnit, watchUnitPerBox, clearErrors, setError, setValue]);
+
 	return (
 		<div>
 			<h1 className="text-2xl font-bold">Sales Information</h1>
@@ -26,87 +68,75 @@ const SalesInformation: React.FC<SalesInfoFormProps> = ({ control, productId }) 
 						label="Selling Price *"
 						placeholder="Enter selling price"
 						type="number"
-						required={true}
-						disabled={true}
+						required
+						disabled
 						tooltipContent="The rate at which you're going to sell this item exclusive of tax"
 					/>
 				</div>
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+				{/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 					<TextInput
 						control={control}
 						name="salesTaxRule"
-						label="Sales Tax Rule "
+						label="Sales Tax Rule"
+						disabled
 						placeholder="Select sales tax rule"
 						type="text"
 						tooltipContent="The tax rates will be automatically applied to transactions based on your default sales tax rule. If you want to apply a different tax rate for this item, select a sales tax rule."
 					/>
-				</div>
+				</div> */}
 
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-					<div className="grid grid-cols-2 gap-6 md:grid-cols-2">
-						{productId === "new" && (
-							<TextInput
-								control={control}
-								name="openingStock"
-								label="Opening Stock *"
-								placeholder="Enter opening stock"
-								type="number"
-								required={true}
-								tooltipContent="The number of initial stock of items available"
-							/>
-						)}
+					<div className="grid grid-cols-2 gap-6">
 						<TextInput
 							control={control}
-							name="availableStock"
-							label="Available to Sell"
-							placeholder="Enter available stock"
+							name="openingStockUnit"
+							label="Stock on Hand (Unit) *"
+							placeholder="Enter stock on hand"
 							type="number"
-							tooltipContent="The number of available stock of this product"
+							required
+							tooltipContent="Stock on Hand (Units): Enter the total quantity of items currently available in stock."
 						/>
-					</div>
-				</div>
-				<div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Is Sample Available?
-						</label>
 						<Controller
-							name="sampleAvailable"
+							name="openingStock"
 							control={control}
-							defaultValue="yes"
-							render={({ field }) => (
-								<select
-									{...field}
-									className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-									<option value="yes">Yes</option>
-									<option value="no">No</option>
-								</select>
+							render={({ field, fieldState: { error } }) => (
+								<div className="flex flex-col gap-2 mt-2">
+									<label className="text-sm font-medium">
+										Stock on Hand (Pack) *
+										<Tooltip.Root>
+											<Tooltip.Trigger>
+												<MessageCircleQuestion
+													size={12}
+													className="text-black/40 mr-2"
+												/>
+											</Tooltip.Trigger>
+											<Tooltip.Content
+												side="right"
+												sideOffset={10}
+												className="bg-black/80 text-white px-2 py-1 rounded-md text-xs max-w-[200px]">
+											  Stock on Hand (Pack): This is the total quantity of items currently available in stock, considering the number of items per pack. This value will be automatically calculated based on the Stock on Hand (Unit) and Units Per Box.
+												<Tooltip.Arrow className="fill-black/80" />
+											</Tooltip.Content>
+										</Tooltip.Root>
+									</label>
+									<input
+										{...field}
+										type="number"
+										disabled
+										className={`cursor-not-allowed rounded-md border px-3 py-2 text-sm bg-gray-100 ${
+											error
+												? "border-red-500 focus:border-red-500"
+												: "border-gray-300 focus:border-blue-500"
+										}`}
+										placeholder="Calculated stock"
+									/>
+									{error && <span className="text-xs text-red-500">{error.message}</span>}
+								</div>
 							)}
 						/>
 					</div>
-					{/* <div className="grid grid-cols-1 gap-6 md:grid-cols-4"> */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700">
-							Make Product Active
-						</label>
-						<Controller
-							name="status"
-							control={control}
-							defaultValue="inactive"
-							render={({ field }) => (
-								<select
-									{...field}
-									className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-									<option value="active">Mark as active</option>
-									{/* <option value="confirmation_pending">Mark as active</option> */}
-									<option value="inactive">Mark as in-active</option>
-								</select>
-							)}
-						/>
-					</div>{" "}
 				</div>
 			</div>
-			{/* </div> */}
 		</div>
 	);
 };

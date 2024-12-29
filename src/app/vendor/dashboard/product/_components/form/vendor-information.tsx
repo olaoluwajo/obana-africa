@@ -1,6 +1,7 @@
 import React from "react";
 import SelectInput from "../inputs/select-input";
-import {TextInput} from "../inputs/text-input";
+import { TextInput } from "../inputs/text-input";
+import { Controller } from "react-hook-form";
 
 interface VendorInformationProps {
 	control: any;
@@ -32,6 +33,8 @@ const VendorInformation: React.FC<VendorInformationProps> = ({
 					options={fobOptions}
 					placeholder="Enter FOB"
 				/>
+			</div>
+			<div className="grid grid-cols-1 mt-4 gap-6 md:grid-cols-4">
 				<SelectInput
 					control={control}
 					name="incoterms"
@@ -39,6 +42,24 @@ const VendorInformation: React.FC<VendorInformationProps> = ({
 					options={incotermsOptions}
 					placeholder="Select incoterm..."
 				/>
+				<div>
+					<label className="block text-sm font-medium text-gray-700">
+						Is Sample Available?
+					</label>
+					<Controller
+						name="sampleAvailable"
+						control={control}
+						defaultValue="yes"
+						render={({ field }) => (
+							<select
+								{...field}
+								className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+								<option value="yes">Yes</option>
+								<option value="no">No</option>
+							</select>
+						)}
+					/>{" "}
+				</div>
 			</div>
 		</div>
 	);

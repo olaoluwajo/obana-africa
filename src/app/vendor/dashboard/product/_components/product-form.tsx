@@ -3,27 +3,19 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Product } from "@/constants/mock-api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {
-	fobOptions,
-	incotermsOptions,
-} from "@/constants/optionsData";
+import { fobOptions, incotermsOptions } from "@/constants/optionsData";
 import { toast } from "sonner";
 import { useVendorStore } from "@/stores/useVendorStore";
 import { useRouter } from "next/navigation";
 import { formatProductData } from "@/utils/formatProductData";
-import {
-	subCategoryOptions,
-	subSubCategoryOptions,
-} from "@/constants/categoryData";
+import { subCategoryOptions, subSubCategoryOptions } from "@/constants/categoryData";
 import { createProduct, editProduct } from "@/lib/product-utils";
 import Loader from "@/components/loader";
 import VendorInformation from "./form/vendor-information";
@@ -89,6 +81,7 @@ export const formSchema = z.object({
 	unitPerBox: z.any().optional(),
 	openingStock: z.any().optional(),
 	availableStock: z.any().optional(),
+	openingStockUnit: z.any().optional(),
 	sampleAvailable: z.any().optional(),
 
 	productCode: z.string().optional(),
@@ -131,7 +124,7 @@ export default function ProductForm({
 		subSubCategory: initialData?.subSubCategory || "",
 		sellingPrice: initialData?.sellingPrice || "",
 		account: initialData?.account || "Sales",
-		salesTaxRule: initialData?.salesTaxRule || "",
+		salesTaxRule: initialData?.salesTaxRule || "Tax Rule for Standard Rate",
 		description: initialData?.description || "",
 		unitPrice: initialData?.unitPrice || "",
 		availableColors: initialData?.availableColors || "",
@@ -141,6 +134,7 @@ export default function ProductForm({
 		sizeType: initialData?.sizeType || "",
 		unitPerBox: initialData?.unitPerBox || "",
 		incoterms: initialData?.incoterms || "",
+		openingStockUnit: initialData?.openingStockUnit || "",
 		tags: initialData?.tags || "",
 		weight_unit: initialData?.weight_unit || "kg",
 		weight: initialData?.weight || "",
@@ -174,7 +168,7 @@ export default function ProductForm({
 		resolver: zodResolver(formSchema),
 		values: defaultValues,
 	});
-	const { watch, setValue } = form;
+	const { control, setValue, setError, clearErrors, watch } = form;
 
 	// Sample vendor and brand data
 	const [sku, setSku] = useState<string>(initialData?.sku || "");
@@ -393,7 +387,13 @@ export default function ProductForm({
 
 							<Separator />
 
-							<SalesInformation control={form.control} productId={productId} />
+							<SalesInformation
+								control={form.control}
+								productId={productId}
+								setValue={setValue}
+								setError={setError}
+								clearErrors={clearErrors}
+							/>
 
 							<SubmitButton isLoading={isLoading} productId={productId} />
 						</form>
