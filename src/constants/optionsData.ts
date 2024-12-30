@@ -1,16 +1,5 @@
 export const sampleAvailableOptions = ["Yes", "No"];
-export const unitOptions = [
-	"Pcs",
-	"kg",
-	"litre",
-	"metre",
-	"Box",
-	"pack",
-	"piece",
-	"set",
-	"pair",
-	"dozen",
-];
+export const unitOptions = ["Box"];
 
 export const manufacturerOptions = [
 	"TANKTOP",

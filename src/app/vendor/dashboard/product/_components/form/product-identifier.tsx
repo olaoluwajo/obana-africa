@@ -39,6 +39,7 @@ const ProductIdentifiers = ({ form }: any) => (
 				control={form.control}
 				name="unit"
 				label="Unit of Measurement"
+				disabled={true}
 				options={unitOptions}
 				placeholder="Select Unit..."
 			/>
@@ -80,14 +81,14 @@ const ProductManufacturingInfo = ({ form, handleBrandChange }: any) => (
 			placeholder="Enter country of manufacture"
 			type="text"
 		/>
-		<SelectInput
+		{/* <SelectInput
 			control={form.control}
 			name="manufacturer"
 			label="Manufacturer"
 			options={manufacturerOptions}
 			placeholder="Select Manufacturer..."
 			tooltipContent="Select your product manufacturer"
-		/>
+		/> */}
 		<SelectInput
 			control={form.control}
 			name="brand"

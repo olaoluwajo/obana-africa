@@ -200,9 +200,7 @@ export default function ProductForm({
 				: `B-${vendorPrefix}${String(productCount + 1).padStart(5, "0")}`;
 		} else {
 			// Use the current SKU without incrementing the product count
-			generatedSku = brandName
-				? `B-${vendorPrefix}${String(productCount).padStart(5, "0")}-${brandPrefix}`
-				: `B-${vendorPrefix}${String(productCount).padStart(5, "0")}`;
+			generatedSku = initialData?.sku;
 		}
 
 		setSku(generatedSku);

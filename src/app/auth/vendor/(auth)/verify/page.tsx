@@ -160,7 +160,7 @@ function VerifyPageContent() {
 								<Input
 									id={`otp-input-${index}`}
 									key={index}
-									type="text"
+									type="number"
 									value={userOtp[index] || ""}
 									onChange={(e) => handleOtpChange(e, index)}
 									onKeyDown={(e) => handleBackspace(e, index)}
