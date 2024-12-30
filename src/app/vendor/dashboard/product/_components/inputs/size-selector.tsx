@@ -73,7 +73,7 @@ const SizeSelector: React.FC<SizeSelectorProps> = ({ onValuesChange, tooltipCont
 			<FormItem>
 				<div className="flex gap-4 items-end">
 					<div className="col-span-2">
-						<FormLabel>Size Type</FormLabel>
+						<FormLabel>Size Type/Range</FormLabel>
 						{tooltipContent && (
 							<Tooltip.Root>
 								<Tooltip.Trigger>

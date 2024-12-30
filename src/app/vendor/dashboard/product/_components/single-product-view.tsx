@@ -29,12 +29,14 @@ import {
 	Calculator,
 	Scissors,
 	FlagOff,
+	MessageCircleQuestion,
 } from "lucide-react";
 
 import ImageGallery from "./image-gallery";
 import ProductActions from "./product-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import React, { useEffect } from "react";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 type ProductViewPageProps = {
 	params: any;
@@ -68,11 +70,13 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 		label,
 		value,
 		valueClassName = "",
+		tooltipContent,
 	}: {
 		icon?: React.ReactNode;
 		label: string;
 		value: string | number;
 		valueClassName?: string;
+		tooltipContent?: string;
 	}) => (
 		<div className="bg-gray-50 p-3 rounded-lg">
 			<div className="flex items-center mb-1">
@@ -81,6 +85,20 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 						size: 16,
 					})}
 				<span className="ml-2 font-medium text-gray-600">{label}</span>
+				{tooltipContent && (
+					<Tooltip.Root>
+						<Tooltip.Trigger>
+							<MessageCircleQuestion size={12} className="text-black/40 mr-2" />
+						</Tooltip.Trigger>
+						<Tooltip.Content
+							side="top"
+							sideOffset={2}
+							className="bg-black/80 text-white px-2 py-1 rounded-md text-xs max-w-[200px]">
+							{tooltipContent}
+							<Tooltip.Arrow className="fill-black/80" />
+						</Tooltip.Content>
+					</Tooltip.Root>
+				)}
 			</div>
 			<p className="font-semibold text-gray-800">{value}</p>
 		</div>
@@ -373,11 +391,13 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							<DetailItem
 								icon={<Percent className="text-pink-600" />}
 								label="Commission Rate"
+								tooltipContent="(This is the percentage of the commission deducted from the total amount)"
 								value={`${COMMISSION_PERCENTAGE}%`}
 							/>{" "}
 							<DetailItem
 								icon={<CircleDollarSign className="text-emerald-600" />}
 								label="Total Sales Amount"
+								tooltipContent="(This is the original total amount before the commission is deducted)"
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",
@@ -386,6 +406,7 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							<DetailItem
 								icon={<CircleDollarSign className="text-emerald-600" />}
 								label="Payable Commision"
+								tooltipContent="(This is the commission amount deducted from the total sale amount)"
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",
@@ -394,6 +415,7 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 							<DetailItem
 								icon={<CircleDollarSign className="text-purple-600" />}
 								label="Payable After Commission"
+								tooltipContent="(This is the amount the vendor will receive after the commission is deducted)"
 								value={new Intl.NumberFormat("en-NG", {
 									style: "currency",
 									currency: "NGN",

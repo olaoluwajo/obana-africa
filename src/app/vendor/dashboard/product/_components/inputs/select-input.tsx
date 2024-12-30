@@ -30,7 +30,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
 	options,
 	placeholder,
 	tooltipContent,
-	disabled,
+	disabled = false,
 	onChange,
 	required = false,
 }) => {
@@ -77,6 +77,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
 								placeholder={placeholder}
 								value={searchTerm}
 								onChange={handleSearchChange}
+								disabled={disabled}
 								className={`${
 									!field.value ? "absolute w-full top-0 left-0" : "hidden"
 								} p-2 border-none bg-transparent z-10`}
