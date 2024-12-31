@@ -5,7 +5,7 @@ import { BarGraph } from "./bar-graph";
 // import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import PageContainer from "@/components/layout/page-container";
 import RecentSales from "./recent-sales";
-import FailedProducts from "./failed-products";
+import RecentOrders from "./recent-order";
 import RecentProducts from "./recent-products";
 import Cookies from "js-cookie";
 import { fetchProducts } from "@/utils/fetchProducts";
@@ -15,41 +15,47 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useVendorStore } from "@/stores/useVendorStore";
 
+type Product = {
+	item_id: any;
+	status: any;
+};
+
 export default function OverViewPage() {
+	const [products, setProducts] = useState<Product[]>([]);
 	const [activeProducts, setActiveProducts] = useState(0);
-	const vendorName = useVendorStore((state) => state.vendorName);
+	const [totalProducts, setTotalProducts] = useState(0);
+	const [salesOrders, setSalesOrders] = useState([]);
+	const [totalOrders, setTotalOrders] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
+	const vendorName = useVendorStore((state) => state.vendorName);
 
 	if (!vendorName) {
 		const vendorName = Cookies.get("vendorName");
-		// console.log("VENDOR NAME", vendorName);
 		useVendorStore.setState({ vendorName: vendorName });
 	}
-	const totalProducts = localStorage.getItem("productCount");
+
+	const storedVendorId = localStorage.getItem("vendorId");
+	if (!storedVendorId) {
+		throw new Error("Vendor ID not found in localStorage");
+	}
+
+	// const totalProducts = localStorage.getItem("productCount");
 	// const totalProducts = Cookies.get("productCount");
 
-	// Fetch active products count from API
+	// Fetch products and count active ones
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const storedVendorId = localStorage.getItem("vendorId");
-				if (!storedVendorId) {
-					throw new Error("Vendor ID not found in localStorage");
-				}
-
-				// Fetch all products
 				const data = await fetchProducts(storedVendorId);
-
-				// Extract products and count active ones
-				const products = data.products || [];
-				// console.log(products);
-
-				// Count products with status "active"
+				const products: any = data.products || [];
+				setProducts(products);
+				if (products) {
+					const totalProducts = products.length;
+					setTotalProducts(totalProducts);
+				}
 				const activeProductsCount = products.filter(
 					(product: any) => product.status === "active",
 				).length;
-
-				// Update state with active products count
 				setActiveProducts(activeProductsCount);
 			} catch (err) {
 				console.error(err instanceof Error ? err.message : "Unknown error");
@@ -59,7 +65,26 @@ export default function OverViewPage() {
 		};
 
 		fetchData();
-	}, []);
+	}, [storedVendorId]);
+
+	// Fetch orders using itemIds from products
+	useEffect(() => {
+		if (products.length === 0) return;
+		const fetchOrders = async () => {
+			try {
+				const itemIds = products.map((product) => product.item_id);
+				const response = await axios.get(`/api/get-orders?itemIds=${itemIds.join(",")}`);
+
+				setSalesOrders(response.data.salesOrders);
+				const totalSalesOrders = response.data.totalSalesOrders;
+				setTotalOrders(totalSalesOrders);
+			} catch (err) {
+				console.error("Error fetching orders:", err);
+			}
+		};
+
+		fetchOrders();
+	}, [products]);
 
 	return (
 		<PageContainer scrollable>
@@ -99,7 +124,7 @@ export default function OverViewPage() {
 								</CardHeader>
 								<CardContent>
 									<div className="text-2xl font-bold">N0.00</div>
-									<p className="text-xs text-muted-foreground">+0.0% from last month</p>
+									{/* <p className="text-xs text-muted-foreground">+0.0% from last month</p> */}
 								</CardContent>
 							</Card>
 							<Card>
@@ -121,7 +146,7 @@ export default function OverViewPage() {
 								</CardHeader>
 								<CardContent>
 									<div className="text-2xl font-bold"> {totalProducts}</div>
-									<p className="text-xs text-muted-foreground">+180.1% from last month</p>
+									{/* <p className="text-xs text-muted-foreground">+180.1% from last month</p> */}
 								</CardContent>
 							</Card>
 							<Card>
@@ -141,8 +166,8 @@ export default function OverViewPage() {
 									</svg>
 								</CardHeader>
 								<CardContent>
-									<div className="text-2xl font-bold">+0</div>
-									<p className="text-xs text-muted-foreground">+0% from last month</p>
+									<div className="text-2xl font-bold">+{totalOrders}</div>
+									{/* <p className="text-xs text-muted-foreground">+0% from last month</p> */}
 								</CardContent>
 							</Card>
 							<Card>
@@ -164,7 +189,7 @@ export default function OverViewPage() {
 								</CardHeader>
 								<CardContent>
 									<div className="text-2xl font-bold">+{activeProducts}</div>
-									<p className="text-xs text-muted-foreground">+0 since last hour</p>
+									{/* <p className="text-xs text-muted-foreground">+0 since last hour</p> */}
 								</CardContent>
 							</Card>
 						</div>
@@ -174,7 +199,7 @@ export default function OverViewPage() {
 									<CardTitle>Overview</CardTitle>
 								</CardHeader>
 								<CardContent className="pl-2">
-									<BarGraph />
+									<BarGraph salesOrders={salesOrders} />
 								</CardContent>
 							</Card>
 							<Card className="col-span-3">
@@ -187,7 +212,7 @@ export default function OverViewPage() {
 							</Card>
 							<Card className="col-span-3">
 								<CardHeader>
-									<CardTitle>Recent Orders</CardTitle>
+									<CardTitle>Recent Sales</CardTitle>
 									<CardDescription>You made 0 sales this month.</CardDescription>
 								</CardHeader>
 								<CardContent>
@@ -197,10 +222,10 @@ export default function OverViewPage() {
 							<Card className="col-span-4">
 								<CardHeader>
 									<CardTitle>Recent Orders</CardTitle>
-									<CardDescription>You have made 0 sales this month</CardDescription>
+									<CardDescription>You have have 0 orders this month</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<FailedProducts />
+									<RecentOrders salesOrders={salesOrders} />
 								</CardContent>
 							</Card>
 						</div>
