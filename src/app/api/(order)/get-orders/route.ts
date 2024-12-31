@@ -32,6 +32,7 @@ export async function GET(request: Request) {
 	const url = new URL(request.url);
 	const itemIdsParam = url.searchParams.get("itemIds");
 
+	const BATCH_SIZE = 10;
 	if (!itemIdsParam) {
 		return NextResponse.json({ error: "Query parameter 'itemIds' is required" }, { status: 400 });
 	}
@@ -42,6 +43,27 @@ export async function GET(request: Request) {
 		return NextResponse.json({ error: "Invalid 'itemIds' query parameter" }, { status: 400 });
 	}
 
+	function chunkArray<T>(array: T[], size: number): T[][] {
+		return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
+			array.slice(i * size, (i + 1) * size),
+		);
+	}
+
+	async function fetchWithRetry(url: string, config: any, retries = 3) {
+		for (let i = 0; i < retries; i++) {
+			try {
+				return await axios.get(url, {
+					...config,
+					timeout: 8000,
+				});
+			} catch (error: any) {
+				if (i === retries - 1) throw error;
+				if (error.response?.status === 401) throw error;
+				await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
+			}
+		}
+	}
+
 	async function fetchSalesOrdersForItem(accessToken: string, itemId: string) {
 		const salesOrders: SalesOrder[] = [];
 		let searchCriteria: SearchCriteria[] = [];
@@ -49,7 +71,7 @@ export async function GET(request: Request) {
 
 		while (true) {
 			try {
-				const response = await axios.get<ApiResponse>(
+				const response: any = await fetchWithRetry(
 					"https://www.zohoapis.com/inventory/v1/salesorders",
 					{
 						headers: {
@@ -64,7 +86,7 @@ export async function GET(request: Request) {
 					},
 				);
 
-				const ordersWithItemId = response.data.salesorders.map((order) => ({
+				const ordersWithItemId = response.data.salesorders.map((order: any) => ({
 					...order,
 					search_text: itemId,
 				}));
@@ -101,20 +123,41 @@ export async function GET(request: Request) {
 			process.env.ZOHO_INVENTORY_SALES_TOKEN = accessToken;
 		}
 
+		// Split itemIds into batches
+		const batches = chunkArray(itemIds, BATCH_SIZE);
 		const allSalesOrders: SalesOrder[] = [];
-		const allSearchCriteria: Record<string, string> = {}; // Map to store itemId -> item_name
+		const allSearchCriteria: Record<string, string> = {};
 
-		// Fetch sales orders for each itemId
-		for (const itemId of itemIds) {
-			const { salesOrders, searchCriteria } = await fetchSalesOrdersForItem(accessToken, itemId);
-			if (salesOrders.length > 0) {
-				allSalesOrders.push(...salesOrders);
-				// Populate the map with item_id and item_name (formatted)
-				searchCriteria.forEach((criteria) => {
-					allSearchCriteria[criteria.search_text] = criteria.search_text_formatted;
-				});
-			}
+		// const results = await Promise.all(
+		// 	itemIds.map((itemId) => fetchSalesOrdersForItem(accessToken, itemId)),
+		// );
+
+		for (const batch of batches) {
+			// Process items within each batch in parallel
+			const batchResults = await Promise.all(
+				batch.map((itemId) => fetchSalesOrdersForItem(accessToken, itemId)),
+			);
+
+			// Combine results from this batch
+			batchResults.forEach(({ salesOrders, searchCriteria }) => {
+				if (salesOrders.length > 0) {
+					allSalesOrders.push(...salesOrders);
+					searchCriteria.forEach((criteria) => {
+						allSearchCriteria[criteria.search_text] = criteria.search_text_formatted;
+					});
+				}
+			});
 		}
+
+		// results.forEach(({ salesOrders, searchCriteria }) => {
+		// 	if (salesOrders.length > 0) {
+		// 		allSalesOrders.push(...salesOrders);
+		// 		searchCriteria.forEach((criteria) => {
+		// 			allSearchCriteria[criteria.search_text] = criteria.search_text_formatted;
+		// 		});
+		// 	}
+		// });
+
 		// console.log("Search Criteria Map:", allSearchCriteria);
 		// console.log("Sample Sales Order:", allSalesOrders[0]);
 

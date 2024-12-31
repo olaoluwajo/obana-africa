@@ -3,5 +3,10 @@
 		"env": {
 			"NODE_OPTIONS": "--openssl-legacy-provider"
 		}
+	},
+	"functions": {
+		"api/get-orders.ts": {
+			"maxDuration": 60
+		}
 	}
 }
