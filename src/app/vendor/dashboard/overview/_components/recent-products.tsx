@@ -41,7 +41,7 @@ const RecentProducts = () => {
 
 				setVendorId(storedVendorId);
 				const data = await fetchProducts(storedVendorId, searchParams);
-				setProducts(data.products || []);
+				setProducts(data.products?.slice(0, 7) || []);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : "Unknown error");
 			} finally {
@@ -52,13 +52,12 @@ const RecentProducts = () => {
 		fetchData();
 	}, [searchParams]);
 
-
-		const formatPriceToNaira = (price: number) => {
-			return `₦${price.toLocaleString("en-NG", {
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			})}`;
-		};
+	const formatPriceToNaira = (price: number) => {
+		return `₦${price.toLocaleString("en-NG", {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		})}`;
+	};
 
 	if (error) {
 		return <div className="text-red-500">Error loading recent products: {error}</div>;
