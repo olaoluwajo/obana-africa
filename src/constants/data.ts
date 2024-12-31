@@ -142,7 +142,7 @@ export const navItems: NavItem[] = [
 		role: ["vendor"],
 	},
 	{
-		title: "Orders",
+		title: "Transactions",
 		url: "#",
 		icon: "order",
 		shortcut: ["o", "o"],

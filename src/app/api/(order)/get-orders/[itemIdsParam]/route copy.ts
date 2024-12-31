@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 import { getSalesAccessToken } from "@/helpers/zohoAuthToken";
-import NodeCache from "node-cache";
-
-// Initialize cache with 15 minutes TTL
-const cache = new NodeCache({ stdTTL: 900 });
 
 interface SalesOrder {
 	id: string;
@@ -32,67 +28,60 @@ interface ApiResponse {
 	page_context: PageContext;
 }
 
+// Changed to use route segment config
 export const dynamic = "force-dynamic";
 
-// Configurable constants
-const CONFIG = {
-	BATCH_SIZE: 3,
-	BATCH_DELAY: 1500,
-	ITEMS_PER_PAGE: 200,
-	MAX_RETRIES: 3,
-	CACHE_TTL: 900,
-	REQUEST_TIMEOUT: 45000,
-} as const;
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export async function GET(request: Request, { params }: { params: { itemIdsParam: string } }) {
+	console.log("Received params:", params);
+
+	const BATCH_SIZE = 5;
+	const BATCH_DELAY = 1000;
+	const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+	// Fixed params handling
 	if (!params.itemIdsParam) {
 		return NextResponse.json({ error: "Item IDs parameter is required" }, { status: 400 });
 	}
 
 	const itemIds = params.itemIdsParam.split(",").filter(Boolean);
+
 	if (itemIds.length === 0) {
 		return NextResponse.json({ error: "Invalid item IDs parameter" }, { status: 400 });
 	}
 
-	// Check cache first
-	const cacheKey = `salesOrders_${itemIds.sort().join(",")}`;
-	const cachedData = cache.get(cacheKey);
-	if (cachedData) {
-		return NextResponse.json(cachedData);
+	function chunkArray<T>(array: T[], size: number): T[][] {
+		return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
+			array.slice(i * size, i + size),
+		);
 	}
 
-	async function fetchWithRetry(url: string, config: any, retries = CONFIG.MAX_RETRIES) {
+	async function fetchWithRetry(url: string, config: any, retries = 3) {
 		let lastError;
 
 		for (let i = 0; i < retries; i++) {
 			try {
 				const response = await axios.get(url, {
 					...config,
-					timeout: CONFIG.REQUEST_TIMEOUT,
+					timeout: 30000,
 				});
 				return response;
 			} catch (error: any) {
 				lastError = error;
-				console.log(`Retry ${i + 1} failed for URL: ${url}`, error.message);
 
 				if (error.response?.status === 401) throw error;
 
-				// Enhanced backoff strategy
-				const backoffTime = Math.min(1000 * Math.pow(2, i), 10000);
 				if (error.response?.status === 429) {
-					await delay(backoffTime * 2);
+					await delay(2000 * (i + 1));
 					continue;
 				}
 
 				if (error.code === "ECONNABORTED" || error.response?.status === 504) {
-					await delay(backoffTime);
+					await delay(1000 * (i + 1));
 					continue;
 				}
 
 				if (i === retries - 1) break;
-				await delay(backoffTime);
+				await delay(1000 * (i + 1));
 			}
 		}
 
@@ -116,7 +105,7 @@ export async function GET(request: Request, { params }: { params: { itemIdsParam
 							organization_id: process.env.ZOHO_ORG_ID,
 							item_id: itemId,
 							page: currentPage,
-							per_page: CONFIG.ITEMS_PER_PAGE,
+							per_page: 200,
 						},
 					},
 				);
@@ -135,7 +124,8 @@ export async function GET(request: Request, { params }: { params: { itemIdsParam
 				if (!response.data.page_context.has_more_page) break;
 				currentPage++;
 
-				await delay(500); // Delay between pages
+				// Add small delay between pages
+				await delay(500);
 			} catch (error: any) {
 				if (error.response?.status === 401) {
 					const newAccessToken = await getSalesAccessToken();
@@ -150,12 +140,6 @@ export async function GET(request: Request, { params }: { params: { itemIdsParam
 		return { salesOrders, searchCriteria };
 	}
 
-	function chunkArray<T>(array: T[], size: number): T[][] {
-		return Array.from({ length: Math.ceil(array.length / size) }, (_, i) =>
-			array.slice(i * size, i + size),
-		);
-	}
-
 	try {
 		let accessToken = process.env.ZOHO_INVENTORY_SALES_TOKEN;
 
@@ -164,13 +148,13 @@ export async function GET(request: Request, { params }: { params: { itemIdsParam
 			process.env.ZOHO_INVENTORY_SALES_TOKEN = accessToken;
 		}
 
-		const batches = chunkArray(itemIds, CONFIG.BATCH_SIZE);
+		const batches = chunkArray(itemIds, BATCH_SIZE);
 		const allSalesOrders: SalesOrder[] = [];
 		const allSearchCriteria: Record<string, string> = {};
 
 		for (const [index, batch] of batches.entries()) {
 			if (index > 0) {
-				await delay(CONFIG.BATCH_DELAY);
+				await delay(BATCH_DELAY);
 			}
 
 			const batchResults = await Promise.all(
@@ -193,16 +177,11 @@ export async function GET(request: Request, { params }: { params: { itemIdsParam
 			item_id: order.search_text,
 		}));
 
-		const response = {
+		return NextResponse.json({
 			salesOrders: salesOrdersWithNames,
 			totalSalesOrders: salesOrdersWithNames.length,
 			searchCriteria: allSearchCriteria,
-		};
-
-		// Cache the successful response
-		cache.set(cacheKey, response);
-
-		return NextResponse.json(response);
+		});
 	} catch (error: any) {
 		console.error("Error in fetching sales orders:", error.message);
 		return NextResponse.json(
