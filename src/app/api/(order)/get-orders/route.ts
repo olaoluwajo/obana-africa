@@ -60,10 +60,9 @@ export async function GET(request: Request) {
 							item_id: itemId,
 							page: currentPage,
 						},
-						timeout: 10000,
+						// timeout: 10000,
 					},
 				);
-
 
 				const ordersWithItemId = response.data.salesorders.map((order) => ({
 					...order,
