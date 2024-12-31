@@ -25,7 +25,7 @@ export default function ProductActions({
 			return;
 		}
 		setLoadingStates((prev) => ({ ...prev, edit: true }));
-		console.log(`Redirecting to edit page for product ID: ${productId}`);
+		// console.log(`Redirecting to edit page for product ID: ${productId}`);
 		router.push(`/vendor/dashboard/product/${productId}`);
 	};
 
@@ -35,7 +35,7 @@ export default function ProductActions({
 			return;
 		}
 		setLoadingStates((prev) => ({ ...prev, duplicate: true }));
-		console.log(`Redirecting to edit page for product ID: ${productId}`);
+		// console.log(`Redirecting to edit page for product ID: ${productId}`);
 		router.push(`/vendor/dashboard/product/${productId}?duplicate=true`);
 	};
 
@@ -43,7 +43,7 @@ export default function ProductActions({
 		const confirmed = confirm("Are you sure you want to delete this product?");
 		if (confirmed) {
 			setLoadingStates((prev) => ({ ...prev, delete: true }));
-			console.log(`Deleting product with ID: ${productId}`);
+			// console.log(`Deleting product with ID: ${productId}`);
 			// Add logic to call the delete API
 			try {
 				// await deleteProduct(productId);

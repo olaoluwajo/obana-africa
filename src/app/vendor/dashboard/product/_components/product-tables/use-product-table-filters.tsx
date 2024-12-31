@@ -37,7 +37,7 @@ export function useProductTableFilters() {
 	// Handle category selection change (optional custom function)
 	const handleCategoryChange = (category: string) => {
 		setCategoriesFilter(category);
-		console.log("Category Filter Updated:", category);
+		// console.log("Category Filter Updated:", category);
 	};
 
 	return {

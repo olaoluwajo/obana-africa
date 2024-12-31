@@ -75,7 +75,7 @@ export async function GET(request: Request, { params }: { params: { itemIdsParam
 				return response;
 			} catch (error: any) {
 				lastError = error;
-				console.log(`Retry ${i + 1} failed for URL: ${url}`, error.message);
+				// console.log(`Retry ${i + 1} failed for URL: ${url}`, error.message);
 
 				if (error.response?.status === 401) throw error;
 

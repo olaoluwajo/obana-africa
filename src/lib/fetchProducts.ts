@@ -8,7 +8,7 @@ interface SearchParams {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const fetchProducts = async (vendorId: string, searchParams: SearchParams) => {
-	console.log("Fetching products from API...");
+	// console.log("Fetching products from API...");
 	const url = new URL(`${process.env.NEXT_PUBLIC_BASE_URL}/api/fetch-products`);
 	url.searchParams.append("vendorId", vendorId);
 	Object.keys(searchParams).forEach((key) => {

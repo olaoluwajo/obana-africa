@@ -5,7 +5,7 @@ export async function POST(request: Request) {
 		// Parse the request body
 		const body = await request.json();
 		const { vendorId, productData } = body;
-		console.log("VENDOR ID", vendorId);
+		// console.log("VENDOR ID", vendorId);
 		// console.log("PRODUCT DATA", productData);
 
 		if (!vendorId) {

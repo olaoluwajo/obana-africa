@@ -25,7 +25,7 @@ export default async function getVendorDetails(email: string) {
 				const vendor = response.data.contacts.find((contact: any) => contact.email === email);
 
 				if (vendor) {
-					console.log("VENDOR FOUND", vendor);
+					// console.log("VENDOR FOUND", vendor);
 					return {
 						exists: true,
 						vendorId: vendor.contact_id,
@@ -47,7 +47,7 @@ export default async function getVendorDetails(email: string) {
 					console.warn("Access token expired. Refreshing...");
 					const newAccessToken = await getAccessToken();
 					process.env.ZOHO_API_TOKEN = newAccessToken;
-					console.log("New access token", newAccessToken);
+					// console.log("New access token", newAccessToken);
 					return await fetchVendorDetails(newAccessToken);
 				} else {
 					console.error("Error checking vendor in Zoho:", error.message);

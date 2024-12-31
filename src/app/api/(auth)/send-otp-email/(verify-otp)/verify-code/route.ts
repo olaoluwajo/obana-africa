@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
 
 		// Retrieve the stored OTP from the database for the email
 		const storedOtp = await getOtp(email);
-		console.log("STORED OTP", storedOtp);
+		// console.log("STORED OTP", storedOtp);
 
 		if (storedOtp === otp) {
 			// console.log("OTP MATCHED");
