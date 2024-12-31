@@ -7,11 +7,11 @@ cloudinary.config({
 	api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-console.log("Cloudinary Config:", {
-	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-	api_key: process.env.CLOUDINARY_API_KEY ? "Loaded" : "Not Loaded",
-	api_secret: process.env.CLOUDINARY_API_SECRET ? "Loaded" : "Not Loaded",
-});
+// console.log("Cloudinary Config:", {
+// 	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+// 	api_key: process.env.CLOUDINARY_API_KEY ? "Loaded" : "Not Loaded",
+// 	api_secret: process.env.CLOUDINARY_API_SECRET ? "Loaded" : "Not Loaded",
+// });
 
 export const runtime = "nodejs";
 
@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
 		// Upload to Cloudinary
 		const result = await cloudinary.uploader.upload(dataUri, { folder: "Home" });
-		console.log("Cloudinary Result:", result);
+		// console.log("Cloudinary Result:", result);
 
 		return new Response(JSON.stringify({ url: result.secure_url }), { status: 200 });
 	} catch (error) {

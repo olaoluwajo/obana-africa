@@ -12,7 +12,7 @@ const ItemToggleButton = ({ itemId, initialStatus }: ItemProps) => {
 	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 
-	console.log("status", status);
+	// console.log("status", status);
 
 	const toggleItemStatus = async () => {
 		setLoading(true);

@@ -105,7 +105,7 @@ export default function ProductForm({
 	const vendorId = useVendorStore((state) => state.vendorId);
 	if (!vendorId) {
 		const vendorId = localStorage.getItem("vendorId");
-		console.log("VENDOR ID from local storage", vendorId);
+		// console.log("VENDOR ID from local storage", vendorId);
 		if (vendorId) {
 			useVendorStore.getState().setVendorId(vendorId);
 		}
@@ -294,19 +294,19 @@ export default function ProductForm({
 			});
 		}
 
-		console.log("Formatted Product Data", formatProductData(values));
+		// console.log("Formatted Product Data", formatProductData(values));
 
 		try {
 			if (productId === "new" || isDuplicating) {
 				const productData: any = await createProduct(values, images);
-				console.log("Product created successfully", productData);
+				// console.log("Product created successfully", productData);
 				toast.success(`Product Name: ${productData.item.name} created successfully`);
 				router.push(`/vendor/dashboard/product`);
 				setIsLoading(false);
 			} else {
 				// toast.success(`Product Name: ${values.name} updated successfully`);
 
-				console.log("Product", productId);
+				// console.log("Product", productId);
 				const productData: any = await editProduct(productId, values, images);
 				toast.success(`Product ${productData.item.name} updated successfully`);
 				// router.refresh();

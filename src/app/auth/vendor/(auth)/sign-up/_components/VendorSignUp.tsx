@@ -263,7 +263,7 @@ const VendorSignUp = () => {
 				setLoading(false);
 			}
 		} else {
-			console.log("ERROR", errors);
+			// console.log("ERROR", errors);
 			setErrors(errors);
 		}
 	};

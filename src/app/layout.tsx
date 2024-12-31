@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 	title: "Vendor.obana.africa",
 	description: "Vendor Sign Up",
 	icons: {
-		icon: "/favicon.jpg",
+		icon: "/favicon.png",
 	},
 };
 

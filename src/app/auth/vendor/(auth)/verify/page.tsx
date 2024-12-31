@@ -51,7 +51,7 @@ function VerifyPageContent() {
 		const promise = () =>
 			new Promise((resolve) => setTimeout(() => resolve({ name: userOtp }), 3000));
 
-		console.log(userOtp);
+		// console.log(userOtp);
 		setLoading(true);
 		toast.promise(promise, {
 			loading: `Verifying OTP, Please wait...`,

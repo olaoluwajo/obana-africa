@@ -21,14 +21,14 @@ export default function RootLayout({
 		// console.log("Role:", role);
 
 		if (role === "vendor") {
-			console.log("Redirecting to vendor dashboard...");
+			// console.log("Redirecting to vendor dashboard...");
 			// router.push("/vendor/dashboard");
 			router.push(window.location.pathname);
 		} else if (role === "admin") {
-			console.log("Redirecting to admin dashboard...");
+			// console.log("Redirecting to admin dashboard...");
 			router.push("/admin/dashboard");
 		} else {
-			console.log("User is not authenticated, redirecting to sign-in page...");
+			// console.log("User is not authenticated, redirecting to sign-in page...");
 			router.push("/auth/vendor/sign-in");
 		}
 	}, [isAuthenticated, role, router]);
