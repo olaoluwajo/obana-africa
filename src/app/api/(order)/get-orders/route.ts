@@ -149,17 +149,7 @@ export async function GET(request: Request) {
 			});
 		}
 
-		// results.forEach(({ salesOrders, searchCriteria }) => {
-		// 	if (salesOrders.length > 0) {
-		// 		allSalesOrders.push(...salesOrders);
-		// 		searchCriteria.forEach((criteria) => {
-		// 			allSearchCriteria[criteria.search_text] = criteria.search_text_formatted;
-		// 		});
-		// 	}
-		// });
 
-		// console.log("Search Criteria Map:", allSearchCriteria);
-		// console.log("Sample Sales Order:", allSalesOrders[0]);
 
 		// Attach item names to the sales orders
 		const salesOrdersWithNames = allSalesOrders.map((order) => ({

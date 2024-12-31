@@ -5,7 +5,7 @@
 		}
 	},
 	"functions": {
-		"api/get-orders.ts": {
+		"app/api/get-orders/route.ts": {
 			"maxDuration": 60
 		}
 	}
