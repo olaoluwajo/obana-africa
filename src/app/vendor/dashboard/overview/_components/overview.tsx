@@ -222,7 +222,9 @@ export default function OverViewPage() {
 							<Card className="col-span-4">
 								<CardHeader>
 									<CardTitle>Recent Orders</CardTitle>
-									<CardDescription>You have have 0 orders this month</CardDescription>
+									<CardDescription>
+										You have {totalOrders} orders this month
+									</CardDescription>
 								</CardHeader>
 								<CardContent>
 									<RecentOrders salesOrders={salesOrders} />
