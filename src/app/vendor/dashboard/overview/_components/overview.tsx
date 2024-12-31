@@ -24,7 +24,7 @@ export default function OverViewPage() {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [activeProducts, setActiveProducts] = useState(0);
 	const [totalProducts, setTotalProducts] = useState(0);
-	const [salesOrders, setSalesOrders] = useState([]);
+	const [salesOrders, setSalesOrders] = useState<any[]>([]);
 	const [totalOrders, setTotalOrders] = useState(0);
 	const [isLoading, setIsLoading] = useState(true);
 	const vendorName = useVendorStore((state) => state.vendorName);
@@ -70,16 +70,28 @@ export default function OverViewPage() {
 	// Fetch orders using itemIds from products
 	useEffect(() => {
 		if (products.length === 0) return;
+
+		const itemIds = products.map((product) => product.item_id);
+		const batchSize = 100;
+
 		const fetchOrders = async () => {
 			try {
-				const itemIds = products.map((product) => product.item_id);
-				const response = await axios.get(`/api/get-orders?itemIds=${itemIds.join(",")}`);
+				const allOrders: any[] = [];
 
-				setSalesOrders(response.data.salesOrders);
-				const totalSalesOrders = response.data.totalSalesOrders;
-				setTotalOrders(totalSalesOrders);
-			} catch (err) {
-				console.error("Error fetching orders:", err);
+				// Process batches sequentially instead of parallel
+				for (let i = 0; i < itemIds.length; i += batchSize) {
+					const batch = itemIds.slice(i, i + batchSize);
+					const response = await axios.get(`/api/get-orders/${batch.join(",")}`);
+					allOrders.push(...response.data.salesOrders);
+
+					// Optional: Add delay between batches if needed
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+				}
+
+				setSalesOrders(allOrders?.slice(0, 7) || []);
+				setTotalOrders(allOrders.length);
+			} catch (error) {
+				console.error("Error fetching orders:", error);
 			}
 		};
 
@@ -151,7 +163,7 @@ export default function OverViewPage() {
 							</Card>
 							<Card>
 								<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-									<CardTitle className="text-sm font-medium">Sales</CardTitle>
+									<CardTitle className="text-sm font-medium">Orders</CardTitle>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										viewBox="0 0 24 24"
