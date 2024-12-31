@@ -38,7 +38,7 @@ const RecentOrders = ({ salesOrders }: { salesOrders: any }) => {
 			</TableHeader>
 			<TableBody>
 				{salesOrders.map((order: any) => (
-					<TableRow key={order.salesorder_id}>
+					<TableRow key={order.salesorder_id} className="text-xs">
 						<TableCell className="font-medium">{order.item_name}</TableCell>
 						<TableCell>
 							{/* <Badge variant={order.status ? "active" : "destructive"}>

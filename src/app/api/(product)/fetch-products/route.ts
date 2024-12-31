@@ -3,6 +3,7 @@ import axios from "axios";
 import { getInventoryAccessToken } from "@/helpers/zohoAuthToken";
 
 export async function GET(request: Request) {
+	console.log('PRODUCT REQUEST',request)
 	const url = new URL(request.url);
 	const vendorId = url.searchParams.get("vendorId");
 	const page = parseInt(url.searchParams.get("page") || "1");
