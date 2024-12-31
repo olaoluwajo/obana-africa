@@ -24,7 +24,7 @@ export async function fetchProducts({
 			},
 			params: {
 				page,
-				per_page: limit,
+				per_page: 200,
 				search_text: search,
 				category: categories,
 				organization_id: process.env.ZOHO_ORG_ID,
