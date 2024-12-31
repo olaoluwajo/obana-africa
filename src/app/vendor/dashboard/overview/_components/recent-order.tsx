@@ -27,7 +27,7 @@ const getStatusVariant = (status: string) => {
 const RecentOrders = ({ salesOrders }: { salesOrders: any }) => {
 	return (
 		<Table>
-			<TableCaption>A list of sales made.</TableCaption>
+			<TableCaption>A list of orders available</TableCaption>
 			<TableHeader>
 				<TableRow>
 					<TableHead>Product name</TableHead>
