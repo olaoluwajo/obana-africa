@@ -60,14 +60,14 @@ export async function GET(request: Request) {
 							item_id: itemId,
 							page: currentPage,
 						},
-						timeout: 5000,
+						timeout: 10000,
 					},
-        );
+				);
 
 
 				const ordersWithItemId = response.data.salesorders.map((order) => ({
 					...order,
-					search_text: itemId, 
+					search_text: itemId,
 				}));
 
 				salesOrders.push(...ordersWithItemId);
