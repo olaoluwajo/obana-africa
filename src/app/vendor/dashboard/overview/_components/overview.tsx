@@ -82,6 +82,7 @@ export default function OverViewPage() {
 				for (let i = 0; i < itemIds.length; i += batchSize) {
 					const batch = itemIds.slice(i, i + batchSize);
 					const response = await axios.get(`/api/get-orders/${batch.join(",")}`);
+					console.log('RESPONSE',response);
 					allOrders.push(...response.data.salesOrders);
 
 					// Optional: Add delay between batches if needed

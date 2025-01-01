@@ -145,12 +145,12 @@ function VerifyPageContent() {
 
 	return (
 		<div className="h-screen flex  items-center justify-center bg-[#dcfbf9]">
-			<div className="max-w-md mx-auto mt-8 px-12 py-8 bg-white shadow-lg border border-slate-300 rounded-lg ">
+			<div className="max-w-md mx-auto mt-8 px-12 py-8 bg-white shadow-lg border border-slate-300 rounded-lg h-[400px]">
 				<div className="flex flex-col items-center my-4">
 					<img src="/logo.png" alt="" className="md:w-[50%] w-[50%] mb-2" />
 				</div>
 				<h2 className="text-xl font-bold text-center mb-1">Verify Your Email</h2>
-				<form onSubmit={onSubmit} className="">
+				<form onSubmit={onSubmit} className="py-4">
 					<div>
 						<label className="block text-center mb-4">
 							Check your email for Verification Code
@@ -198,7 +198,7 @@ function VerifyPageContent() {
 					<Button
 						variant="link"
 						onClick={() => router.push("/auth/vendor/sign-in")}
-						className="w-full mx-auto text-blue-500">
+						className="w-full mx-auto text-blue-500 py-4">
 						Back to Login
 					</Button>
 				</div>
