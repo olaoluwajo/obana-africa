@@ -129,7 +129,7 @@ export default function UserAuthForm() {
 
 	return isAuthenticated ? (
 		<div className="flex flex-col justify-center items-center">
-			<Loader message="Loading Please wait.."/> 
+			<Loader message="Loading Please wait.." />
 		</div>
 	) : (
 		<>
