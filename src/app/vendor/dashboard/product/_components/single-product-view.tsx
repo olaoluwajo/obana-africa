@@ -206,11 +206,11 @@ export default async function SingleProductView({ params }: ProductViewPageProps
 								label="Brand"
 								value={product.brand}
 							/>
-							<DetailItem
+							{/* <DetailItem
 								icon={<Flag className="text-red-600" />}
 								label="Manufacturer"
 								value={product.manufacturer}
-							/>
+							/> */}
 							<DetailItem
 								icon={<Box className="text-orange-600" />}
 								label="Unit of Measurement"
