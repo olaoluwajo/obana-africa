@@ -26,7 +26,15 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { navItems } from "@/constants/data";
-import { BadgeCheck, Bell, ChevronRight, ChevronsUpDown, CreditCard, LogOut } from "lucide-react";
+import {
+	BadgeCheck,
+	Bell,
+	ChevronRight,
+	ChevronsUpDown,
+	CreditCard,
+	LogOut,
+	CircleUserRound,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -73,7 +81,7 @@ export default function AppSidebar() {
 				<div className="flex gap-2 mt-4 ml-4 text-sidebar-accent-foreground   justify-start items-center">
 					<div className="mt-4 flex">
 						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<h1 className="text-white text-[28px]">Obana.africa</h1>
+						<h1 className="text-white text-[28px]">Obana</h1>
 					</div>
 				</div>
 			</SidebarHeader>
@@ -181,7 +189,6 @@ export default function AppSidebar() {
 												{vendorFirstName || ""}
 											</span>
 											<span className="truncate text-xs">
-												{" "}
 												{vendorEmailFromStore || ""}
 											</span>
 										</div>
@@ -190,6 +197,10 @@ export default function AppSidebar() {
 								<DropdownMenuSeparator />
 
 								<DropdownMenuGroup>
+									<DropdownMenuItem>
+										<CircleUserRound />
+										Profile
+									</DropdownMenuItem>
 									<DropdownMenuItem>
 										<BadgeCheck />
 										Account

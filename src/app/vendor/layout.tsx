@@ -14,21 +14,25 @@ export default function RootLayout({
 	const pathname = usePathname();
 	const isAuthenticated = useAuthStore((state: any) => state.isAuthenticated);
 	const role = useAuthStore((state: any) => state.role);
-	const queryClient = new QueryClient();
+
+	const queryClient = new QueryClient({
+		defaultOptions: {
+			queries: {
+				staleTime: 5000,
+				gcTime: 300000,
+				refetchOnMount: false,
+				refetchOnWindowFocus: false,
+				retry: 1,
+			},
+		},
+	});
 
 	useEffect(() => {
-		// console.log("Authenticated:", isAuthenticated);
-		// console.log("Role:", role);
-
 		if (role === "vendor") {
-			// console.log("Redirecting to vendor dashboard...");
-			// router.push("/vendor/dashboard");
 			router.push(window.location.pathname);
 		} else if (role === "admin") {
-			// console.log("Redirecting to admin dashboard...");
 			router.push("/admin/dashboard");
 		} else {
-			// console.log("User is not authenticated, redirecting to sign-in page...");
 			router.push("/auth/vendor/sign-in");
 		}
 	}, [isAuthenticated, role, router]);

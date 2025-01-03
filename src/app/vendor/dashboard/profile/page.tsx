@@ -1,15 +1,15 @@
-import { SearchParams } from 'nuqs/parsers';
-// import ProfileViewPage from './_components/profile-view-page';
+import { SearchParams } from "nuqs/parsers";
+import ProfileViewPage from "./_components/profile-view-page";
 
 type pageProps = {
-  searchParams: SearchParams;
+	searchParams: SearchParams;
 };
 
 export const metadata = {
-  title: 'Dashboard : Profile'
+	title: "Dashboard : Profile",
 };
 
 export default async function Page({ searchParams }: pageProps) {
-  // return <ProfileViewPage />
-  return <div>Profile page</div>;
+	return <ProfileViewPage />;
+	// return <div>Profile page</div>;
 }

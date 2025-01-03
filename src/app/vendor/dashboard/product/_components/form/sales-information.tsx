@@ -8,8 +8,8 @@ interface SalesInfoFormProps {
 	control: any;
 	productId: any;
 	setValue: any;
-	clearErrors: any; // Add clearErrors as a prop
-	setError: any; // Add setError as a prop
+	clearErrors: any;
+	setError: any; 
 }
 
 const SalesInformation: React.FC<SalesInfoFormProps> = ({
