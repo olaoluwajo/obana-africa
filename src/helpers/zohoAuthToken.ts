@@ -127,7 +127,7 @@ export async function getMailAccessToken() {
 // Function to refresh the Zoho Inventory access token
 export async function getInventoryAccessToken() {
 	const accessToken = process.env.ZOHO_INVENTORY_ACCESS_TOKEN;
-	console.log("ACCESS TOKEN", accessToken);
+	console.log("INVENTORY ACCESS TOKEN", accessToken);
 
 	// If token is still valid, return it
 	if (accessToken && Date.now() < inventoryAccessTokenExpiry) {

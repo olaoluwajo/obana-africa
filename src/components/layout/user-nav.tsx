@@ -32,16 +32,8 @@ export function UserNav() {
 		if (storedEmail) useVendorStore.getState().setVendorEmail(storedEmail);
 	}, []);
 
-	const session = {
-		user: {
-			name: "John Doe",
-			email: "john@example.com",
-			image: "/path/to/profile-image.jpg",
-		},
-	};
 
 	const router = useRouter();
-	const setAuthenticated = useAuthStore((state) => state.setAuthenticated);
 
 	// Logout handler
 	const handleLogout = () => {
@@ -54,7 +46,7 @@ export function UserNav() {
 		toast.success("User logged out successfully.");
 	};
 
-	if (session) {
+	if (vendorFirstName) {
 		return (
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
@@ -76,7 +68,7 @@ export function UserNav() {
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />
 					<DropdownMenuGroup>
-						<DropdownMenuItem>
+						<DropdownMenuItem onClick={() => router.push("/vendor/dashboard/profile")}>
 							Profile
 							<DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
 						</DropdownMenuItem>

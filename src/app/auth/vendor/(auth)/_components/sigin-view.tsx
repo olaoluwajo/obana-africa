@@ -23,7 +23,7 @@ export default function SignInViewPage() {
 
 			<div className="flex h-full items-center p-4 lg:p-8">
 				<div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px] shadow-md  rounded-md p-12 items-center bg-white">
-					<img src="/logo.png" alt="" className="md:w-[70%] w-[50%] mb-2" />
+					<img src="/logo.webp" alt="" className="md:w-[70%] w-[50%] mb-2" />
 					<div className="flex flex-col space-y-2 text-center">
 						<h1 className="text-2xl font-semibold tracking-tight">VENDOR LOGIN</h1>
 						<p className="text-sm text-muted-foreground">

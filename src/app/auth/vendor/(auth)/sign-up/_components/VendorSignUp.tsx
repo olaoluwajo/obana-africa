@@ -314,7 +314,7 @@ const VendorSignUp = () => {
 	return (
 		<div className="min-h-screen py-10 md:py-20 flex flex-col items-center justify-center bg-[#f2f4f7] ">
 			<div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] h-full divide-y-2 flex  flex-col items-center justify-center">
-				<img src="/logo.png" alt="" className="md:w-[30%] w-[50%] mb-2" />
+				<img src="/logo.webp" alt="" className="md:w-[30%] w-[50%] mb-2" />
 				<div className="mx-auto  w-full">
 					<h1 className="text-2xl font-bold mb-6 text-black text-center mt-3">
 						Vendor Registration
@@ -438,8 +438,8 @@ const VendorSignUp = () => {
 							{step == 1 && (
 								<div className="flex justify-center items-center">
 									<p className=" text-center text-sm text-muted-foreground">
-										Already have an account?{" "}
-										<Link href="/sign-in" className="font-bold ">
+										Already have an account?
+										<Link href="/auth/vendor/sign-in" className="font-bold ">
 											Sign in
 										</Link>
 									</p>

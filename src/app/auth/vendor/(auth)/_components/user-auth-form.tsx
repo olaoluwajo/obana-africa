@@ -99,7 +99,7 @@ export default function UserAuthForm() {
 					useVendorStore.getState().setVendorEmail(vendorEmail);
 
 					const result = otpResponse.data;
-					// console.log("RESULT", result);
+					console.log("RESULT", result);
 
 					if (result.success) {
 						useVendorStore.getState().setVendorId(vendorId);
